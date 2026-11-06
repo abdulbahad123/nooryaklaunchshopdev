@@ -84,9 +84,16 @@ class ItemController extends Controller
 
         $data = explode(',,,', $id);
         $id = (int)$data[0];
-        $qty = isset($data[1]) ? (int)$data[1] : 1;
-        $total = isset($data[2]) ? (float)$data[2] : 0;
-        $variant = (isset($data[3]) && !empty($data[3])) ? json_decode($data[3], true) : [];
+        $qty = (isset($data[1]) && is_numeric($data[1]) && (int)$data[1] > 0) ? (int)$data[1] : 1;
+        $total = (isset($data[2]) && is_numeric($data[2])) ? (float)$data[2] : 0;
+        if (is_nan($total) || $total < 0) {
+            $total = 0;
+        }
+        $variantRaw = isset($data[3]) ? trim($data[3]) : '';
+        $variant = (!empty($variantRaw) && $variantRaw !== 'null' && $variantRaw !== 'undefined') ? json_decode($variantRaw, true) : [];
+        if (!is_array($variant)) {
+            $variant = [];
+        }
 
         $item = UserItem::find($id);
         if (!$item) {

@@ -313,8 +313,8 @@ if (!function_exists('format_price')) {
 if (!function_exists('currency_converter')) {
     function currency_converter($value): string
     {
-        $userCurrentCurr = app('userCurrentCurr');
-        $userDefaultCurrency = app('userDefaultCurrency');
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
+        $userDefaultCurrency = app()->bound('userDefaultCurrency') ? app('userDefaultCurrency') : null;
 
         if (empty($userCurrentCurr) || empty($userDefaultCurrency) || !is_object($userCurrentCurr) || !is_object($userDefaultCurrency)) {
             return number_format((float)$value, 2, '.', '');
@@ -333,8 +333,8 @@ if (!function_exists('currency_converter_shipping')) {
 
     function currency_converter_shipping($value, $shipping_id): string
     {
-        $userCurrentCurr = app('userCurrentCurr');
-        $userDefaultCurrency = app('userDefaultCurrency');
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
+        $userDefaultCurrency = app()->bound('userDefaultCurrency') ? app('userDefaultCurrency') : null;
 
         if (empty($userCurrentCurr) || empty($userDefaultCurrency) || !is_object($userCurrentCurr) || !is_object($userDefaultCurrency)) {
             return round((float)$value, 2);
@@ -373,7 +373,7 @@ if (!function_exists('currency_sign')) {
 
     function currency_sign(): string
     {
-        $userCurrentCurr = app('userCurrentCurr');
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
         if (empty($userCurrentCurr) || !is_object($userCurrentCurr)) {
             return '₹';
         }
@@ -385,7 +385,7 @@ if (!function_exists('currency_value')) {
 
     function currency_value(): string
     {
-        $userCurrentCurr = app('userCurrentCurr');
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
         if (empty($userCurrentCurr) || !is_object($userCurrentCurr)) {
             return '1';
         }
@@ -577,7 +577,7 @@ if (!function_exists('currency_converter_customer')) {
         if (empty($value)) {
             $value = 0;
         }
-        $userCurrentCurr = app('userCurrentCurr');
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
         if (empty($userCurrentCurr) || !is_object($userCurrentCurr) || empty($userCurrentCurr->id)) {
             return (string) round((float)$value, 2);
         }
@@ -1712,7 +1712,8 @@ if (!function_exists('flashAmountStatus')) {
 if (!function_exists('cartSubTotal')) {
     function cartSubTotal()
     {
-        $username = app('user')->username;
+        $user = app()->bound('user') ? app('user') : getUser();
+        $username = ($user && is_object($user)) ? ($user->username ?? '') : '';
         $coupon = session()->has('user_coupon_' . $username) && !empty(session()->get('user_coupon_' . $username)) ? session()->get('user_coupon_' . $username) : 0;
         $cartTotal = cartTotal();
         $subTotal = $cartTotal - $coupon;

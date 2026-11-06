@@ -8,18 +8,25 @@ var ffffff = 0;
 var $voptions = '';
 
 function totalPrice(qty) {
-    qty = qty.toString().length > 0 ? qty : 0;
+    qty = (qty && !isNaN(parseInt(qty))) ? parseInt(qty) : 1;
 
     $voptions = $("input.voptions:checked");
     let vprice = 0;
     if ($voptions.length > 0) {
         $voptions.each(function () {
-            vprice = parseFloat(vprice) + parseFloat($(this).data('price'));
+            let p = parseFloat($(this).data('price'));
+            if (!isNaN(p)) {
+                vprice += p;
+            }
         });
     }
 
-    let total = parseFloat(pprice) + parseFloat(vprice);
-    total = total.toFixed(2) * parseInt(qty);
+    let baseP = (typeof pprice !== 'undefined' && !isNaN(parseFloat(pprice))) ? parseFloat(pprice) : 0;
+    let total = (baseP + vprice) * qty;
+    if (isNaN(total) || total < 0) {
+        total = 0;
+    }
+
     if ($("#productPrice").length > 0) {
         $("#productPrice").html(total.toFixed(2));
     }
@@ -37,13 +44,21 @@ function addToCart(url, variant, qty) {
     $(".modal-cart-link i").removeClass('d-none');
     $(".modal-cart-link i").addClass('d-inline-block');
 
+    qty = (qty && !isNaN(parseInt(qty)) && parseInt(qty) > 0) ? parseInt(qty) : 1;
+    let price = totalPrice(qty);
+    if (isNaN(parseFloat(price))) {
+        price = "0.00";
+    }
+
     // Safety watchdog: remove loader after 6s in case network hangs
     var loaderTimeout = setTimeout(function () {
         $(".request-loader").removeClass("show");
         $(".modal-cart-link").removeClass('disabled');
     }, 6000);
 
-    $.get(cartUrl + ',,,' + qty + ',,,' + totalPrice(qty) + ',,,' + JSON.stringify(variant), function (res) {
+    let variantParam = (variant && typeof variant === 'object') ? JSON.stringify(variant) : 'null';
+
+    $.get(cartUrl + ',,,' + qty + ',,,' + price + ',,,' + variantParam, function (res) {
         clearTimeout(loaderTimeout);
         $(".request-loader").removeClass("show");
 

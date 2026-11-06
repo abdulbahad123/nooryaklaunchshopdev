@@ -729,10 +729,15 @@
                       <input type="text" class="form-control" name="username" placeholder="{{ $hasSubdomain ? __('mystore') : __('Username') }}"
                         value="{{ old('username') }}" required autocomplete="off" style="border: none !important; height: auto !important; padding: 12px 15px !important; font-size: 14px !important; flex-grow: 1; outline: none !important; box-shadow: none !important;">
                       @php
-                        $reqHost = request()->getHost();
+                        $reqHost = strtolower(request()->getHost());
+                        $reqHost = preg_replace('/:\d+$/', '', $reqHost);
                         $cleanWhitelabel = preg_replace('/^(launchshop|ecombuilder|ecom-builder|checkout|websitebuilder|website-builder|app|www)\./i', '', $reqHost);
                         $cleanWhitelabel = preg_replace('/:\d+$/', '', $cleanWhitelabel);
-                        $displayExt = (!empty($cleanWhitelabel) && !in_array($cleanWhitelabel, ['localhost', '127.0.0.1'])) ? $cleanWhitelabel : env('WEBSITE_HOST', 'launchshop.in');
+                        if ($cleanWhitelabel === 'in' || $cleanWhitelabel === 'com' || str_ends_with($reqHost, 'launchshop.in') || in_array($reqHost, ['launchshop.in', 'www.launchshop.in', 'localhost', '127.0.0.1'])) {
+                            $displayExt = 'launchshop.in';
+                        } else {
+                            $displayExt = (!empty($cleanWhitelabel) && !in_array($cleanWhitelabel, ['localhost', '127.0.0.1'])) ? $cleanWhitelabel : env('WEBSITE_HOST', 'launchshop.in');
+                        }
                       @endphp
                       <span class="domain-ext" id="subdomain-ext" style="padding: 12px 15px; font-size: 14px; color: #475569; font-weight: 700; background: #f8fafc; border-left: 1px solid #cbd5e1; display: {{ $hasSubdomain ? 'flex' : 'none' }}; align-items: center;">.{{ $displayExt }}</span>
                     </div>

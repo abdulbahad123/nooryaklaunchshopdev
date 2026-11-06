@@ -78,7 +78,11 @@
                             $reqHost = request()->getHost();
                             $cleanWhitelabel = preg_replace('/^(launchshop|ecombuilder|ecom-builder|checkout|websitebuilder|website-builder|app|www)\./i', '', $reqHost);
                             $cleanWhitelabel = preg_replace('/:\d+$/', '', $cleanWhitelabel);
-                            $baseHost = (!empty($cleanWhitelabel) && !in_array($cleanWhitelabel, ['localhost', '127.0.0.1'])) ? $cleanWhitelabel : env('WEBSITE_HOST', 'launchshop.in');
+                            if ($cleanWhitelabel === 'in' || $cleanWhitelabel === 'com' || str_ends_with($reqHost, 'launchshop.in') || in_array($reqHost, ['launchshop.in', 'www.launchshop.in', 'localhost', '127.0.0.1'])) {
+                                $baseHost = 'launchshop.in';
+                            } else {
+                                $baseHost = (!empty($cleanWhitelabel) && !in_array($cleanWhitelabel, ['localhost', '127.0.0.1'])) ? $cleanWhitelabel : env('WEBSITE_HOST', 'launchshop.in');
+                            }
                             $subdomain = strtolower(Auth::user()->username) . '.' . $baseHost;
                           @endphp
                           <a href="//{{ $subdomain }}" target="_blank">{{ $subdomain }}</a>

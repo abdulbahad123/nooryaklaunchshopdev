@@ -666,6 +666,10 @@
       $reqHost = preg_replace('/^www\./i', '', $reqHost);
       $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
 
+      if ($cleanAgencyHost === 'in' || $cleanAgencyHost === 'com' || str_ends_with($reqHost, 'launchshop.in') || in_array($reqHost, ['launchshop.in', 'www.launchshop.in'])) {
+          $cleanAgencyHost = 'launchshop.in';
+      }
+
       $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
 
       if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {

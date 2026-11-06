@@ -180,6 +180,9 @@ if (str_starts_with($requestHost, 'launchshop.') && !in_array($requestHost, ['la
 
 
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $requestHost);
+if ($cleanRequestHost === 'in' || $cleanRequestHost === 'com' || str_ends_with($requestHost, 'launchshop.in') || in_array($requestHost, ['launchshop.in', 'www.launchshop.in'])) {
+    $cleanRequestHost = 'launchshop.in';
+}
 
 $isTenantSubdomain = false;
 $tenantSubdomainName = null;

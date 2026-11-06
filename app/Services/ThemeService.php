@@ -13,7 +13,7 @@ class ThemeService
     public function getActiveTheme(): string
     {
         $theme = null;
-        $user = app('user');
+        $user = app()->bound('user') ? app('user') : (function_exists('getUser') ? getUser() : null);
         if ($user && isset($user->id)) {
             $theme = DB::table('user_basic_settings')
                 ->where('user_id', $user->id)
