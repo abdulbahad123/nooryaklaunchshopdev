@@ -253,40 +253,6 @@ class ShopController extends Controller
                 ->paginate(12);
         }
 
-        if ($items->total() == 0 && empty($keyword)) {
-            $fallbackQuery = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
-                ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
-                ->where('user_items.status', '=', 1)
-                ->where('user_items.user_id', '=', $user->id)
-                ->where(function ($q) {
-                    $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
-                })
-                ->when($category, function ($query, $category) {
-                    return $query->where('user_item_categories.id', $category);
-                })
-                ->select(
-                    'user_items.*',
-                    'user_items.id as item_id',
-                    'user_item_contents.id as content_id',
-                    'user_item_contents.item_id as content_item_id',
-                    'user_item_contents.language_id as content_language_id',
-                    'user_item_contents.title',
-                    'user_item_contents.slug as product_slug',
-                    'user_item_contents.summary',
-                    'user_item_contents.description',
-                    'user_item_contents.category_id',
-                    'user_item_contents.subcategory_id',
-                    'user_item_contents.label_id',
-                    'user_item_categories.name as category_name',
-                    'user_item_categories.slug as category_slug'
-                )
-                ->groupBy('user_items.id')
-                ->orderByDesc('user_items.id');
-
-            $items = $fallbackQuery->paginate(12);
-        }
-
         $data['minPrice'] = UserItem::where([['status', 1], ['user_id', $user->id]])->min('current_price');
         $data['maxPrice'] = UserItem::where([['status', 1], ['user_id', $user->id]])->max('current_price');
 
@@ -552,40 +518,6 @@ class ShopController extends Controller
                 )
                 ->orderByDesc('user_items.id')
                 ->paginate(12);
-        }
-
-        if ($items->total() == 0 && empty($keyword)) {
-            $fallbackQuery = UserItem::join('user_item_contents', 'user_items.id', '=', 'user_item_contents.item_id')
-                ->leftJoin('user_item_categories', 'user_item_categories.id', '=', 'user_item_contents.category_id')
-                ->leftJoin('user_item_sub_categories', 'user_item_sub_categories.id', '=', 'user_item_contents.subcategory_id')
-                ->where('user_items.status', '=', 1)
-                ->where('user_items.user_id', '=', $user->id)
-                ->where(function ($q) {
-                    $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
-                })
-                ->when($category, function ($query, $category) {
-                    return $query->where('user_item_categories.id', $category);
-                })
-                ->select(
-                    'user_items.*',
-                    'user_items.id as item_id',
-                    'user_item_contents.id as content_id',
-                    'user_item_contents.item_id as content_item_id',
-                    'user_item_contents.language_id as content_language_id',
-                    'user_item_contents.title',
-                    'user_item_contents.slug as product_slug',
-                    'user_item_contents.summary',
-                    'user_item_contents.description',
-                    'user_item_contents.category_id',
-                    'user_item_contents.subcategory_id',
-                    'user_item_contents.label_id',
-                    'user_item_categories.name as category_name',
-                    'user_item_categories.slug as category_slug'
-                )
-                ->groupBy('user_items.id')
-                ->orderByDesc('user_items.id');
-
-            $items = $fallbackQuery->paginate(12);
         }
 
         $data['items'] = $items;
