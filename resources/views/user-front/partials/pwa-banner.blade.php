@@ -1,4 +1,12 @@
 @if (empty($user) || empty($user->preview_template) || $user->preview_template != 1 || request()->getHost() != env('WEBSITE_HOST'))
+@php
+  $pwaTextIosTitle = $keywords['Install App'] ?? __('Install on iPhone/iPad');
+  $pwaTextIosMsg = $keywords['To install this app, tap the Share icon at the bottom of Safari, then select "Add to Home Screen".'] ?? __('To install this app, tap the Share icon at the bottom of Safari, then select "Add to Home Screen".');
+  $pwaTextInstalledTitle = $keywords['App Already Installed'] ?? __('App Already Installed');
+  $pwaTextInstalledMsg = $keywords['This app is already installed! You can launch it from your home screen or app launcher.'] ?? __('This app is already installed! You can launch it from your home screen or app launcher.');
+  $pwaTextDefaultTitle = $keywords['Install App'] ?? __('Install App');
+  $pwaTextDefaultMsg = $keywords['To install this app, tap your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".'] ?? __('To install this app, tap your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".');
+@endphp
 <!-- PWA Sticky Bottom Install Banner -->
 <div id="pwa-install-banner" class="pwa-install-banner-bar" style="display:none;">
   <div style="display:flex;align-items:center;gap:14px;">
@@ -72,7 +80,7 @@
 </style>
 
 <script>
-  window.pwaInstallLabel = @json($keywords['Install App'] ?? __('Install App'));
+  window.pwaInstallLabel = {!! json_encode($pwaTextDefaultTitle) !!};
 
   function isPwaInstalled() {
     return window.matchMedia('(display-mode: standalone)').matches ||
@@ -134,23 +142,23 @@
     var isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIos) {
       showPwaFallback(
-        @json($keywords['Install App'] ?? __('Install on iPhone/iPad')),
-        @json($keywords['To install this app, tap the Share icon at the bottom of Safari, then select "Add to Home Screen".'] ?? __('To install this app, tap the Share icon at the bottom of Safari, then select "Add to Home Screen".'))
+        {!! json_encode($pwaTextIosTitle) !!},
+        {!! json_encode($pwaTextIosMsg) !!}
       );
       return;
     }
 
     if (isPwaInstalled()) {
       showPwaFallback(
-        @json($keywords['App Already Installed'] ?? __('App Already Installed')),
-        @json($keywords['This app is already installed! You can launch it from your home screen or app launcher.'] ?? __('This app is already installed! You can launch it from your home screen or app launcher.'))
+        {!! json_encode($pwaTextInstalledTitle) !!},
+        {!! json_encode($pwaTextInstalledMsg) !!}
       );
       return;
     }
 
     showPwaFallback(
-      @json($keywords['Install App'] ?? __('Install App')),
-      @json($keywords['To install this app, tap your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".'] ?? __('To install this app, tap your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".'))
+      {!! json_encode($pwaTextDefaultTitle) !!},
+      {!! json_encode($pwaTextDefaultMsg) !!}
     );
   }
 

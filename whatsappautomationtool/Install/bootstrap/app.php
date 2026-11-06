@@ -8,6 +8,7 @@ use App\Http\Middleware\Themes;
 use App\Http\Middleware\Authentication;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\BootContext;
+use App\Http\Middleware\TenantDatabaseMiddleware;
 
 spl_autoload_register(function ($class) {
     $prefix = 'Modules\\';
@@ -68,11 +69,16 @@ $app = Application::configure(basePath: dirname(__DIR__))
             '*/do_login'
         ]);
         
-        $middleware->web(append: [
-            Authentication::class,
-            SetLocale::class,
-            Themes::class,
-        ]);
+        $middleware->web(
+            prepend: [
+                TenantDatabaseMiddleware::class,
+            ],
+            append: [
+                Authentication::class,
+                SetLocale::class,
+                Themes::class,
+            ]
+        );
 
         $middleware->alias([
             'theme' => Themes::class,
