@@ -19,8 +19,11 @@
     @page {
       margin: 18mm 12mm;
     }
+    * {
+      font-family: 'DejaVu Sans', sans-serif !important;
+    }
     body {
-      font-family: {{ $font_family }} !important;
+      font-family: 'DejaVu Sans', sans-serif !important;
       font-size: 11px;
       color: #1e293b;
       line-height: 1.5;
@@ -47,7 +50,7 @@
     }
     .report-title {
       font-size: 20px;
-      font-weight: 800;
+      font-weight: bold;
       color: {{ $primary_color }};
       letter-spacing: -0.3px;
       margin: 0 0 4px 0;
@@ -71,14 +74,14 @@
     }
     .kpi-label {
       font-size: 9px;
-      font-weight: 700;
+      font-weight: bold;
       text-transform: uppercase;
       color: #64748b;
       margin-bottom: 3px;
     }
     .kpi-value {
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: bold;
       color: #0f172a;
     }
 
@@ -91,7 +94,7 @@
       background-color: #0f172a;
       color: #ffffff;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border: 1px solid #0f172a;
@@ -107,7 +110,7 @@
       display: inline-block;
       padding: 2px 7px;
       font-size: 9px;
-      font-weight: 700;
+      font-weight: bold;
       border-radius: 4px;
     }
     .badge-success {
