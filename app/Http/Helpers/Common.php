@@ -302,25 +302,26 @@ class Common
             }
         }
 
+        $authCust = Auth::guard('customer')->check() ? Auth::guard('customer')->user() : null;
         $order = new UserOrder();
-        $order->customer_id = Auth::guard('customer')->check() ? Auth::guard('customer')->user()->id : 9999999;
+        $order->customer_id = $authCust ? $authCust->id : 9999999;
         $order->user_id = $user->id;
-        $order->billing_fname = $request['billing_fname'];
-        $order->billing_lname = $request['billing_lname'];
-        $order->billing_email = $request['billing_email'];
-        $order->billing_address = $request['billing_address'];
-        $order->billing_city = $request['billing_city'];
-        $order->billing_state = $request['billing_state'];
-        $order->billing_country = $request['billing_country'];
-        $order->billing_number = $request['billing_number'];
-        $order->shipping_fname = !is_null($request['shipping_fname']) ? $request['shipping_fname'] : $request['billing_fname'];
-        $order->shipping_lname = !is_null($request['shipping_lname']) ? $request['shipping_lname'] : $request['billing_lname'];
-        $order->shipping_email = !is_null($request['shipping_email']) ? $request['shipping_email'] : $request['billing_email'];
-        $order->shipping_address = !is_null($request['shipping_address']) ? $request['shipping_address'] : $request['billing_address'];
-        $order->shipping_city = !is_null($request['shipping_city']) ? $request['shipping_city'] : $request['billing_city'];
-        $order->shipping_state = !is_null($request['shipping_state']) ? $request['shipping_state'] : $request['billing_state'];
-        $order->shipping_country = !is_null($request['shipping_country']) ? $request['shipping_country'] : $request['billing_country'];
-        $order->shipping_number = !is_null($request['shipping_number']) ? $request['shipping_number'] : $request['billing_number'];
+        $order->billing_fname = !empty($request['billing_fname']) ? $request['billing_fname'] : ($authCust ? ($authCust->billing_fname ?: $authCust->first_name) : '');
+        $order->billing_lname = !empty($request['billing_lname']) ? $request['billing_lname'] : ($authCust ? ($authCust->billing_lname ?: $authCust->last_name) : '');
+        $order->billing_email = !empty($request['billing_email']) ? $request['billing_email'] : ($authCust ? ($authCust->billing_email ?: $authCust->email) : '');
+        $order->billing_address = !empty($request['billing_address']) ? $request['billing_address'] : ($authCust ? ($authCust->billing_address ?: $authCust->address) : '');
+        $order->billing_city = !empty($request['billing_city']) ? $request['billing_city'] : ($authCust ? ($authCust->billing_city ?: $authCust->city) : '');
+        $order->billing_state = !empty($request['billing_state']) ? $request['billing_state'] : ($authCust ? ($authCust->billing_state ?: $authCust->state) : '');
+        $order->billing_country = !empty($request['billing_country']) ? $request['billing_country'] : ($authCust ? ($authCust->billing_country ?: $authCust->country) : '');
+        $order->billing_number = !empty($request['billing_number']) ? $request['billing_number'] : ($authCust ? ($authCust->billing_number ?: $authCust->contact_number) : '');
+        $order->shipping_fname = !empty($request['shipping_fname']) ? $request['shipping_fname'] : $order->billing_fname;
+        $order->shipping_lname = !empty($request['shipping_lname']) ? $request['shipping_lname'] : $order->billing_lname;
+        $order->shipping_email = !empty($request['shipping_email']) ? $request['shipping_email'] : $order->billing_email;
+        $order->shipping_address = !empty($request['shipping_address']) ? $request['shipping_address'] : $order->billing_address;
+        $order->shipping_city = !empty($request['shipping_city']) ? $request['shipping_city'] : $order->billing_city;
+        $order->shipping_state = !empty($request['shipping_state']) ? $request['shipping_state'] : $order->billing_state;
+        $order->shipping_country = !empty($request['shipping_country']) ? $request['shipping_country'] : $order->billing_country;
+        $order->shipping_number = !empty($request['shipping_number']) ? $request['shipping_number'] : $order->billing_number;
         $order->order_status = $order_status;
         $order->gateway_type = $gtype;
         if (is_array($request)) {
@@ -459,52 +460,117 @@ class Common
         }
     }
 
-    public static function sendMails($order)
+    public static function sendOrderConfirmationAndInvoice($order, $user = null)
     {
-        $user = getUser() ?? User::find($order->user_id);
+        if (!$user) {
+            $user = getUser() ?? User::find($order->user_id);
+        }
         if (!$user) {
             return;
         }
-        $data['user'] = $user;
-        $data['userBs'] = BasicSetting::where('user_id', $user->id)->first();
-        $fileName = \Str::random(4) . time() . '.pdf';
-        $dir = public_path('assets/front/invoices/');
-        $path = $dir . $fileName;
-        @mkdir($dir, 0777, true);
-        $data['order']  = $order;
-        try {
-            $pdf = PDF::setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-                'logOutputFile' => storage_path('logs/log.htm'),
-                'tempDir' => storage_path('logs/')
-            ])->loadView('pdf.item', $data)->save($path);
-            UserOrder::where('id', $order->id)->update([
-                'invoice_number' => $fileName
-            ]);
-            $order->invoice_number = $fileName;
-        } catch (\Throwable $e) {
-            \Log::warning('Invoice PDF generation failed: ' . $e->getMessage());
+
+        // Ensure order items relation is loaded
+        if (!$order->relationLoaded('orderitems')) {
+            $order->load('orderitems');
         }
 
-        // Send Mail to Buyer (Instant Order / Guest or Registered User)
-        if (!empty($order->billing_email)) {
-            $mailer = new MegaMailer();
-            $mailData = [
-                'toMail' => $order->billing_email,
-                'toName' => trim($order->billing_fname . ' ' . ($order->billing_lname ?? '')),
-                'attachment' => $order->invoice_number ?? $fileName,
-                'customer_name' => trim($order->billing_fname . ' ' . ($order->billing_lname ?? '')),
-                'order_number' => $order->order_number,
-                'order_link' => '',
-                'website_title' => $data['userBs']->website_title ?? $user->shop_name ?? 'Store',
-                'templateType' => 'product_order',
-                'type' => 'productOrder'
-            ];
-            $mailer->mailFromUser($mailData);
+        // Ensure invoice PDF exists
+        if (empty($order->invoice_number) || !file_exists(public_path('assets/front/invoices/' . $order->invoice_number))) {
+            try {
+                $order->invoice_number = static::generateInvoice($order, $user);
+                $order->save();
+            } catch (\Throwable $e) {
+                \Log::warning('Invoice PDF generation failed: ' . $e->getMessage());
+            }
         }
+
+        // Resolve buyer email (supports Guest via instant order and registered customer)
+        $buyerEmail = !empty($order->billing_email) ? trim($order->billing_email) : '';
+        if (empty($buyerEmail) && !empty($order->customer_id) && $order->customer_id != 9999999) {
+            $cust = \App\Models\Customer::find($order->customer_id);
+            if ($cust) {
+                $buyerEmail = trim($cust->billing_email ?: $cust->email);
+            }
+        }
+        if (empty($buyerEmail) && !empty($order->shipping_email)) {
+            $buyerEmail = trim($order->shipping_email);
+        }
+
+        if (empty($buyerEmail)) {
+            \Log::warning("sendOrderConfirmationAndInvoice: Recipient email is empty for order #{$order->order_number}");
+            return;
+        }
+
+        // Resolve customer display name
+        $customerName = trim(($order->billing_fname ?? '') . ' ' . ($order->billing_lname ?? ''));
+        if (empty($customerName) && !empty($order->customer_id) && $order->customer_id != 9999999) {
+            $cust = \App\Models\Customer::find($order->customer_id);
+            if ($cust) {
+                $customerName = trim(($cust->first_name ?? '') . ' ' . ($cust->last_name ?? ''));
+            }
+        }
+        if (empty($customerName)) {
+            $customerName = trim(($order->shipping_fname ?? '') . ' ' . ($order->shipping_lname ?? ''));
+        }
+        if (empty($customerName)) {
+            $customerName = 'Valued Customer';
+        }
+
+        $userBs = BasicSetting::where('user_id', $user->id)->first();
+        $websiteTitle = $userBs->website_title ?? $user->shop_name ?? $user->username ?? 'Store';
+
+        // Check if custom template exists in db
+        $mailTemplate = UserEmailTemplate::where([['email_type', 'product_order'], ['user_id', $user->id]])->first();
+        $subject = ($mailTemplate && !empty($mailTemplate->email_subject))
+            ? str_replace(['{order_number}', '{customer_name}', '{website_title}'], [$order->order_number, $customerName, $websiteTitle], $mailTemplate->email_subject)
+            : "Order Confirmation - #{$order->order_number} | {$websiteTitle}";
+
+        // Render dedicated order confirmation & invoice email view
+        $htmlBody = view('mail.order_confirmation', [
+            'order'         => $order,
+            'user'          => $user,
+            'userBs'        => $userBs,
+            'customerName'  => $customerName,
+            'website_title' => $websiteTitle,
+            'subject'       => $subject,
+        ])->render();
+
+        $info = DB::table('basic_extendeds')
+            ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
+            ->first();
+
+        $data = [
+            'smtp_status'   => $info->is_smtp ?? 1,
+            'smtp_host'     => $info->smtp_host ?? env('MAIL_HOST'),
+            'smtp_port'     => $info->smtp_port ?? env('MAIL_PORT', 465),
+            'encryption'    => $info->encryption ?? env('MAIL_ENCRYPTION', 'ssl'),
+            'smtp_username' => $info->smtp_username ?? env('MAIL_USERNAME'),
+            'smtp_password' => $info->smtp_password ?? env('MAIL_PASSWORD'),
+            'from_mail'     => $info->from_mail ?? env('MAIL_FROM_ADDRESS'),
+            'from_name'     => $info->from_name ?? $websiteTitle,
+            'recipient'     => $buyerEmail,
+            'subject'       => $subject,
+            'body'          => $htmlBody,
+        ];
+
+        if (!empty($order->invoice_number) && file_exists(public_path('assets/front/invoices/' . $order->invoice_number))) {
+            $data['invoice'] = public_path('assets/front/invoices/' . $order->invoice_number);
+        }
+
+        try {
+            BasicMailer::sendMail($data);
+        } catch (\Throwable $e) {
+            \Log::warning("Order confirmation email failed for #{$order->order_number}: " . $e->getMessage());
+        }
+
         Session::forget('cart_' . $user->username);
         Session::forget('coupon');
+        Session::forget('user_coupon_' . $user->username);
+    }
+
+    public static function sendMails($order)
+    {
+        return static::sendOrderConfirmationAndInvoice($order);
     }
 
     public static function generateInvoice($order, $user)
@@ -530,81 +596,7 @@ class Common
 
     public static function OrderCompletedMail($order, $user = null)
     {
-        if (!$user) {
-            $user = getUser() ?? User::find($order->user_id);
-        }
-        if (!$user) {
-            return;
-        }
-
-        // Ensure invoice PDF exists
-        if (empty($order->invoice_number) || !file_exists(public_path('assets/front/invoices/' . $order->invoice_number))) {
-            try {
-                $order->invoice_number = static::generateInvoice($order, $user);
-                $order->save();
-            } catch (\Throwable $e) {
-                \Log::warning('OrderCompletedMail invoice generation: ' . $e->getMessage());
-            }
-        }
-
-        // first, get the mail template information from db
-        $mailTemplate = UserEmailTemplate::where([['email_type', 'product_order'], ['user_id', $user->id]])->first();
-        $mailSubject = $mailTemplate ? $mailTemplate->email_subject : "Order Confirmation - {order_number}";
-        $mailBody = $mailTemplate ? $mailTemplate->email_body : "Hello {customer_name},<br><br>Thank you for your order {order_number}.<br><br>Please find your invoice attached.<br><br>Best regards,<br>{website_title}";
-
-        // second, get smtp information from basic_extendeds
-        $info = DB::table('basic_extendeds')
-            ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
-            ->first();
-
-        $website_title = $user->shop_name ?? $user->username;
-        $link = '';
-        $customerFullName = trim(($order->billing_fname ?? '') . ' ' . ($order->billing_lname ?? ''));
-        if (empty($customerFullName)) {
-            $customerFullName = 'Valued Customer';
-        }
-        $mailBody = str_replace('{customer_name}', $customerFullName, $mailBody);
-        $mailBody = str_replace('{order_number}', $order->order_number, $mailBody);
-
-        $mailBody = str_replace('{shipping_fname}', $order->shipping_fname, $mailBody);
-        $mailBody = str_replace('{shipping_lname}', $order->shipping_lname, $mailBody);
-        $mailBody = str_replace('{shipping_address}', $order->shipping_address, $mailBody);
-        $mailBody = str_replace('{shipping_city}', $order->shipping_city, $mailBody);
-        $mailBody = str_replace('{shipping_country}', $order->shipping_country, $mailBody);
-        $mailBody = str_replace('{shipping_number}', $order->shipping_number, $mailBody);
-
-        $mailBody = str_replace('{billing_fname}', $order->billing_fname, $mailBody);
-        $mailBody = str_replace('{billing_lname}', $order->billing_lname, $mailBody);
-        $mailBody = str_replace('{billing_address}', $order->billing_address, $mailBody);
-        $mailBody = str_replace('{billing_city}', $order->billing_city, $mailBody);
-        $mailBody = str_replace('{billing_country}', $order->billing_country, $mailBody);
-        $mailBody = str_replace('{billing_number}', $order->billing_number, $mailBody);
-        $mailBody = str_replace('{order_link}', $link, $mailBody);
-        $mailBody = str_replace('{website_title}', $website_title, $mailBody);
-
-        $mailSubject = str_replace('{order_number}', $order->order_number, $mailSubject);
-
-        $data = [];
-        $data['smtp_status'] = $info->is_smtp ?? 1;
-        $data['smtp_host'] = $info->smtp_host ?? env('MAIL_HOST');
-        $data['smtp_port'] = $info->smtp_port ?? env('MAIL_PORT', 465);
-        $data['encryption'] = $info->encryption ?? env('MAIL_ENCRYPTION', 'ssl');
-        $data['smtp_username'] = $info->smtp_username ?? env('MAIL_USERNAME');
-        $data['smtp_password'] = $info->smtp_password ?? env('MAIL_PASSWORD');
-
-        //mail info in array
-        $data['from_mail'] = $info->from_mail ?? env('MAIL_FROM_ADDRESS');
-        $data['from_name'] = $info->from_name ?? $website_title;
-        $data['recipient'] = $order->billing_email;
-        $data['subject'] = $mailSubject;
-        $data['body'] = $mailBody;
-        if (!empty($order->invoice_number) && file_exists(public_path('assets/front/invoices/' . $order->invoice_number))) {
-            $data['invoice'] = public_path('assets/front/invoices/' . $order->invoice_number);
-        }
-        if (!empty($data['recipient'])) {
-            BasicMailer::sendMail($data);
-        }
-        return;
+        return static::sendOrderConfirmationAndInvoice($order, $user);
     }
 
     public static function getUserCurrentCurrency($userId)

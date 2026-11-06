@@ -598,26 +598,167 @@ class BasicController extends Controller
         return 'success';
     }
 
-    public function recurringWarning()
+    public static function ensureExpiryWarningColumnsExist()
     {
         try {
-            if (!\Illuminate\Support\Facades\Schema::hasColumn('basic_settings', 'recurring_warning_first_days')) {
-                \Illuminate\Support\Facades\Schema::table('basic_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->string('recurring_warning_first_days')->nullable()->default('30');
-                    $table->string('recurring_warning_second_days')->nullable()->default('7');
-                    $table->string('recurring_warning_daily_days')->nullable()->default('3');
-                    $table->text('recurring_warning_message')->nullable();
-                    $table->string('recurring_warning_status')->nullable()->default('1');
-                });
+            $table = 'basic_settings';
+            $columns = [
+                'recurring_warning_first_days'        => ['type' => 'string', 'default' => '30'],
+                'recurring_warning_second_days'       => ['type' => 'string', 'default' => '7'],
+                'recurring_warning_daily_days'        => ['type' => 'string', 'default' => '3'],
+                'recurring_warning_status'            => ['type' => 'string', 'default' => '1'],
+                'recurring_warning_whatsapp_template' => ['type' => 'text', 'default' => null],
+                'recurring_warning_email_subject'     => ['type' => 'string', 'default' => 'Subscription Expiry Notice: {store_name} ({plan_name})'],
+                'recurring_warning_email_template'    => ['type' => 'text', 'default' => null],
+                'usage_pricing_status'                => ['type' => 'string', 'default' => '1'],
+                'usage_increase_threshold'            => ['type' => 'string', 'default' => '40'],
+                'usage_price_multiplier'              => ['type' => 'string', 'default' => '2.0'],
+                'usage_baseline_orders'               => ['type' => 'string', 'default' => '100'],
+                'usage_baseline_products'             => ['type' => 'string', 'default' => '50'],
+            ];
+
+            foreach ($columns as $column => $def) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn($table, $column)) {
+                    \Illuminate\Support\Facades\Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($column, $def) {
+                        if ($def['type'] === 'text') {
+                            $t->text($column)->nullable();
+                        } else {
+                            $t->string($column)->nullable()->default($def['default']);
+                        }
+                    });
+                }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+            \Log::warning('ensureExpiryWarningColumnsExist: ' . $e->getMessage());
+        }
+    }
+
+    public static function calculateRenewalPricing($user, $membership = null, $basic = null)
+    {
+        if (!$basic) {
+            $basic = \App\Models\BasicSetting::first();
+        }
+        if (!$membership && $user) {
+            $membership = $user->memberships()->where('status', '<>', 2)->orderBy('id', 'DESC')->first();
+        }
+
+        $basePrice = 0;
+        $currencySymbol = '₹';
+        if ($membership) {
+            $basePrice = (float)($membership->price ?? 0);
+            $currencySymbol = $membership->currency_symbol ?? '₹';
+            if ($basePrice <= 0 && $membership->package) {
+                $basePrice = (float)($membership->package->price ?? 0);
+            }
+        }
+
+        // Fetch usage metrics
+        $orderCount = \App\Models\User\UserOrder::where('user_id', $user->id)->count();
+        $productCount = \App\Models\User\UserItem::where('user_id', $user->id)->count();
+
+        // Baseline settings
+        $baselineOrders = max(1, (int)($basic->usage_baseline_orders ?? 100));
+        $baselineProducts = max(1, (int)($basic->usage_baseline_products ?? 50));
+        $thresholdPercent = (float)($basic->usage_increase_threshold ?? 40); // 40%
+        $multiplier = max(1.0, (float)($basic->usage_price_multiplier ?? 2.0)); // 2x
+
+        // Calculate usage percent over baseline
+        $ordersRatio = ($orderCount / $baselineOrders) * 100;
+        $productsRatio = ($productCount / $baselineProducts) * 100;
+        $effectiveUsageRatio = max($ordersRatio, $productsRatio);
+
+        // Usage increase percentage over 100% baseline
+        $increasePercent = max(0, $effectiveUsageRatio - 100);
+
+        $pricingEnabled = ($basic->usage_pricing_status ?? '1') == '1';
+        $isSurge = false;
+        $renewalPrice = $basePrice;
+
+        if ($pricingEnabled && $increasePercent >= $thresholdPercent && $basePrice > 0) {
+            $isSurge = true;
+            $renewalPrice = round($basePrice * $multiplier, 2);
+        }
+
+        return [
+            'base_price'        => $basePrice,
+            'renewal_price'     => $renewalPrice,
+            'currency_symbol'   => $currencySymbol,
+            'order_count'       => $orderCount,
+            'product_count'     => $productCount,
+            'baseline_orders'   => $baselineOrders,
+            'baseline_products' => $baselineProducts,
+            'increase_percent'  => round($increasePercent, 1),
+            'threshold_percent' => $thresholdPercent,
+            'multiplier'        => $multiplier,
+            'is_surge'          => $isSurge,
+            'pricing_enabled'   => $pricingEnabled,
+        ];
+    }
+
+    public function recurringWarning()
+    {
+        static::ensureExpiryWarningColumnsExist();
 
         $data['basic'] = \App\Models\BasicSetting::first();
+
+        // Default WhatsApp template if empty
+        if (empty($data['basic']->recurring_warning_whatsapp_template)) {
+            $data['basic']->recurring_warning_whatsapp_template = "⚠️ *LaunchShop Subscription Expiry Notice*\n\nHello *{user_name}*,\n\nYour *LaunchShop* store (*{store_name}*) subscription for plan *{plan_name}* will expire in *{days_left}* on *{expire_date}*.\n\n📊 *Usage Details:* {usage_summary}\n💰 *Base Package Price:* {base_price}\n🏷️ *Renewal Amount:* *{renewal_price}*{surge_badge}\n\nTo prevent storefront downtime and retain all your store settings, renew your subscription now:\n🔗 *Renew Here:*\n{renewal_url}\n\nNeed assistance? Reply to this message anytime.\n– Team LaunchShop 🚀";
+        }
+
+        // Default Email Subject & Template if empty
+        if (empty($data['basic']->recurring_warning_email_subject)) {
+            $data['basic']->recurring_warning_email_subject = 'Subscription Expiry Notice: {store_name} ({plan_name})';
+        }
+        if (empty($data['basic']->recurring_warning_email_template)) {
+            $data['basic']->recurring_warning_email_template = "<p>Hello {user_name},</p><p>Your subscription for store <strong>{store_name}</strong> ({plan_name}) will expire on <strong>{expire_date}</strong> (<strong>{days_left}</strong>).</p><p><strong>Store Usage Summary:</strong> {usage_summary}</p><p><strong>Base Plan Price:</strong> {base_price}<br><strong>Renewal Price:</strong> <span style='font-size: 18px; color: #059669; font-weight: bold;'>{renewal_price}</span> {surge_badge}</p><p><a href='{renewal_url}' style='background-color:#059669;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block;font-weight:bold;'>Renew Subscription Now</a></p><p>Best regards,<br>LaunchShop Team</p>";
+        }
+
+        // Fetch registered merchants with their latest membership and calculate dynamic metrics
+        $users = \App\Models\User::with(['memberships' => function ($q) {
+            $q->where('status', '<>', 2)->orderBy('id', 'DESC');
+        }, 'memberships.package'])->get();
+
+        $subscribers = [];
+        $now = \Carbon\Carbon::now();
+
+        foreach ($users as $user) {
+            $membership = $user->memberships->first();
+            if (!$membership) {
+                continue;
+            }
+
+            $expireDate = \Carbon\Carbon::parse($membership->expire_date);
+            $daysLeft = $now->diffInDays($expireDate, false);
+            $isLifetime = ($membership->package && $membership->package->term === 'lifetime') || $expireDate->year >= 9999;
+            $pricing = static::calculateRenewalPricing($user, $membership, $data['basic']);
+
+            $subscribers[] = [
+                'user'         => $user,
+                'membership'   => $membership,
+                'package'      => $membership->package,
+                'expire_date'  => $expireDate,
+                'days_left'    => $daysLeft,
+                'is_lifetime'  => $isLifetime,
+                'is_expired'   => $daysLeft < 0,
+                'pricing'      => $pricing,
+            ];
+        }
+
+        // Sort by expiry date ascending
+        usort($subscribers, function ($a, $b) {
+            return $a['expire_date']->timestamp <=> $b['expire_date']->timestamp;
+        });
+
+        $data['subscribers'] = $subscribers;
+
         return view('admin.basic.recurring_warning', $data);
     }
 
     public function updateRecurringWarning(\Illuminate\Http\Request $request)
     {
+        static::ensureExpiryWarningColumnsExist();
+
         $validated = $request->validate([
             'recurring_warning_first_days'  => 'nullable|integer|min:1|max:365',
             'recurring_warning_second_days' => 'nullable|integer|min:1|max:365',
@@ -632,7 +773,174 @@ class BasicController extends Controller
             $basic->update($validated);
         }
 
-        \Illuminate\Support\Facades\Session::flash('success', __('Payment recurring warning settings updated successfully!'));
+        \Illuminate\Support\Facades\Session::flash('success', __('Payment recurring warning timing updated successfully!'));
+        return back();
+    }
+
+    public function updateRecurringTemplate(\Illuminate\Http\Request $request)
+    {
+        static::ensureExpiryWarningColumnsExist();
+
+        $validated = $request->validate([
+            'recurring_warning_whatsapp_template' => 'nullable|string',
+            'recurring_warning_email_subject'     => 'nullable|string|max:255',
+            'recurring_warning_email_template'    => 'nullable|string',
+            'recurring_warning_first_days'        => 'nullable|integer|min:1|max:365',
+            'recurring_warning_second_days'       => 'nullable|integer|min:1|max:365',
+            'recurring_warning_daily_days'        => 'nullable|integer|min:1|max:365',
+        ]);
+
+        $validated['recurring_warning_status'] = $request->has('recurring_warning_status') ? '1' : '0';
+
+        $basic = \App\Models\BasicSetting::first();
+        if ($basic) {
+            $basic->update($validated);
+        }
+
+        \Illuminate\Support\Facades\Session::flash('success', __('Expiry alert notification format updated successfully!'));
+        return back();
+    }
+
+    public function updateUsagePricing(\Illuminate\Http\Request $request)
+    {
+        static::ensureExpiryWarningColumnsExist();
+
+        $validated = $request->validate([
+            'usage_increase_threshold' => 'required|numeric|min:1|max:500',
+            'usage_price_multiplier'   => 'required|numeric|min:1.0|max:10.0',
+            'usage_baseline_orders'    => 'required|integer|min:1',
+            'usage_baseline_products'  => 'required|integer|min:1',
+        ]);
+
+        $validated['usage_pricing_status'] = $request->has('usage_pricing_status') ? '1' : '0';
+
+        $basic = \App\Models\BasicSetting::first();
+        if ($basic) {
+            $basic->update($validated);
+        }
+
+        \Illuminate\Support\Facades\Session::flash('success', __('Usage-based dynamic renewal pricing rules saved successfully!'));
+        return back();
+    }
+
+    public function sendExpiryAlert(\Illuminate\Http\Request $request, $id)
+    {
+        static::ensureExpiryWarningColumnsExist();
+
+        $user = \App\Models\User::findOrFail($id);
+        $channel = $request->input('channel', 'both');
+
+        $basic = \App\Models\BasicSetting::first();
+        $membership = $user->memberships()->where('status', '<>', 2)->orderBy('id', 'DESC')->first();
+        if (!$membership) {
+            session()->flash('warning', __('No active subscription found for this user.'));
+            return back();
+        }
+
+        $pricing = static::calculateRenewalPricing($user, $membership, $basic);
+        $currSign = $pricing['currency_symbol'];
+        $basePriceFormatted = $currSign . number_format($pricing['base_price'], 2);
+        $renewalPriceFormatted = $currSign . number_format($pricing['renewal_price'], 2);
+
+        $package = $membership->package;
+        $planName = $package ? $package->title : 'Store Plan';
+        $expireDateObj = \Carbon\Carbon::parse($membership->expire_date);
+        $daysLeft = \Carbon\Carbon::now()->diffInDays($expireDateObj, false);
+        $daysLeftStr = $daysLeft > 0 ? "{$daysLeft} days" : ($daysLeft == 0 ? "Today" : abs($daysLeft) . " days ago (Expired)");
+        $surgeBadge = $pricing['is_surge'] ? " (Usage surge: +{$pricing['increase_percent']}%)" : "";
+        $usageSummary = "{$pricing['order_count']} orders, {$pricing['product_count']} products";
+
+        $host = request()->getHost();
+        $cleanHost = str_replace('www.', '', $host);
+        $renewalUrl = 'https://' . $cleanHost . '/membership/checkout';
+
+        // 1. WhatsApp Dispatch
+        $waSent = false;
+        if (in_array($channel, ['whatsapp', 'both']) && !empty($user->phone)) {
+            $waTemplate = $basic->recurring_warning_whatsapp_template ?: "⚠️ *LaunchShop Subscription Expiry Notice*\n\nHello *{user_name}*,\n\nYour *LaunchShop* store (*{store_name}*) subscription for plan *{plan_name}* will expire in *{days_left}* on *{expire_date}*.\n\n📊 *Usage Details:* {usage_summary}\n💰 *Base Package Price:* {base_price}\n🏷️ *Renewal Amount:* *{renewal_price}*{surge_badge}\n\nTo prevent storefront downtime and retain all your store settings, renew your subscription now:\n🔗 *Renew Here:*\n{renewal_url}\n\nNeed assistance? Reply to this message anytime.\n– Team LaunchShop 🚀";
+
+            $waMsg = str_replace(
+                ['{user_name}', '{store_name}', '{plan_name}', '{product_name}', '{expiry_date}', '{expire_date}', '{days_left}', '{base_price}', '{renewal_price}', '{surge_badge}', '{usage_summary}', '{renewal_url}'],
+                [$user->first_name ?: $user->username, $user->shop_name ?: $user->username, $planName, 'LaunchShop', $expireDateObj->format('d M Y'), $expireDateObj->format('d M Y'), $daysLeftStr, $basePriceFormatted, $renewalPriceFormatted, $surgeBadge, $usageSummary, $renewalUrl],
+                $waTemplate
+            );
+
+            $formattedPhone = \App\Services\WhatsAppNotificationService::formatNumber($user->phone);
+            if (!empty($formattedPhone)) {
+                try {
+                    \App\Services\WhatsAppNotificationService::sendMessage($formattedPhone, $waMsg);
+                    $waSent = true;
+                } catch (\Throwable $e) {}
+
+                try {
+                    \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => 'Bearer a09a0ee3aae408f843020cbd6bccf590',
+                        'Content-Type'  => 'application/json',
+                    ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
+                        'number'  => $formattedPhone,
+                        'type'    => 'text',
+                        'message' => $waMsg,
+                    ]);
+                    $waSent = true;
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        // 2. Email Dispatch
+        $emailSent = false;
+        if (in_array($channel, ['email', 'both']) && !empty($user->email)) {
+            $emailSubject = $basic->recurring_warning_email_subject ?: 'Subscription Expiry Notice: {store_name} ({plan_name})';
+            $emailSubject = str_replace(
+                ['{user_name}', '{store_name}', '{plan_name}', '{expire_date}', '{renewal_price}'],
+                [$user->first_name ?: $user->username, $user->shop_name ?: $user->username, $planName, $expireDateObj->format('d M Y'), $renewalPriceFormatted],
+                $emailSubject
+            );
+
+            $emailBodyTemplate = $basic->recurring_warning_email_template ?: "<p>Hello {user_name},</p><p>Your subscription for store <strong>{store_name}</strong> ({plan_name}) will expire on <strong>{expire_date}</strong> (<strong>{days_left}</strong>).</p><p><strong>Store Usage Summary:</strong> {usage_summary}</p><p><strong>Base Plan Price:</strong> {base_price}<br><strong>Renewal Price:</strong> <span style='font-size: 18px; color: #059669; font-weight: bold;'>{renewal_price}</span> {surge_badge}</p><p><a href='{renewal_url}' style='background-color:#059669;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block;font-weight:bold;'>Renew Subscription Now</a></p><p>Best regards,<br>LaunchShop Team</p>";
+
+            $emailBody = str_replace(
+                ['{user_name}', '{store_name}', '{plan_name}', '{expire_date}', '{days_left}', '{base_price}', '{renewal_price}', '{surge_badge}', '{usage_summary}', '{renewal_url}'],
+                [$user->first_name ?: $user->username, $user->shop_name ?: $user->username, $planName, $expireDateObj->format('d M Y'), $daysLeftStr, $basePriceFormatted, $renewalPriceFormatted, $surgeBadge, $usageSummary, $renewalUrl],
+                $emailBodyTemplate
+            );
+
+            $mailData = [
+                'recipient' => $user->email,
+                'subject'   => $emailSubject,
+                'body'      => $emailBody,
+                'from_name' => 'LaunchShop Admin',
+            ];
+            try {
+                \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                $emailSent = true;
+            } catch (\Throwable $e) {}
+        }
+
+        \Illuminate\Support\Facades\Session::flash('success', __('Expiry alert dispatched successfully! (WhatsApp: :wa, Email: :email)', [
+            'wa'    => $waSent ? 'Delivered' : 'Skipped/Failed',
+            'email' => $emailSent ? 'Delivered' : 'Skipped/Failed'
+        ]));
+        return back();
+    }
+
+    public function bulkSendExpiryAlert(\Illuminate\Http\Request $request)
+    {
+        $ids = $request->input('user_ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            session()->flash('warning', __('Please select at least one merchant to send expiry alert.'));
+            return back();
+        }
+
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $subRequest = new \Illuminate\Http\Request(['channel' => 'both']);
+                $this->sendExpiryAlert($subRequest, $id);
+                $count++;
+            } catch (\Throwable $e) {}
+        }
+
+        session()->flash('success', __(':count expiry alerts queued/sent successfully with dynamic pricing!', ['count' => $count]));
         return back();
     }
 }

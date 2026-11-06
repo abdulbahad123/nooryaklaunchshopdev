@@ -38,6 +38,9 @@
                 <div class="alert alert-danger" role="alert">{{ $error }}</div>
               @endforeach
             @endif
+            @php
+              $authCust = Auth::guard('customer')->user();
+            @endphp
             <div class="billing-details">
               <h3 class="mb-20">{{ $keywords['Billing Details'] ?? __('Billing Details') }} </h3>
               <div class="row">
@@ -46,7 +49,7 @@
                     <label for="firstName">{{ $keywords['First_Name'] ?? __('First Name') }} *</label>
                     <input id="firstName" type="text" class="form-control"
                       placeholder="{{ $keywords['First_Name'] ?? __('First Name') }}" name="billing_fname"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_fname) : old('billing_fname') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_fname) ?: convertUtf8($authCust->first_name)) : old('billing_fname') }}">
                     @error('billing_fname')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -57,7 +60,7 @@
                     <label for="lastName">{{ $keywords['Last_Name'] ?? __('Last Name') }} *</label>
                     <input id="lastName" type="text" class="form-control"
                       placeholder="{{ $keywords['Last_Name'] ?? __('Last Name') }}" name="billing_lname"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_lname) : old('billing_lname') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_lname) ?: convertUtf8($authCust->last_name)) : old('billing_lname') }}">
                     @error('billing_lname')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -69,7 +72,7 @@
                     <label for="phone">{{ $keywords['Phone_Number'] ?? __('Phone Number') }} *</label>
                     <input id="phone" type="text" class="form-control"
                       placeholder="{{ $keywords['Phone_Number'] ?? __('Phone Number') }}" name="billing_number"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_number) : old('billing_number') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_number) ?: convertUtf8($authCust->contact_number)) : old('billing_number') }}">
                     @error('billing_number')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -81,7 +84,7 @@
                     <label for="email">{{ $keywords['Email_Address'] ?? __('Email Address') }} *</label>
                     <input class="form-control" id="email" type="email"
                       placeholder="{{ $keywords['Email_Address'] ?? __('Email Address') }}" name="billing_email"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_email) : old('billing_email') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_email) ?: convertUtf8($authCust->email)) : old('billing_email') }}">
                     @error('billing_email')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -93,7 +96,7 @@
                     <label for="city">{{ $keywords['City'] ?? __('City') }} *</label>
                     <input id="city" type="text" class="form-control"
                       placeholder="{{ $keywords['City'] ?? __('City') }}" name="billing_city"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_city) : old('billing_city') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_city) ?: convertUtf8($authCust->city)) : old('billing_city') }}">
                     @error('billing_city')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -105,7 +108,7 @@
                     <label for="district">{{ $keywords['State'] ?? __('State') }} </label>
                     <input id="district" type="text" class="form-control"
                       placeholder="{{ $keywords['State'] ?? __('State') }}" name="billing_state"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_state) : old('billing_state') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_state) ?: convertUtf8($authCust->state)) : old('billing_state') }}">
                   </div>
                 </div>
                 <div class="col-lg-6">
@@ -113,7 +116,7 @@
                     <label for="country">{{ $keywords['Country'] ?? __('Country') }} *</label>
                     <input type="text" class="form-control" placeholder="{{ $keywords['Country'] ?? __('Country') }}"
                       name="billing_country"
-                      value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_country) : old('billing_country') }}">
+                      value="{{ $authCust ? (convertUtf8($authCust->billing_country) ?: convertUtf8($authCust->country)) : old('billing_country') }}">
                     @error('billing_country')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -123,7 +126,7 @@
                   <div class="form-group mb-3">
                     <label for="country">{{ $keywords['Address'] ?? __('Address') }} *</label>
                     <textarea name="billing_address" class="form-control max_height_100"
-                      placeholder="{{ $keywords['Address'] ?? __('Address') }}">{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->billing_address) : old('billing_address') }}</textarea>
+                      placeholder="{{ $keywords['Address'] ?? __('Address') }}">{{ $authCust ? (convertUtf8($authCust->billing_address) ?: convertUtf8($authCust->address)) : old('billing_address') }}</textarea>
                     @error('billing_address')
                       <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                     @enderror
@@ -150,7 +153,7 @@
                       <label for="firstName">{{ $keywords['First_Name'] ?? __('First Name') }} *</label>
                       <input id="firstName" type="text" class="form-control" name="shipping_fname"
                         placeholder="{{ $keywords['First_Name'] ?? __('First Name') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_fname) : old('shipping_fname') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_fname) ?: convertUtf8($authCust->first_name)) : old('shipping_fname') }}">
                       @error('shipping_fname')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -161,7 +164,7 @@
                       <label for="lastName">{{ $keywords['Last_Name'] ?? __('Last Name') }} *</label>
                       <input id="lastName" type="text" class="form-control" name="shipping_lname"
                         placeholder="{{ $keywords['Last_Name'] ?? __('Last Name') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_lname) : old('shipping_lname') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_lname) ?: convertUtf8($authCust->last_name)) : old('shipping_lname') }}">
                       @error('shipping_lname')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -172,7 +175,7 @@
                       <label for="phone">{{ $keywords['Phone_Number'] ?? __('Phone Number') }} *</label>
                       <input id="phone" type="text" class="form-control" name="shipping_number"
                         placeholder="{{ $keywords['Phone_Number'] ?? __('Phone Number') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_number) : old('shipping_number') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_number) ?: convertUtf8($authCust->contact_number)) : old('shipping_number') }}">
                       @error('shipping_number')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -183,7 +186,7 @@
                       <label for="email">{{ $keywords['Email_Address'] ?? __('Email Address') }} *</label>
                       <input id="email" type="email" class="form-control" name="shipping_email"
                         placeholder="{{ $keywords['Email_Address'] ?? __('Email Address') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_email) : old('shipping_email') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_email) ?: convertUtf8($authCust->email)) : old('shipping_email') }}">
                       @error('shipping_email')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -194,7 +197,7 @@
                       <label for="shipping_city">{{ $keywords['City'] ?? __('City') }}* </label>
                       <input id="shipping_city" type="text" class="form-control" name="shipping_city"
                         placeholder="{{ $keywords['City'] ?? __('City') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_city) : old('shipping_city') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_city) ?: convertUtf8($authCust->city)) : old('shipping_city') }}">
                       @error('shipping_city')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -206,7 +209,7 @@
                       <label for="shipping_state">{{ $keywords['State'] ?? __('State') }}* </label>
                       <input id="shipping_state" type="text" class="form-control" name="shipping_state"
                         placeholder="{{ $keywords['State'] ?? __('State') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_state) : old('shipping_state') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_state) ?: convertUtf8($authCust->state)) : old('shipping_state') }}">
                       @error('shipping_state')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -218,7 +221,7 @@
                       <label for="country">{{ $keywords['Country'] ?? __('Country') }} </label>
                       <input id="shipping_country" type="text" class="form-control" name="shipping_country"
                         placeholder="{{ $keywords['Country'] ?? __('Country') }}"
-                        value="{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_country) : old('shipping_country') }}">
+                        value="{{ $authCust ? (convertUtf8($authCust->shipping_country) ?: convertUtf8($authCust->country)) : old('shipping_country') }}">
                       @error('shipping_country')
                         <p class="text-danger mb-2">{{ convertUtf8($message) }}</p>
                       @enderror
@@ -229,7 +232,7 @@
                     <div class="form-group mb-3">
                       <label for="shipping_address">{{ $keywords['Address'] ?? __('Address') }} *</label>
                       <textarea name="shipping_address" class="form-control max_height_100"
-                        placeholder="{{ $keywords['Address'] ?? __('Address') }}">{{ Auth::guard('customer')->user() ? convertUtf8(Auth::guard('customer')->user()->shipping_address) : old('shipping_address') }}</textarea>
+                        placeholder="{{ $keywords['Address'] ?? __('Address') }}">{{ $authCust ? (convertUtf8($authCust->shipping_address) ?: convertUtf8($authCust->address)) : old('shipping_address') }}</textarea>
                       @error('shipping_address')
                         <p class="text-danger mt-2">{{ convertUtf8($message) }}</p>
                       @enderror

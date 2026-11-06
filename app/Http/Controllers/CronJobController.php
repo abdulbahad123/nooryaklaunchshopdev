@@ -62,6 +62,32 @@ class CronJobController extends Controller
             }
         }
 
+        // Automated Recurring Expiry Warnings with Usage-Based Dynamic Renewal Pricing
+        if (($bs->recurring_warning_status ?? '1') == '1') {
+            $daysToRemind = array_unique(array_filter([
+                (int)($bs->recurring_warning_first_days ?? 30),
+                (int)($bs->recurring_warning_second_days ?? 7),
+                (int)($bs->recurring_warning_daily_days ?? 3),
+            ]));
+
+            foreach ($daysToRemind as $days) {
+                if ($days <= 0) continue;
+                $targetDate = Carbon::now()->addDays($days)->toDateString();
+                $expiringMembers = Membership::whereDate('expire_date', $targetDate)->where('status', '<>', 2)->get();
+                foreach ($expiringMembers as $memb) {
+                    if (!empty($memb->user)) {
+                        $user = $memb->user;
+                        try {
+                            $req = new \Illuminate\Http\Request(['channel' => 'both']);
+                            (new \App\Http\Controllers\Admin\BasicController())->sendExpiryAlert($req, $user->id);
+                        } catch (\Throwable $e) {
+                            \Log::warning("CronJob expired reminder failed for user {$user->id}: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        }
+
         \Artisan::call("queue:work --stop-when-empty");
     }
 
