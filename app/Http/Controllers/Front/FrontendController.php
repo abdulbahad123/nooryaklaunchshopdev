@@ -1262,37 +1262,60 @@ class FrontendController extends Controller
         if (is_null($slug) && !is_null($domain)) {
             $slug = $domain;
         }
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        if (empty($user)) {
+            return redirect()->route('front.index');
+        }
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = \App\Models\User\Language::where('user_id', $user->id)->first();
+        }
+        $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
         $id = $user->id;
 
         $pageId = UserPageContent::where([['slug', $slug], ['user_id', $id]])->pluck('page_id')->firstOrFail();
 
-        $data['page'] = UserPageContent::where([['page_id', $pageId], ['language_id', $userCurrentLang->id], ['user_id', $id]])->first();
+        $data['page'] = UserPageContent::where([['page_id', $pageId], ['language_id', $uLang], ['user_id', $id]])->first();
 
         if (is_null($data['page'])) {
-            abort(404);
+            $data['page'] = UserPageContent::where([['page_id', $pageId], ['user_id', $id]])->first();
+            if (is_null($data['page'])) {
+                abort(404);
+            }
         }
 
         UserPage::where([['id', $data['page']->page_id], ['status', 1]])->firstOrFail();
 
         //custom seo info
         $seoInfo = UserSeo::select('custome_page_meta_keyword', 'custome_page_meta_description')
-            ->where([['language_id', $userCurrentLang->id], ['user_id', $id]])
+            ->where('user_id', $id)
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('language_id', $uLang);
+            })
             ->first();
         $metaKeyword = isset($seoInfo->custome_page_meta_keyword) ? json_decode($seoInfo->custome_page_meta_keyword, true) : '';
         $metaDescription = isset($seoInfo->custome_page_meta_description) ? json_decode($seoInfo->custome_page_meta_description, true) : '';
         $data['meta_keywords'] = isset($metaKeyword[$pageId]) ? $metaKeyword[$pageId] : '';
         $data['meta_description'] = isset($metaDescription[$pageId]) ? $metaDescription[$pageId] : '';
 
-
         //custom page page heading
         $pageHeading = UserHeading::select('custom_page_heading')
-            ->where([['language_id', $userCurrentLang->id], ['user_id', $id]])
-            ->select('custom_page_heading')
+            ->where('user_id', $id)
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('language_id', $uLang);
+            })
             ->first();
         $pageHeading = isset($pageHeading->custom_page_heading) ? json_decode($pageHeading->custom_page_heading, true) : [];
-        $data['title'] = (is_array($pageHeading) && isset($pageHeading[$pageId])) ? $pageHeading[$pageId] : '';
+        $data['title'] = (is_array($pageHeading) && isset($pageHeading[$pageId])) ? $pageHeading[$pageId] : ($data['page']->title ?? '');
+
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['userCurrentCurr'] = app()->bound('userCurrency') ? app('userCurrency') : null;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
 
         return view('user-front.custom-page', $data);
     }
@@ -1512,6 +1535,11 @@ class FrontendController extends Controller
 
     public function privacyPolicy()
     {
+        $tenantUser = app()->bound('user') ? app('user') : getUser();
+        if ($tenantUser && is_object($tenantUser) && isset($tenantUser->id) && function_exists('isTenantCustomDomainRequest') && isTenantCustomDomainRequest()) {
+            return app(\App\Http\Controllers\UserFront\HomeController::class)->tenantPrivacyPolicy();
+        }
+
         $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'ecombuilder.') || str_starts_with($requestHost, 'ecom-builder.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();
@@ -1530,6 +1558,11 @@ class FrontendController extends Controller
 
     public function termsConditions()
     {
+        $tenantUser = app()->bound('user') ? app('user') : getUser();
+        if ($tenantUser && is_object($tenantUser) && isset($tenantUser->id) && function_exists('isTenantCustomDomainRequest') && isTenantCustomDomainRequest()) {
+            return app(\App\Http\Controllers\UserFront\HomeController::class)->tenantTermsConditions();
+        }
+
         $requestHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $isProductSubdomain = str_starts_with($requestHost, 'launchshop.') || str_starts_with($requestHost, 'ecombuilder.') || str_starts_with($requestHost, 'ecom-builder.') || str_starts_with($requestHost, 'websitebuilder.') || str_starts_with($requestHost, 'website-builder.');
         $agency = getAgencyFromHost();

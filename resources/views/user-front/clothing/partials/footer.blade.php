@@ -58,7 +58,7 @@
             <ul class="footer-links" style="list-style:none;padding-left:0;line-height:2.2;">
               @foreach($ulinks as $link)
                 @if($loop->iteration > 4) @break @endif
-                <li><a href="{{ $link->url }}">{{ $link->name }}</a></li>
+                <li><a href="{{ formatTenantLinkUrl($link->url) }}">{{ $link->name }}</a></li>
               @endforeach
               <li><a href="{{ route('front.user.privacy_policy', getParam()) }}">{{ $keywords['Privacy Policy'] ?? __('Privacy Policy') }}</a></li>
               <li><a href="{{ route('front.user.terms_conditions', getParam()) }}">{{ $keywords['Terms & Conditions'] ?? __('Terms & Conditions') }}</a></li>

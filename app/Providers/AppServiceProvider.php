@@ -105,7 +105,7 @@ class AppServiceProvider extends ServiceProvider
 
         //user basic-settings
         $this->app->singleton('userBs', function () {
-            $user = app('user');
+            $user = app()->bound('user') ? app('user') : getUser();
             if (!empty($user) && is_object($user) && !empty($user->id)) {
                 $userBs = BasicSetting::where('user_id', $user->id)->first();
                 if ($userBs && app()->bound('theme.service')) {
@@ -135,8 +135,8 @@ class AppServiceProvider extends ServiceProvider
 
         //user basic-extend
         $this->app->singleton('userBe', function () {
-            $user = app('user');
-            $userCurrentLang = app('userCurrentLang');
+            $user = app()->bound('user') ? app('user') : getUser();
+            $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
             if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
                 $userBe = BasicExtende::where([
                     ['user_id', $user->id],
@@ -157,8 +157,8 @@ class AppServiceProvider extends ServiceProvider
 
         //user item-categories
         $this->app->singleton('categories', function () {
-            $user = app('user');
-            $userCurrentLang = app('userCurrentLang');
+            $user = app()->bound('user') ? app('user') : getUser();
+            $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
             if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
                 return collect([]);
             }
@@ -195,8 +195,8 @@ class AppServiceProvider extends ServiceProvider
         });
         //user header-content
         $this->app->singleton('header', function () {
-            $user = app('user');
-            $userCurrentLang = app('userCurrentLang');
+            $user = app()->bound('user') ? app('user') : getUser();
+            $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
             if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
                 $header = UserHeader::where('language_id', $userCurrentLang->id)
                     ->where('user_id', $user->id)
@@ -218,8 +218,8 @@ class AppServiceProvider extends ServiceProvider
         });
         //user usefull links
         $this->app->singleton('ulinks', function () {
-            $user = app('user');
-            $userCurrentLang = app('userCurrentLang');
+            $user = app()->bound('user') ? app('user') : getUser();
+            $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
             if (empty($user) || !is_object($user) || empty($userCurrentLang)) {
                 return collect([]);
             }
@@ -239,8 +239,8 @@ class AppServiceProvider extends ServiceProvider
         });
         //user footer content
         $this->app->singleton('footer', function () {
-            $user = app('user');
-            $userCurrentLang = app('userCurrentLang');
+            $user = app()->bound('user') ? app('user') : getUser();
+            $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
             if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
                 $footer = UserFooter::where('language_id', $userCurrentLang->id)
                     ->where('user_id', $user->id)
@@ -266,7 +266,7 @@ class AppServiceProvider extends ServiceProvider
         });
         //user currency
         $this->app->singleton('userCurrency', function () {
-            $user = app('user');
+            $user = app()->bound('user') ? app('user') : getUser();
             if (empty($user) || !is_object($user) || empty($user->id)) {
                 return collect([]);
             }
@@ -287,7 +287,7 @@ class AppServiceProvider extends ServiceProvider
         });
         //user languages
         $this->app->singleton('userLangs', function () {
-            $user = app('user');
+            $user = app()->bound('user') ? app('user') : getUser();
             if (empty($user) || !is_object($user) || empty($user->id)) {
                 return collect([]);
             }
@@ -296,8 +296,8 @@ class AppServiceProvider extends ServiceProvider
         });
         //user Contact info
         $this->app->singleton('userContact', function () {
-            $user = app('user');
-            $userCurrentLang = app('userCurrentLang');
+            $user = app()->bound('user') ? app('user') : getUser();
+            $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
             if (!empty($user) && is_object($user) && !empty($userCurrentLang) && isset($userCurrentLang->id)) {
                 $userContact = UserContact::where([
                     ['user_id', $user->id],
@@ -311,7 +311,7 @@ class AppServiceProvider extends ServiceProvider
         });
         //user shoping settings
         $this->app->singleton('shop_settings', function () {
-            $user = app('user');
+            $user = app()->bound('user') ? app('user') : getUser();
             if (!empty($user) && is_object($user) && isset($user->id)) {
                 $shop_settings = UserShopSetting::where('user_id', $user->id)->first();
                 if (!$shop_settings) {

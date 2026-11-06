@@ -40,7 +40,7 @@
                     @break
                   @endif
                   <li>
-                    <a href="{{ $link->url }}">{{ $link->name }}</a>
+                    <a href="{{ formatTenantLinkUrl($link->url) }}">{{ $link->name }}</a>
                   </li>
                 @endforeach
                 <li><a href="{{ route('front.user.privacy_policy', getParam()) }}">{{ $keywords['Privacy Policy'] ?? __('Privacy Policy') }}</a></li>

@@ -264,8 +264,10 @@ class ShopController extends Controller
             ->where([
                 ['user_items.status', '=', 1],
                 ['user_items.user_id', $user->id],
-                ['user_item_contents.language_id', $userCurrentLang->id],
             ])
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('user_item_contents.language_id', $uLang);
+            })
             ->where(function ($q) {
                 $q->where('user_item_categories.status', '=', 1)->orWhereNull('user_item_categories.status');
             })
@@ -282,6 +284,11 @@ class ShopController extends Controller
             ->select('shop_meta_keywords', 'shop_meta_description')
             ->first();
         $data['view_type'] = Session::has('view_type') ? Session::get('view_type') : null;
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['userCurrentCurr'] = $userCurrentCurr;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
         return themeView('shop', $data);
     }
 
@@ -604,13 +611,46 @@ class ShopController extends Controller
         return themeView('variants', $data)->render();
     }
 
-    public function get_productVariation(Request $request)
+    public function get_productVariation($domain = null, ?Request $request = null)
     {
-        $userCurrentLang = app('userCurrentLang');
-        $data['language_id'] = $userCurrentLang->id;
+        if ($domain instanceof Request) {
+            $request = $domain;
+            $domain = null;
+        } elseif (!$request) {
+            $request = request();
+        }
 
-        $data['product_variations'] = ProductVariation::where('item_id', $request->item_id)->get();
-        $data['item_id'] = $request->item_id;
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user) && isset($user->id)) {
+            $userCurrentLang = \App\Models\User\Language::where('user_id', $user->id)->first();
+        }
+        $data['language_id'] = $userCurrentLang ? $userCurrentLang->id : 0;
+
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
+        if (empty($userCurrentCurr) && !empty($user)) {
+            $userCurrentCurr = UserCurrency::where('user_id', $user->id)->where('is_default', 1)->first();
+        }
+        if (empty($userCurrentCurr)) {
+            $fallbackCurr = new \stdClass();
+            $fallbackCurr->symbol = '₹';
+            $fallbackCurr->symbol_position = 'left';
+            $fallbackCurr->value = 1;
+            $fallbackCurr->text = 'INR';
+            $userCurrentCurr = $fallbackCurr;
+        }
+        $data['userCurrentCurr'] = $userCurrentCurr;
+        $data['user'] = $user;
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
+
+        $itemId = $request ? $request->input('item_id') : request()->input('item_id');
+        $data['product_variations'] = ProductVariation::where('item_id', $itemId)->get();
+        $data['item_id'] = $itemId;
 
         return themeView('variant-content', $data)->render();
     }

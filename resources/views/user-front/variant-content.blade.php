@@ -1,5 +1,7 @@
 @php
   $seen_variations = [];
+  $currSym = !empty($userCurrentCurr) ? $userCurrentCurr->symbol : (currency_sign() ?: '₹');
+  $currPos = !empty($userCurrentCurr) ? $userCurrentCurr->symbol_position : 'left';
 @endphp
 @foreach ($product_variations as $product_variation)
   @php
@@ -63,7 +65,7 @@
           </div>
 
           <span class="variants_price">(<i
-              class="fas fa-plus"></i>{{ symbolPrice($userCurrentCurr->symbol_position, $userCurrentCurr->symbol, currency_converter($variant_content_option->price)) }})</span>
+              class="fas fa-plus"></i>{{ symbolPrice($currPos, $currSym, currency_converter($variant_content_option->price)) }})</span>
         </div>
       @endforeach
     </div>

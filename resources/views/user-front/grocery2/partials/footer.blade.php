@@ -158,7 +158,7 @@
             <ul class="widget-links list-unstyled m-0 p-0" style="font-size: 14px; line-height: 2;">
               @if(!empty($ulinks) && count($ulinks) > 0)
                 @foreach($ulinks as $link)
-                  <li><a href="{{ $link->url }}" class="text-decoration-none text-dark">{{ $link->name }}</a></li>
+                  <li><a href="{{ formatTenantLinkUrl($link->url) }}" class="text-decoration-none text-dark">{{ $link->name }}</a></li>
                 @endforeach
               @else
                 <li><a href="{{ route('front.user.about', getParam()) }}" class="text-decoration-none text-dark">About Us</a></li>

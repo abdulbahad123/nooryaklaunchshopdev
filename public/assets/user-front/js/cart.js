@@ -37,7 +37,14 @@ function addToCart(url, variant, qty) {
     $(".modal-cart-link i").removeClass('d-none');
     $(".modal-cart-link i").addClass('d-inline-block');
 
+    // Safety watchdog: remove loader after 6s in case network hangs
+    var loaderTimeout = setTimeout(function () {
+        $(".request-loader").removeClass("show");
+        $(".modal-cart-link").removeClass('disabled');
+    }, 6000);
+
     $.get(cartUrl + ',,,' + qty + ',,,' + totalPrice(qty) + ',,,' + JSON.stringify(variant), function (res) {
+        clearTimeout(loaderTimeout);
         $(".request-loader").removeClass("show");
 
         // button enabled & loader deactivate (only for modal add to cart button)
@@ -57,6 +64,15 @@ function addToCart(url, variant, qty) {
             toastr["error"](res && res.error ? res.error : "Failed to add item to cart. Please try again.");
         }
         $('.request-loader').removeClass('show');
+    }).fail(function () {
+        clearTimeout(loaderTimeout);
+        $(".request-loader").removeClass("show");
+        $(".modal-cart-link").removeClass('disabled');
+        $(".modal-cart-link span").removeClass('d-none');
+        $(".modal-cart-link span").addClass('d-block');
+        $(".modal-cart-link i").removeClass('d-inline-block');
+        $(".modal-cart-link i").addClass('d-none');
+        toastr["error"]("Failed to add item to cart. Please try again.");
     });
 }
 
@@ -127,7 +143,12 @@ $('body').on('click', '.btn-wishlist', function (e) {
                 item_id: item_id,
                 language_id: language_id,
             };
+            var varTimeout = setTimeout(function () {
+                $(".request-loader").removeClass("show");
+            }, 6000);
+
             $.get(variation_url, data, function (result) {
+                clearTimeout(varTimeout);
                 $("#variationModal").modal('show');
                 // set modal title & quantity
                 $("#variationModal .modal-title > span").html(title);
@@ -136,6 +157,10 @@ $('body').on('click', '.btn-wishlist', function (e) {
                 $(".variation-label").removeClass("d-none");
                 $("#variants").html(result);
                 $(".request-loader").removeClass("show");
+            }).fail(function () {
+                clearTimeout(varTimeout);
+                $(".request-loader").removeClass("show");
+                toastr["error"]("Unable to load variations. Please try again.");
             });
             $(".modal-cart-link").attr('data-item_id', item_id);
             $(".modal-cart-link").attr('data-total_variations', $(this).data('totalvari'));

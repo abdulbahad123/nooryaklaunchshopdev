@@ -21,7 +21,7 @@
               <div class="form-group">
                 <h3 class="text-center text-muted mb-20">
                   <a href="{{ route('front.user.checkout', [getParam(), 'type' => 'guest']) }}"
-                    class="underline checkout-guest">{{ $keywords['Instant Order'] ?? ($keywords['Checkout as Guest'] ?? __('Instant Order')) }}</a>
+                    class="underline checkout-guest">{{ $keywords['Instant Order'] ?? __('Instant Order') }}</a>
                 </h3>
               </div>
               <div class="mt-4 mb-3 text-center">

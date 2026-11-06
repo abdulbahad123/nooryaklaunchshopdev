@@ -1114,6 +1114,78 @@ if (!function_exists('getTenantLanguageUrl')) {
     }
 }
 
+if (!function_exists('formatTenantLinkUrl')) {
+    function formatTenantLinkUrl($url)
+    {
+        if (empty($url) || $url === '#') {
+            return '#';
+        }
+
+        // If it is a full URL matching current host, normalize it to relative path
+        if (preg_match('/^https?:\/\//i', $url)) {
+            $parsed = parse_url($url);
+            $currentHost = strtolower(request()->getHost() ?: '');
+            if (!empty($parsed['host']) && strtolower($parsed['host']) === $currentHost) {
+                $url = $parsed['path'] ?? '/';
+            } else {
+                return $url;
+            }
+        }
+
+        $clean = trim(ltrim($url, '/'));
+        $cleanLower = strtolower($clean);
+
+        // Map known internal store pages to named tenant routes
+        $routeMap = [
+            'privacy-policy' => 'front.user.privacy_policy',
+            'privacy_policy' => 'front.user.privacy_policy',
+            'privacy' => 'front.user.privacy_policy',
+            'terms-and-conditions' => 'front.user.terms_conditions',
+            'terms-conditions' => 'front.user.terms_conditions',
+            'terms_conditions' => 'front.user.terms_conditions',
+            'terms_and_conditions' => 'front.user.terms_conditions',
+            'terms' => 'front.user.terms_conditions',
+            'refund-policy' => 'front.user.refund_policy',
+            'refund_policy' => 'front.user.refund_policy',
+            'refund' => 'front.user.refund_policy',
+            'shipping-policy' => 'front.user.shipping_policy',
+            'shipping_policy' => 'front.user.shipping_policy',
+            'shipping' => 'front.user.shipping_policy',
+            'about' => 'front.user.about',
+            'about-us' => 'front.user.about',
+            'about_us' => 'front.user.about',
+            'contact' => 'front.user.contact',
+            'contact-us' => 'front.user.contact',
+            'contact_us' => 'front.user.contact',
+            'faq' => 'front.user.faq',
+            'faqs' => 'front.user.faq',
+            'blog' => 'front.user.blogs',
+            'blogs' => 'front.user.blogs',
+            'shop' => 'front.user.shop',
+            'cart' => 'front.user.cart',
+            'checkout' => 'front.user.checkout.final_step',
+        ];
+
+        if (isset($routeMap[$cleanLower])) {
+            try {
+                $param = getParam();
+                return !empty($param) ? route($routeMap[$cleanLower], $param) : route($routeMap[$cleanLower]);
+            } catch (\Throwable $e) {}
+        }
+
+        // For other custom pages or relative links
+        $param = getParam();
+        if (!empty($param) && $param !== 'default') {
+            // Path-based tenant: ensure URL starts with /{username}/
+            if (!str_starts_with($cleanLower, strtolower($param) . '/') && $cleanLower !== strtolower($param)) {
+                return url('/' . $param . '/' . $clean);
+            }
+        }
+
+        return url('/' . $clean);
+    }
+}
+
 // checks if 'current package has subdomain ?'
 
 if (!function_exists('cPackageHasSubdomain')) {

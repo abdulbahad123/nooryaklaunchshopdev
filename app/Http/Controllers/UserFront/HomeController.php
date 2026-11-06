@@ -578,10 +578,16 @@ class HomeController extends Controller
     }
 
 
-    public function contactView()
+    public function contactView($domain = null)
     {
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = UserLanguage::where('user_id', $user->id)->first();
+        }
         $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
 
         $basic_settings = BasicSetting::where('user_id', $user->id)->select('is_recaptcha', 'google_recaptcha_site_key', 'google_recaptcha_secret_key')->first();
@@ -595,7 +601,10 @@ class HomeController extends Controller
 
         $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)->first();
         $data['contact'] = UserContact::where('language_id', $uLang)->where('user_id', $user->id)->first();
-
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
 
         return themeView('contact', $data);
     }
@@ -668,10 +677,20 @@ class HomeController extends Controller
         }
     }
 
-    public function faqs()
+    public function faqs($domain = null)
     {
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        if (empty($user)) {
+            return redirect()->route('front.index');
+        }
+
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = UserLanguage::where('user_id', $user->id)->first();
+        }
         $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
 
@@ -688,6 +707,13 @@ class HomeController extends Controller
                 ->orderBy('serial_number', 'ASC')
                 ->get();
         }
+
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['userCurrentCurr'] = app()->bound('userCurrency') ? app('userCurrency') : null;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
+
         return themeView('faq', $data);
     }
 
@@ -695,7 +721,13 @@ class HomeController extends Controller
     public function userBlogs(Request $request, $domain = null)
     {
         $term = $catid = null;
-        $user = app('user');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        if (empty($user)) {
+            return redirect()->route('front.index');
+        }
 
         $current_package = UserPermissionHelper::currentPackagePermission($user->id);
         $features = $current_package ? json_decode($current_package->features) : [];
@@ -705,7 +737,10 @@ class HomeController extends Controller
 
         $id = $user->id;
 
-        $userCurrentLang = app('userCurrentLang');
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = UserLanguage::where('user_id', $user->id)->first();
+        }
         $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
         $data['uLang'] = $uLang;
@@ -788,6 +823,12 @@ class HomeController extends Controller
             ->select('blogs_meta_keywords', 'blogs_meta_description')
             ->first();
 
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['userCurrentCurr'] = app()->bound('userCurrency') ? app('userCurrency') : null;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
+
         return themeView('blogs', $data);
     }
 
@@ -869,87 +910,124 @@ class HomeController extends Controller
         if (empty($slug)) {
             $slug = $domain;
         }
-        $user = app('user');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        if (empty($user)) {
+            return redirect()->route('front.index');
+        }
         $userId = $user->id;
-        $userCurrentLang = app('userCurrentLang');
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = UserLanguage::where('user_id', $user->id)->first();
+        }
+        $uLang = !empty($userCurrentLang) ? $userCurrentLang->id : 0;
+
         $blog_id = BlogContent::where([['user_blog_contents.user_id', $userId], ['user_blog_contents.slug', $slug]])->pluck('blog_id')->first();
-        $data['blog'] = BlogContent::where([['user_blog_contents.user_id', $userId], ['user_blog_contents.blog_id', $blog_id], ['user_blog_contents.language_id', $userCurrentLang->id]])
+        $data['blog'] = BlogContent::where([['user_blog_contents.user_id', $userId], ['user_blog_contents.blog_id', $blog_id]])
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('user_blog_contents.language_id', $uLang);
+            })
             ->join('user_blog_categories', 'user_blog_categories.id', '=', 'user_blog_contents.category_id')
             ->select('user_blog_contents.*', 'user_blog_categories.name as categoryName')
             ->first();
         if (is_null($data['blog'])) {
-            abort(404);
+            $data['blog'] = BlogContent::where([['user_blog_contents.user_id', $userId], ['user_blog_contents.blog_id', $blog_id]])
+                ->join('user_blog_categories', 'user_blog_categories.id', '=', 'user_blog_contents.category_id')
+                ->select('user_blog_contents.*', 'user_blog_categories.name as categoryName')
+                ->first();
+            if (is_null($data['blog'])) {
+                abort(404);
+            }
         }
 
         $data['latestBlogs'] = BlogContent::query()
-            ->where([['user_id', $userId], ['language_id', $userCurrentLang->id], ['blog_id', '!=', $data['blog']->blog_id]])
+            ->where([['user_id', $userId], ['blog_id', '!=', $data['blog']->blog_id]])
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('language_id', $uLang);
+            })
             ->orderBy('id', 'DESC')
             ->limit(5)->get();
-
 
         $data['blog_categories'] = BlogCategory::query()
             ->where('status', 1)
             ->orderBy('serial_number', 'ASC')
-            ->where('language_id', $userCurrentLang->id)
             ->where('user_id', $userId)
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('language_id', $uLang);
+            })
             ->get();
 
         $data['allCount'] = BlogContent::query()
             ->where('user_id', $userId)
-            ->where('language_id', $userCurrentLang->id)
+            ->when($uLang, function ($q) use ($uLang) {
+                return $q->where('language_id', $uLang);
+            })
             ->count();
 
-        $userId = $data['blog']->user_id;
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['userCurrentCurr'] = app()->bound('userCurrency') ? app('userCurrency') : null;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
 
         return themeView('blog-details', $data);
     }
 
     public function userAbout($domain = null)
     {
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = UserLanguage::where('user_id', $user->id)->first();
+        }
+        $uLang = $userCurrentLang ? $userCurrentLang->id : 0;
 
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
 
-        $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $userCurrentLang->id;
+        $enLangId = UserLanguage::where('user_id', $user->id)->where('code', 'en')->value('id') ?? $uLang;
 
-        $data['how_work_steps'] = HowitWorkSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
-        if ($data['how_work_steps']->isEmpty()) {
+        $data['how_work_steps'] = HowitWorkSection::where([['language_id', $uLang], ['user_id', $user->id]])->get();
+        if ($data['how_work_steps']->isEmpty() && $enLangId) {
             $data['how_work_steps'] = HowitWorkSection::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
         }
 
-        $data['aboutInfo'] = AboutUs::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->first();
-        if (empty($data['aboutInfo'])) {
+        $data['aboutInfo'] = AboutUs::where([['language_id', $uLang], ['user_id', $user->id]])->first();
+        if (empty($data['aboutInfo']) && $enLangId) {
             $data['aboutInfo'] = AboutUs::where([['language_id', $enLangId], ['user_id', $user->id]])->first();
         }
 
-        $data['aboutFeatures'] = AboutUsFeatures::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
-        if ($data['aboutFeatures']->isEmpty()) {
+        $data['aboutFeatures'] = AboutUsFeatures::where([['language_id', $uLang], ['user_id', $user->id]])->get();
+        if ($data['aboutFeatures']->isEmpty() && $enLangId) {
             $data['aboutFeatures'] = AboutUsFeatures::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
         }
 
-        $data['counterSection'] = CounterSection::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->first();
-        if (empty($data['counterSection'])) {
+        $data['counterSection'] = CounterSection::where([['language_id', $uLang], ['user_id', $user->id]])->first();
+        if (empty($data['counterSection']) && $enLangId) {
             $data['counterSection'] = CounterSection::where([['language_id', $enLangId], ['user_id', $user->id]])->first();
         }
 
-        $data['counterInformations'] = CounterInformation::where([['language_id', $userCurrentLang->id], ['user_id', $user->id]])->get();
-        if ($data['counterInformations']->isEmpty()) {
+        $data['counterInformations'] = CounterInformation::where([['language_id', $uLang], ['user_id', $user->id]])->get();
+        if ($data['counterInformations']->isEmpty() && $enLangId) {
             $data['counterInformations'] = CounterInformation::where([['language_id', $enLangId], ['user_id', $user->id]])->get();
         }
 
-        $data['testimonial_info'] = UserSection::where([['user_id', $user->id], ['language_id', $userCurrentLang->id]])->first();
-        if (empty($data['testimonial_info'])) {
+        $data['testimonial_info'] = UserSection::where([['user_id', $user->id], ['language_id', $uLang]])->first();
+        if (empty($data['testimonial_info']) && $enLangId) {
             $data['testimonial_info'] = UserSection::where([['user_id', $user->id], ['language_id', $enLangId]])->first();
         }
 
-        $data['testimonials'] = Testimonial::where([['user_id', $user->id], ['language_id', $userCurrentLang->id]])->get();
-        if ($data['testimonials']->isEmpty()) {
+        $data['testimonials'] = Testimonial::where([['user_id', $user->id], ['language_id', $uLang]])->get();
+        if ($data['testimonials']->isEmpty() && $enLangId) {
             $data['testimonials'] = Testimonial::where([['user_id', $user->id], ['language_id', $enLangId]])->get();
         }
-        $data['uLang'] = $userCurrentLang->id;
+        $data['uLang'] = $uLang;
 
-        $data['seo'] = SEO::where('language_id', $userCurrentLang->id)->where('user_id', $user->id)
+        $data['seo'] = SEO::where('language_id', $uLang)->where('user_id', $user->id)
             ->select('about_page_meta_keywords', 'about_page_meta_description')
             ->first();
 
@@ -969,6 +1047,11 @@ class HomeController extends Controller
                 ->get();
         }
 
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
+
         return themeView('about', $data);
     }
 
@@ -986,8 +1069,18 @@ class HomeController extends Controller
         if (is_null($slug) && !is_null($domain)) {
             $slug = $domain;
         }
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        if (empty($user)) {
+            return redirect()->route('front.index');
+        }
+
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = UserLanguage::where('user_id', $user->id)->first();
+        }
         $id = $user->id;
 
         $slugMap = [
@@ -1022,6 +1115,11 @@ class HomeController extends Controller
         }
 
         $data['pageHeading'] = $data['title'];
+        $data['user'] = $user;
+        $data['userBs'] = app()->bound('userBs') ? app('userBs') : ($user->basic_setting ?? null);
+        $data['userCurrentLang'] = $userCurrentLang;
+        $data['userCurrentCurr'] = app()->bound('userCurrency') ? app('userCurrency') : null;
+        $data['keywords'] = \App\Http\Helpers\Common::get_keywords();
 
         return themeView('custom-page', $data);
     }

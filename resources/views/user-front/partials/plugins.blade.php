@@ -47,8 +47,9 @@
 
   // Handle the guest message
   var guest_message = {!! json_encode(
-      $keywords['Please log in or continue as guest to proceed with your order'] ??
-          __('Please log in or continue as guest to proceed with your order')) !!};
+      $keywords['Please log in or use Instant Order to proceed with your order'] ??
+          ($keywords['Please log in or continue as guest to proceed with your order'] ??
+              __('Please log in or use Instant Order to proceed with your order'))) !!};
 
   // Check if the user was redirected to checkout
   @if (request()->input('redirected') == 'checkout')

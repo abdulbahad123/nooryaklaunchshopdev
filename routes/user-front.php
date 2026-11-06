@@ -29,11 +29,18 @@ $tenantRoutes = function () {
     Route::get('apply/{token}', 'UserFront\HomeController@removeMaintenance')->name('front.user.remove')->withoutMiddleware('userMaintenance');
 
     Route::get('/about', 'UserFront\HomeController@userAbout')->name('front.user.about');
+    Route::get('/about-us', 'UserFront\HomeController@userAbout');
+    Route::get('/about_us', 'UserFront\HomeController@userAbout');
     Route::get('/privacy-policy', 'UserFront\HomeController@tenantPrivacyPolicy')->name('front.user.privacy_policy');
+    Route::get('/privacy_policy', 'UserFront\HomeController@tenantPrivacyPolicy');
     Route::get('/terms-and-conditions', 'UserFront\HomeController@tenantTermsConditions')->name('front.user.terms_conditions');
     Route::get('/terms-conditions', 'UserFront\HomeController@tenantTermsConditions');
+    Route::get('/terms_conditions', 'UserFront\HomeController@tenantTermsConditions');
+    Route::get('/terms_and_conditions', 'UserFront\HomeController@tenantTermsConditions');
     Route::get('/refund-policy', 'UserFront\HomeController@tenantRefundPolicy')->name('front.user.refund_policy');
+    Route::get('/refund_policy', 'UserFront\HomeController@tenantRefundPolicy');
     Route::get('/shipping-policy', 'UserFront\HomeController@tenantShippingPolicy')->name('front.user.shipping_policy');
+    Route::get('/shipping_policy', 'UserFront\HomeController@tenantShippingPolicy');
 
     Route::get('/page/{slug}', 'Front\FrontendController@customPage')->name('front.user.custom.page');
     Route::post('/subscribe', 'User\SubscriberController@Usersubscribe')->name('front.user.subscribe');
@@ -63,9 +70,13 @@ $tenantRoutes = function () {
     Route::post('/coupon', 'UserFront\ItemController@coupon')->name('front.coupon');
 
     Route::get('/contact', 'UserFront\HomeController@contactView')->name('front.user.contact');
+    Route::get('/contact-us', 'UserFront\HomeController@contactView');
+    Route::get('/contact_us', 'UserFront\HomeController@contactView');
     Route::post('/contact-message', 'UserFront\HomeController@contactMessage')->name('front.user.contact.send_message')->middleware('Demo');
     Route::get('/faqs', 'UserFront\HomeController@faqs')->name('front.user.faq');
+    Route::get('/faq', 'UserFront\HomeController@faqs');
 
+    Route::get('/blogs', 'UserFront\HomeController@userBlogs');
     Route::prefix('blog')->group(function () {
         Route::get('/', 'UserFront\HomeController@userBlogs')->name('front.user.blogs');
         Route::get('/{slug}', 'UserFront\HomeController@userBlogDetail')->name('user-front.blog_details');

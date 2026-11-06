@@ -65,14 +65,20 @@ class ItemController extends Controller
         if (is_null($id) && !is_null($domain)) {
             $id = $domain;
         }
-        $user = getUser();
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        if (empty($user)) {
+            return response()->json(['error' => 'Store session expired. Please refresh the page.']);
+        }
         $keywords = Common::get_keywords();
         $cart = Session::get('cart_' . $user->username);
 
         $user_id = $user->id;
         if (!is_null($cart) && is_array($cart)) {
             $cart = array_filter($cart, function ($item) use ($user_id) {
-                return $item['user_id'] == $user_id;
+                return isset($item['user_id']) && $item['user_id'] == $user_id;
             });
         }
 
@@ -82,8 +88,10 @@ class ItemController extends Controller
         $total = isset($data[2]) ? (float)$data[2] : 0;
         $variant = (isset($data[3]) && !empty($data[3])) ? json_decode($data[3], true) : [];
 
-
-        $item = UserItem::findOrFail($id);
+        $item = UserItem::find($id);
+        if (!$item) {
+            return response()->json(['error' => 'Product not found.']);
+        }
         if ($item->type != 'digital') {
             // validations
             if ($qty < 1) {
@@ -94,9 +102,6 @@ class ItemController extends Controller
 
             if ($totalVari != 0 && ($totalVari > count((array) $variant))) {
                 return response()->json(['error' => $keywords['You must select a variant'] ?? __('You must select a variant')]);
-            }
-            if (!$item) {
-                abort(404);
             }
         }
         $ckey = uniqid();
