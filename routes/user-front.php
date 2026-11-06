@@ -21,7 +21,9 @@ $tenantRoutes = function () {
         ->name('front.user.detail.invoice');
 
     Route::get('/changelanguage/{code}', 'UserFront\HomeController@changeUserLanguage')->name('front.user.changeUserLanguage');
+    Route::get('/{username}/changelanguage/{code}', 'UserFront\HomeController@changeUserLanguage');
     Route::get('/changecurrency/{id}', 'UserFront\HomeController@changeUserCurrency')->name('front.user.changeUserCurrency');
+    Route::get('/{username}/changecurrency/{id}', 'UserFront\HomeController@changeUserCurrency');
     Route::get('apply/{token}', 'UserFront\HomeController@removeMaintenance')->name('front.user.remove')->withoutMiddleware('userMaintenance');
 
     Route::get('/about', 'UserFront\HomeController@userAbout')->name('front.user.about');

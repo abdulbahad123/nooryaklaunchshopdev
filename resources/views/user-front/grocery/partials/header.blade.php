@@ -55,7 +55,7 @@
 
                   @foreach ($userLangs ?? [] as $userLang)
                     <li>
-                      <a href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}"
+                      <a href="{{ getTenantLanguageUrl($userLang->code) }}"
                         class="menu-link" data-value="{{ $userLang->code }}">
                         {{ convertUtf8($userLang->name) }}
                       </a>
@@ -262,7 +262,7 @@
                 <ul class="setting-dropdown" style="min-width: 140px;">
                   @foreach ($userLangs as $userLang)
                     <li>
-                      <a href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}"
+                      <a href="{{ getTenantLanguageUrl($userLang->code) }}"
                         class="menu-link {{ ($userCurrentLang->code ?? '') == $userLang->code ? 'active' : '' }}" data-value="{{ $userLang->code }}">
                         {{ convertUtf8($userLang->name) }}
                       </a>

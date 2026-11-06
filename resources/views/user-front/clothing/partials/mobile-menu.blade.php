@@ -38,7 +38,7 @@
           <ul class="setting-dropdown">
             @foreach($userLangs as $userLang)
               <li>
-                <a href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}" class="menu-link">
+                <a href="{{ getTenantLanguageUrl($userLang->code) }}" class="menu-link">
                   {{ convertUtf8($userLang->name) }}
                 </a>
               </li>

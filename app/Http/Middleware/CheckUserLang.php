@@ -67,6 +67,8 @@ class CheckUserLang
                 app()->setLocale($userCurrentLang->code);
             } elseif (session()->has('user_lang_' . $username)) {
                 app()->setLocale(session()->get('user_lang_' . $username));
+            } elseif (request()->cookie('user_lang_' . $username)) {
+                app()->setLocale(request()->cookie('user_lang_' . $username));
             }
         }
 

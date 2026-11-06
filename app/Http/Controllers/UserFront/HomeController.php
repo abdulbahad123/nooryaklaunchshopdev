@@ -496,17 +496,19 @@ class HomeController extends Controller
 
     public function checkCurrentUser() {}
 
-    public function changeUserLanguage($domain = null, $code = null): \Illuminate\Http\RedirectResponse
+    public function changeUserLanguage(Request $request, $domain = null, $code = null): \Illuminate\Http\RedirectResponse
     {
-        if (is_null($code) && !is_null($domain)) {
-            $code = $domain;
-        }
-        $user = getUser() ?? app('user');
-        if (!empty($user) && !empty($code)) {
-            $userLang = UserLanguage::where('code', $code)->where('user_id', $user->id)->first();
+        $langCode = $code ?? $domain ?? $request->input('code');
+        $user = getUser() ?? (app()->bound('user') ? app('user') : null);
+        if (!empty($user) && !empty($langCode)) {
+            $userLang = UserLanguage::where('code', $langCode)->where('user_id', $user->id)->first();
             if (!empty($userLang)) {
                 session()->put('user_lang_' . $user->username, $userLang->code);
                 session()->put('user_lang_chosen_' . $user->username, true);
+                session()->save();
+
+                cookie()->queue(cookie('user_lang_' . $user->username, $userLang->code, 60 * 24 * 30));
+                cookie()->queue(cookie('user_lang_chosen_' . $user->username, '1', 60 * 24 * 30));
             }
         }
         return redirect()->back();

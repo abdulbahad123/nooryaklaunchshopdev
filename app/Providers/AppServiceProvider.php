@@ -68,14 +68,19 @@ class AppServiceProvider extends ServiceProvider
 
         //user front current langauge
         $this->app->singleton('userCurrentLang', function () {
-            $user = app('user');
+            $user = app()->bound('user') ? app('user') : getUser();
             if (!empty($user) && is_object($user) && !empty($user->id)) {
-                // Check if visitor has explicitly chosen a language in this session
-                $explicitlyChosen = session()->get('user_lang_chosen_' . $user->username, false);
-                if ($explicitlyChosen && session()->has('user_lang_' . $user->username)) {
-                    $chosenCode = session()->get('user_lang_' . $user->username);
+                // Check if visitor has explicitly chosen a language in this session or persistent cookie
+                $explicitlyChosen = session()->get('user_lang_chosen_' . $user->username, false)
+                    ?: request()->cookie('user_lang_chosen_' . $user->username, false);
+
+                $chosenCode = session()->get('user_lang_' . $user->username)
+                    ?: request()->cookie('user_lang_' . $user->username);
+
+                if ($explicitlyChosen && !empty($chosenCode)) {
                     $userCurrentLang = UserLanguage::where('code', $chosenCode)->where('user_id', $user->id)->first();
                     if (!empty($userCurrentLang)) {
+                        session()->put('user_lang_' . $user->username, $userCurrentLang->code);
                         return $userCurrentLang;
                     }
                 }

@@ -1031,13 +1031,36 @@ if (!function_exists('getParam')) {
         $pathSegments = explode('/', trim($currentPath, '/'));
         $firstSegment = $pathSegments[0] ?? null;
 
-        $reservedKeywords = ['admin', 'user', 'front', 'api', 'login', 'register', 'checkout', 'templates', 'shops', 'pricing', 'blogs', 'contact', 'faqs', 'whitelabel-panel', 'master', 'product', 'cart', 'shop', 'page', 'about', 'privacy-policy', 'terms-and-conditions', 'terms-conditions', 'refund-policy', 'shipping-policy', 'x9_admin-portal_v7', 'subscription-test', 'subscription_test'];
+        $reservedKeywords = ['admin', 'user', 'front', 'api', 'login', 'register', 'checkout', 'templates', 'shops', 'pricing', 'blogs', 'contact', 'faqs', 'whitelabel-panel', 'master', 'product', 'cart', 'shop', 'page', 'about', 'privacy-policy', 'terms-and-conditions', 'terms-conditions', 'refund-policy', 'shipping-policy', 'x9_admin-portal_v7', 'subscription-test', 'subscription_test', 'changelanguage', 'changecurrency'];
 
         if (!empty($firstSegment) && !in_array(strtolower($firstSegment), $reservedKeywords)) {
             return strtolower(urldecode($firstSegment));
         }
 
         return 'default';
+    }
+}
+
+if (!function_exists('getTenantLanguageUrl')) {
+    function getTenantLanguageUrl($code)
+    {
+        $user = getUser() ?? (app()->bound('user') ? app('user') : null);
+        $cleanHost = preg_replace('/^www\./i', '', strtolower(request()->getHost() ?: ''));
+        $tenantBaseHosts = ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
+
+        $isCustomDomain = !empty(request()->attributes->get('is_launchshop_custom_domain'))
+            || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($cleanHost))
+            || (!in_array($cleanHost, $tenantBaseHosts) && !str_ends_with($cleanHost, '.saasreselling.com') && !str_ends_with($cleanHost, '.saasreselling.in'));
+
+        if ($isCustomDomain) {
+            return url('/changelanguage/' . $code);
+        }
+
+        if (!empty($user) && !empty($user->username)) {
+            return url('/' . $user->username . '/changelanguage/' . $code);
+        }
+
+        return url('/changelanguage/' . $code);
     }
 }
 
@@ -1285,6 +1308,7 @@ if (!function_exists('getUser')) {
             'refund-policy', 'shipping-policy', 'assets', 'storage',
             'favicon.ico', 'sitemap.xml', 'robots.txt', 'public',
             'x9_admin-portal_v7', 'subscription-test', 'subscription_test',
+            'changelanguage', 'changecurrency',
         ];
 
         // ── CASE 1: path-based tenant ─────────────────────────────────────

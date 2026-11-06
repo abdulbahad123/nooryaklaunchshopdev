@@ -105,7 +105,7 @@
                     @foreach ($userLangs as $userLang)
                       <li>
                         <a class="menu-link {{ ($userCurrentLang->code ?? '') == $userLang->code ? 'active font-weight-bold' : '' }}"
-                          href="{{ route('front.user.changeUserLanguage', ['code' => $userLang->code, getParam()]) }}">
+                          href="{{ getTenantLanguageUrl($userLang->code) }}">
                           {{ convertUtf8($userLang->name) }}
                         </a>
                       </li>
