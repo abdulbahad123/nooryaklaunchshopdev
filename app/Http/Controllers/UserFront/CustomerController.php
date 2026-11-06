@@ -48,10 +48,10 @@ class CustomerController extends Controller
     }
     public function login(Request $request, $domain = null)
     {
-        $user = app('user');
-        $data['currentLanguage'] = app('userCurrentLang');
-        if ($request->filled('redirected') && $request->filled('redirected') == 'checkout') {
-            Session::put('redirectTo', route('front.user.checkout', getParam()));
+        $user = app()->bound('user') ? app('user') : getUser();
+        $data['currentLanguage'] = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if ($request->filled('redirected') && $request->input('redirected') == 'checkout') {
+            Session::put('redirectTo', route('front.user.checkout.final_step', getParam()));
         }
 
         $current_package = UserPermissionHelper::currentPackagePermission($user->id);
@@ -64,7 +64,7 @@ class CustomerController extends Controller
 
         $data['pageHeading'] = $this->getUserPageHeading($data['currentLanguage']);
         // when user have to redirect to check out page after login.
-        $data['seo'] = SEO::where('language_id', $data['currentLanguage']->id)->where('user_id', $user->id)->first();
+        $data['seo'] = (!empty($data['currentLanguage']) && !empty($user)) ? SEO::where('language_id', $data['currentLanguage']->id)->where('user_id', $user->id)->first() : null;
         return view('user-front.customer.login', $data);
     }
 
@@ -187,13 +187,25 @@ class CustomerController extends Controller
 
         if (Auth::guard('customer')->attempt($credentials)) {
             $authUser = Auth::guard('customer')->user();
-            // first, check whether the user's email address verified or not
 
+            $isCheckoutFlow = Session::has('redirectTo')
+                || $request->input('redirected') == 'checkout'
+                || (Session::has('cart_' . $user->username) && !empty(Session::get('cart_' . $user->username)));
+
+            // first, check whether the user's email address verified or not
             if ($authUser->email_verified_at == null) {
-                Session::flash('error', $keywords['Please, verify your email address'] ?? __('Please, verify your email address'));
-                // logout auth user as condition not satisfied
-                Auth::guard('customer')->logout();
-                return redirect()->back();
+                if ($isCheckoutFlow) {
+                    // Auto-verify directly during checkout so customer can place their order immediately
+                    $authUser->email_verified = 1;
+                    $authUser->email_verified_at = Carbon::now();
+                    $authUser->status = 1;
+                    $authUser->save();
+                } else {
+                    Session::flash('error', $keywords['Please, verify your email address'] ?? __('Please, verify your email address'));
+                    // logout auth user as condition not satisfied
+                    Auth::guard('customer')->logout();
+                    return redirect()->back();
+                }
             }
 
             // second, check whether the user's account is active or not
@@ -205,6 +217,10 @@ class CustomerController extends Controller
             }
 
             // otherwise, redirect auth user to next url
+            if ($isCheckoutFlow && empty($redirectURL)) {
+                $redirectURL = route('front.user.checkout.final_step', getParam());
+            }
+
             if ($redirectURL == null) {
                 return redirect()->route('customer.dashboard', getParam());
             } else {
@@ -406,16 +422,20 @@ class CustomerController extends Controller
         return redirect()->route('customer.login', getParam());
     }
 
-    public function signup($domain = null)
+    public function signup(Request $request, $domain = null)
     {
-        $user = app('user');
-        $data['currentLanguage'] = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        $data['currentLanguage'] = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+
+        if ($request->filled('redirected') && $request->input('redirected') == 'checkout') {
+            Session::put('redirectTo', route('front.user.checkout.final_step', getParam()));
+        }
 
         $data['pageHeading'] = $this->getUserPageHeading($data['currentLanguage']);
         // when user have to redirect to check out page after login.
-        $data['seo'] = SEO::where('language_id', $data['currentLanguage']->id)->where('user_id', $user->id)->first();
-        $basic_settings = BasicSetting::where('user_id', $user->id)->select('is_recaptcha', 'google_recaptcha_site_key', 'google_recaptcha_secret_key')->first();
-        if ($basic_settings->is_recaptcha == 1) {
+        $data['seo'] = (!empty($data['currentLanguage']) && !empty($user)) ? SEO::where('language_id', $data['currentLanguage']->id)->where('user_id', $user->id)->first() : null;
+        $basic_settings = !empty($user) ? BasicSetting::where('user_id', $user->id)->select('is_recaptcha', 'google_recaptcha_site_key', 'google_recaptcha_secret_key')->first() : null;
+        if ($basic_settings && $basic_settings->is_recaptcha == 1) {
             Config::set('captcha.sitekey', $basic_settings->google_recaptcha_site_key);
             Config::set('captcha.secret', $basic_settings->google_recaptcha_secret_key);
         }
@@ -475,21 +495,28 @@ class CustomerController extends Controller
 
         $customer->verification_token = $token;
 
-        // Auto-verify on local environment for seamless development and testing
-        if (config('app.env') === 'local') {
+        $isCheckoutFlow = Session::has('redirectTo')
+            || $request->input('redirected') == 'checkout'
+            || (Session::has('cart_' . $user->username) && !empty(Session::get('cart_' . $user->username)));
+
+        // Auto-verify on local environment or when user is checking out
+        if ($isCheckoutFlow || config('app.env') === 'local') {
             $customer->email_verified = 1;
-            $customer->email_verified_at = date('Y-m-d H:i:s');
+            $customer->email_verified_at = Carbon::now();
             $customer->status = 1;
             $customer->verification_token = null;
         }
 
         $customer->save();
 
-        if (config('app.env') === 'local') {
-            // Auto login on local for better DX
+        if ($isCheckoutFlow || config('app.env') === 'local') {
+            // Auto login directly and proceed to checkout
             Auth::guard('customer')->login($customer);
             Session::flash('success', $keywords['Registration successful'] ?? __('Registration successful'));
-            return redirect()->route('customer.dashboard', getParam());
+
+            $targetCheckout = Session::get('redirectTo', route('front.user.checkout.final_step', getParam()));
+            Session::forget('redirectTo');
+            return redirect($targetCheckout);
         }
 
         // send a mail to user for verify his/her email address

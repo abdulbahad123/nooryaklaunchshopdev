@@ -37,6 +37,7 @@ class UserVisibilityCheck
         if (empty($user) || !is_object($user) || !isset($user->id)) {
             abort(404);
         }
+        app()->instance('user', $user);
 
         // On custom domains, cleanly 301 redirect legacy trailing ?{username} queries (e.g. /shop?mercado -> /shop)
         if ($request->isMethod('GET') && function_exists('isTenantCustomDomainRequest') && isTenantCustomDomainRequest() && !empty($user->username)) {

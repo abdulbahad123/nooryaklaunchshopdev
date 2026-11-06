@@ -118,24 +118,33 @@
   }
 
   function triggerPwaInstall() {
-    if (isPwaInstalled() || localStorage.getItem('pwa_installed') === '1') {
-      showPwaFallback(
-        @json($keywords['App Already Installed'] ?? __('App Already Installed')),
-        @json($keywords['You have already installed this app. Please open it from your home screen or app menu.'] ?? __('You have already installed this app. Please open it from your home screen or app menu.'))
-      );
-      return;
-    }
-
     if (window.deferredPwaPrompt) {
       window.deferredPwaPrompt.prompt();
       window.deferredPwaPrompt.userChoice.then(function(result) {
-        if (result.outcome === 'accepted') {
+        if (result && result.outcome === 'accepted') {
           try { localStorage.setItem('pwa_installed', '1'); } catch(e) {}
           dismissPwaBanner();
           updatePwaInstallUi();
         }
         window.deferredPwaPrompt = null;
       });
+      return;
+    }
+
+    var isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIos) {
+      showPwaFallback(
+        @json($keywords['Install App'] ?? __('Install on iPhone/iPad')),
+        @json($keywords['To install this app, tap the Share icon at the bottom of Safari, then select "Add to Home Screen".'] ?? __('To install this app, tap the Share icon at the bottom of Safari, then select "Add to Home Screen".'))
+      );
+      return;
+    }
+
+    if (isPwaInstalled()) {
+      showPwaFallback(
+        @json($keywords['App Already Installed'] ?? __('App Already Installed')),
+        @json($keywords['This app is already installed! You can launch it from your home screen or app launcher.'] ?? __('This app is already installed! You can launch it from your home screen or app launcher.'))
+      );
       return;
     }
 
@@ -162,7 +171,11 @@
     updatePwaInstallUi();
   });
 
-  window.addEventListener('beforeinstallprompt', function() {
+  window.addEventListener('beforeinstallprompt', function(e) {
+    if (e) {
+      e.preventDefault();
+      window.deferredPwaPrompt = e;
+    }
     injectPwaNavLinks();
     updatePwaInstallUi();
   });

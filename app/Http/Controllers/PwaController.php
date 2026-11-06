@@ -33,16 +33,34 @@ class PwaController extends Controller
             return ['start_url' => '/', 'scope' => '/'];
         }
 
-        $host = str_replace('www.', '', request()->getHost());
-        $websiteHost = str_replace('www.', '', env('WEBSITE_HOST'));
+        $host = strtolower(str_replace('www.', '', request()->getHost()));
+        $isCustom = (function_exists('isTenantCustomDomainRequest') && isTenantCustomDomainRequest())
+            || (function_exists('isLaunchShopCustomDomain') && isLaunchShopCustomDomain($host))
+            || !empty(request()->attributes->get('is_launchshop_custom_domain'));
 
-        if ($host === $websiteHost) {
-            $base = '/' . $user->username . '/';
-
-            return ['start_url' => $base, 'scope' => $base];
+        if ($isCustom) {
+            return ['start_url' => '/', 'scope' => '/'];
         }
 
-        return ['start_url' => '/', 'scope' => '/'];
+        // Check if tenant subdomain (e.g. mercado.saasreselling.in)
+        $tenantBaseHosts = ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
+        if (env('WEBSITE_HOST')) {
+            $tenantBaseHosts[] = strtolower(str_replace('www.', '', env('WEBSITE_HOST')));
+        }
+        $tenantBaseHosts = array_unique(array_filter($tenantBaseHosts));
+
+        foreach ($tenantBaseHosts as $baseHost) {
+            if (str_ends_with($host, '.' . $baseHost)) {
+                $sub = explode('.', $host)[0] ?? '';
+                if (!in_array(strtolower($sub), ['launchshop', 'ecombuilder', 'checkout', 'app', 'www', 'admin', 'websitebuilder', 'website-builder', 'whatsappbulk', 'whatsapp'])) {
+                    return ['start_url' => '/', 'scope' => '/'];
+                }
+            }
+        }
+
+        // Path-based tenant: e.g. ecombuilder.saasreselling.in/newshop/
+        $base = '/' . $user->username . '/';
+        return ['start_url' => $base, 'scope' => $base];
     }
 
     public function manifest(Request $request)

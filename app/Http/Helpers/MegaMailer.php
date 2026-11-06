@@ -158,71 +158,105 @@ class MegaMailer
     public function mailFromUser($data)
     {
         $user = getUser();
-        $temp = UserEmailTemplate::where('email_type', '=', $data['templateType'])->where('user_id', $user->id)->first();
-        if ($temp) {
-            $body = $temp->email_body;
-            if (array_key_exists('username', $data)) {
-                $body = preg_replace("/{username}/", $data['username'], $body);
-            }
-            if (array_key_exists('customer_name', $data)) {
-                $body = preg_replace("/{customer_name}/", $data['customer_name'], $body);
-            }
-            if (array_key_exists('order_number', $data)) {
-                $body = preg_replace("/{order_number}/", $data['order_number'], $body);
-            }
-            if (array_key_exists('order_link', $data)) {
-                $body = preg_replace("/{order_link}/", $data['order_link'], $body);
-            }
+        $temp = (!empty($user) && isset($user->id)) ? UserEmailTemplate::where('email_type', '=', $data['templateType'])->where('user_id', $user->id)->first() : null;
+        if (!$temp) {
+            $temp = (object) [
+                'email_subject' => 'Order Confirmation - ' . ($data['order_number'] ?? ''),
+                'email_body'    => '<p>Hello {customer_name},</p><p>Thank you for your order! Your order <strong>{order_number}</strong> has been received successfully.</p><p>Please find your invoice attached.</p><p>Best regards,<br>{website_title}</p>',
+            ];
+        }
 
-            if (array_key_exists('website_title', $data)) {
-                $body = preg_replace("/{website_title}/", $data['website_title'], $body);
-            }
+        $body = $temp->email_body;
+        if (array_key_exists('username', $data)) {
+            $body = preg_replace("/{username}/", $data['username'], $body);
+        }
+        if (array_key_exists('customer_name', $data)) {
+            $body = preg_replace("/{customer_name}/", $data['customer_name'], $body);
+        }
+        if (array_key_exists('order_number', $data)) {
+            $body = preg_replace("/{order_number}/", $data['order_number'], $body);
+        }
+        if (array_key_exists('order_link', $data)) {
+            $body = preg_replace("/{order_link}/", $data['order_link'], $body);
+        }
+        if (array_key_exists('website_title', $data)) {
+            $body = preg_replace("/{website_title}/", $data['website_title'], $body);
+        }
 
-            if (session()->has('lang')) {
-                $currentLang = Language::where('code', session()->get('lang'))->first();
-            } else {
-                $currentLang = Language::where('is_default', 1)->first();
-            }
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
 
-            $be = $currentLang->basic_extended;
+        $be = $currentLang ? $currentLang->basic_extended : BasicExtended::first();
 
-            $mail = new PHPMailer(true);
-            $mail->CharSet = 'UTF-8';
+        $mail = new PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
 
+        $smtpHost = (!empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in') && !str_contains($be->smtp_host, 'nooryak.in'))
+            ? $be->smtp_host
+            : env('MAIL_HOST', 'mail.saasreselling.com');
+        $smtpPort = !empty($be->smtp_port) ? (int)$be->smtp_port : (int)env('MAIL_PORT', 465);
+        $smtpEncryption = !empty($be->encryption) ? $be->encryption : env('MAIL_ENCRYPTION', 'ssl');
+        $smtpUser = (!empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in') && !str_contains($be->smtp_username, 'nooryak.in'))
+            ? $be->smtp_username
+            : env('MAIL_USERNAME', 'admin@saasreselling.com');
+        $smtpPass = !empty($be->smtp_password) ? $be->smtp_password : env('MAIL_PASSWORD', 'Admin@nooryak');
 
-            if ($be->is_smtp == 1) {
-                try {
+        $fromMail = (!empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in') && !str_contains($be->from_mail, 'nooryak.in'))
+            ? $be->from_mail
+            : env('MAIL_FROM_ADDRESS', $smtpUser);
+        $fromName = !empty($be->from_name) ? $be->from_name : ($data['website_title'] ?? env('MAIL_FROM_NAME', 'Ecom Builder'));
 
-                    $mail->isSMTP();
-                    $mail->Host       = $be->smtp_host;
-                    $mail->SMTPAuth   = true;
-                    $mail->Username   = $be->smtp_username;
-                    $mail->Password   = $be->smtp_password;
-                    $mail->SMTPSecure = $be->encryption;
-                    $mail->Port       = $be->smtp_port;
-                } catch (Exception $e) {
-                }
-            }
-
+        if (!empty($be->is_smtp) || !empty($smtpHost)) {
             try {
-
-                //Recipients
-                $mail->setFrom($be->from_mail, $be->from_name);
-                $mail->addAddress($data['toMail'], $data['toName']);
-
-                // Attachments
-                if (array_key_exists('order_number', $data)) {
-                    $mail->addAttachment('assets/front/invoices/' . $data['attachment']);
-                }
-
-                // Content
-                $mail->isHTML(true);
-                $mail->Subject = $temp->email_subject;
-                $mail->Body    = Common::wrapEmailBody($body, $temp->email_subject, $user);
-
-                $mail->send();
+                $mail->isSMTP();
+                $mail->Host       = $smtpHost;
+                $mail->SMTPAuth   = true;
+                $mail->Username   = $smtpUser;
+                $mail->Password   = $smtpPass;
+                $mail->SMTPSecure = $smtpEncryption;
+                $mail->Port       = $smtpPort;
+                $mail->Timeout    = 8;
             } catch (Exception $e) {
             }
+        }
+
+        try {
+            // Recipients
+            $mail->setFrom($fromMail, $fromName);
+            $mail->addAddress($data['toMail'], $data['toName']);
+
+            // Attachments
+            if (array_key_exists('attachment', $data) && !empty($data['attachment'])) {
+                $attPath = public_path('assets/front/invoices/' . $data['attachment']);
+                if (file_exists($attPath)) {
+                    $mail->addAttachment($attPath);
+                }
+            }
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = $temp->email_subject;
+            $mail->Body    = Common::wrapEmailBody($body, $temp->email_subject, $user, null, $fromName);
+
+            $mail->send();
+        } catch (Exception $e) {
+            // Fail-safe: fallback to BasicMailer with invoice
+            try {
+                $fallbackData = [
+                    'recipient' => $data['toMail'],
+                    'subject'   => $temp->email_subject,
+                    'body'      => $body,
+                    'from_name' => $fromName,
+                    'from_mail' => $fromMail,
+                ];
+                if (!empty($data['attachment'])) {
+                    $fallbackData['invoice'] = public_path('assets/front/invoices/' . $data['attachment']);
+                }
+                BasicMailer::sendMail($fallbackData);
+            } catch (\Throwable $ex) {}
         }
     }
 

@@ -39,18 +39,27 @@
                   <p class="text-danger">{{ $message }}</p>
                 @enderror
               </div>
-              <div class="form-group mb-30">
-                <input required type="password" placeholder="{{ $keywords['Enter Password'] ?? __('Enter Password') }}"
+              <div class="form-group mb-30 position-relative">
+                <input required type="password" id="signupPassword" placeholder="{{ $keywords['Enter Password'] ?? __('Enter Password') }}"
                   class="form-control" name="password" value="{{ old('password') }}" required>
+                <span toggle="#signupPassword" class="show-password-field">
+                  <i class="show-icon"></i>
+                </span>
                 @error('password')
                   <p class="text-danger">{{ $message }}</p>
                 @enderror
               </div>
-              <div class="form-group mb-30">
-                <input type="password"
+              <div class="form-group mb-30 position-relative">
+                <input type="password" id="signupConfirmPassword"
                   placeholder="{{ $keywords['Enter Confirm Password'] ?? __('Enter Confirm Password') }}"
                   class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
+                <span toggle="#signupConfirmPassword" class="show-password-field">
+                  <i class="show-icon"></i>
+                </span>
               </div>
+              @if (request()->has('redirected'))
+                <input type="hidden" name="redirected" value="{{ request('redirected') }}">
+              @endif
               @if ($userBs->is_recaptcha == 1 && in_array('Google Recaptcha', $packagePermissions))
                 <div class="form-group mb-30">
                   <div class="d-block mb-4">
@@ -70,7 +79,7 @@
                 <div class="col-8 col-xs-12">
                   <div class="link go-signup">
                     {{ $keywords['Already_have_an_account'] ?? __('Already have an account') }}? <a
-                      href="{{ route('customer.login', getParam()) }}">{{ $keywords['Click_Here'] ?? __('Click here ') }}</a>
+                      href="{{ route('customer.login', array_merge((array) getParam(), request()->has('redirected') ? ['redirected' => request('redirected')] : [])) }}">{{ $keywords['Click_Here'] ?? __('Click here ') }}</a>
                     {{ $keywords['to Login'] ?? __('to Login') }}
                   </div>
                 </div>

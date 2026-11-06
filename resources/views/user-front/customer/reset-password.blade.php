@@ -22,17 +22,23 @@
               <div class="title">
                 <h3 class="mb-20">{{ $keywords['Reset password'] ?? __('Reset password') }}</h3>
               </div>
-              <div class="form-group mb-30">
-                <input type="password" placeholder="{{ $keywords['New Password'] ?? __('New Password') }}"
+              <div class="form-group mb-30 position-relative">
+                <input type="password" id="resetPassword" placeholder="{{ $keywords['New Password'] ?? __('New Password') }}"
                   class="form-control" name="new_password" value="{{ old('new_password') }}" required>
+                <span toggle="#resetPassword" class="show-password-field">
+                  <i class="show-icon"></i>
+                </span>
                 @error('new_password')
                   <p class="text-danger">{{ $message }}</p>
                 @enderror
               </div>
-              <div class="form-group mb-30">
-                <input type="password" placeholder="{{ $keywords['Confirm New Password'] ?? __('Confirm New Password') }}"
+              <div class="form-group mb-30 position-relative">
+                <input type="password" id="resetConfirmPassword" placeholder="{{ $keywords['Confirm New Password'] ?? __('Confirm New Password') }}"
                   class="form-control" name="new_password_confirmation" value="{{ old('new_password_confirmation') }}"
                   required>
+                <span toggle="#resetConfirmPassword" class="show-password-field">
+                  <i class="show-icon"></i>
+                </span>
                 @error('new_password_confirmation')
                   <p class="text-danger">{{ $message }}</p>
                 @enderror

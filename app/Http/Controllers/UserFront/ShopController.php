@@ -22,27 +22,32 @@ class ShopController extends Controller
 {
     public function Shop(Request $request, $slug = null, $slug1 = null,)
     {
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user) && isset($user->id)) {
+            $userCurrentLang = \App\Models\User\Language::where('user_id', $user->id)->first();
+        }
+        $uLang = $userCurrentLang ? $userCurrentLang->id : 0;
+        $data['uLang'] = $uLang;
 
         $data['pageHeading'] = $this->getUserPageHeading($userCurrentLang);
 
-        $uLang = $userCurrentLang->id;
-        $data['uLang'] = $userCurrentLang->id;
-
-        $data['categories'] = UserItemCategory::with('subcategories')->where('language_id', $userCurrentLang->id)
+        $data['categories'] = $userCurrentLang ? UserItemCategory::with('subcategories')->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
-            ->get();
+            ->get() : collect();
         if ($data['categories']->isEmpty()) {
             $data['categories'] = UserItemCategory::with('subcategories')
                 ->where([['user_id', $user->id], ['status', 1]])
                 ->get();
         }
 
-        $selected_category = UserItemCategory::with('variations')->where('slug', $request->category)->where('language_id', $userCurrentLang->id)
+        $selected_category = $userCurrentLang ? UserItemCategory::with('variations')->where('slug', $request->category)->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->select('id')
-            ->first();
+            ->first() : null;
         if (!$selected_category && $request->filled('category')) {
             $selected_category = UserItemCategory::with('variations')->where('slug', $request->category)
                 ->where([['user_id', $user->id], ['status', 1]])
@@ -101,25 +106,22 @@ class ShopController extends Controller
                 $subcategory = null;
             }
         }
-        $userCurrentCurr = app('userCurrentCurr');
-        $userSelectedCurrency = UserCurrency::where('id', $userCurrentCurr->id)->where('user_id', $user->id)->select('id', 'value', 'symbol')->first();
-        $userDefaultCurrency = UserCurrency::where([['is_default', 1], ['user_id', $user->id]])->select('id', 'value', 'symbol')->first();
+        $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
+        $currId = $userCurrentCurr ? $userCurrentCurr->id : null;
+        $userSelectedCurrency = ($currId && !empty($user)) ? UserCurrency::where('id', $currId)->where('user_id', $user->id)->select('id', 'value', 'symbol')->first() : null;
+        $userDefaultCurrency = !empty($user) ? UserCurrency::where([['is_default', 1], ['user_id', $user->id]])->select('id', 'value', 'symbol')->first() : null;
 
         if ($request->filled('min') && $request->filled('max')) {
-            $min = $request['min'];
-            $max = $request['max'];
+            $min = (float) $request['min'];
+            $max = (float) $request['max'];
 
-            if ($userDefaultCurrency && $userDefaultCurrency->id != $userCurrentCurr->id) {
-                $min = $min / $userSelectedCurrency->value;
-                $max = $max / $userSelectedCurrency->value;
-                $min = (float) $min;
-                $max = (float) $max;
-            } else {
-                $min = (float) $min;
-                $max = (float) $max;
+            $currVal = $userSelectedCurrency->value ?? ($userCurrentCurr->value ?? 1);
+            if ($userDefaultCurrency && $userCurrentCurr && $userDefaultCurrency->id != $userCurrentCurr->id && $currVal > 0) {
+                $min = $min / $currVal;
+                $max = $max / $currVal;
             }
         }
-        $data['symbol'] = $userSelectedCurrency->symbol ?? ($userDefaultCurrency->symbol ?? '$');
+        $data['symbol'] = $userSelectedCurrency->symbol ?? ($userCurrentCurr->symbol ?? ($userDefaultCurrency->symbol ?? '₹'));
         if ($request->filled('keyword')) {
             $keyword = $request['keyword'];
         }
@@ -285,37 +287,43 @@ class ShopController extends Controller
 
     public function ShopSearch(Request $request)
     {
-        $user = app('user');
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        if (empty($user) || !is_object($user) || empty($user->id)) {
+            $user = getUser();
+        }
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user) && isset($user->id)) {
+            $userCurrentLang = \App\Models\User\Language::where('user_id', $user->id)->first();
+        }
+        $uLang = $userCurrentLang ? $userCurrentLang->id : 0;
+        $data['uLang'] = $uLang;
 
-        $uLang = $userCurrentLang->id;
-
-        $data['categories'] = UserItemCategory::with('subcategories')->where('language_id', $userCurrentLang->id)
+        $data['categories'] = $userCurrentLang ? UserItemCategory::with('subcategories')->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
-            ->get();
+            ->get() : collect();
         if ($data['categories']->isEmpty()) {
             $data['categories'] = UserItemCategory::with('subcategories')
                 ->where([['user_id', $user->id], ['status', 1]])
                 ->get();
         }
 
-        $data['selected_category'] = UserItemCategory::with('variations')
+        $data['selected_category'] = $userCurrentLang ? UserItemCategory::with('variations')
             ->where([['slug', $request->category], ['language_id', $userCurrentLang->id], ['user_id', $user->id], ['status', 1]])
             ->select('id')
-            ->first();
+            ->first() : null;
 
-        $data['selected_subcategory'] = UserItemSubCategory::with('variations')->where('slug', $request->subcategory)->where('language_id', $userCurrentLang->id)
+        $data['selected_subcategory'] = $userCurrentLang ? UserItemSubCategory::with('variations')->where('slug', $request->subcategory)->where('language_id', $userCurrentLang->id)
             ->where([['user_id', $user->id], ['status', 1]])
             ->select('id')
-            ->first();
+            ->first() : null;
         $data['variants'] = VariantContent::where([['language_id', $uLang], ['user_id', $user->id]])->get()->unique('variant_id');
 
         $category = $subcategory = $min = $max = $keyword = $sort = $rating = $variants = $on_sale = null;
 
         if ($request->filled('category')) {
-            $category = UserItemCategory::where([['slug', $request['category']], ['language_id', $userCurrentLang->id], ['user_id', $user->id], ['status', 1]])
+            $category = $userCurrentLang ? UserItemCategory::where([['slug', $request['category']], ['language_id', $userCurrentLang->id], ['user_id', $user->id], ['status', 1]])
                 ->select('id')
-                ->first();
+                ->first() : null;
             if ($category) {
                 $category = $category->id;
             } else {
@@ -323,9 +331,9 @@ class ShopController extends Controller
             }
         }
         if ($request->filled('subcategory')) {
-            $subcategory = UserItemSubCategory::where([['slug', $request['subcategory']], ['language_id', $userCurrentLang->id], ['user_id', $user->id], ['status', 1]])
+            $subcategory = $userCurrentLang ? UserItemSubCategory::where([['slug', $request['subcategory']], ['language_id', $userCurrentLang->id], ['user_id', $user->id], ['status', 1]])
                 ->select('id')
-                ->first();
+                ->first() : null;
             if ($subcategory) {
                 $subcategory = $subcategory->id;
             } else {
@@ -333,19 +341,14 @@ class ShopController extends Controller
             }
         }
         if ($request->filled('min') && $request->filled('max')) {
-            $min = $request['min'];
-            $max = $request['max'];
+            $min = (float) $request['min'];
+            $max = (float) $request['max'];
 
-            $userCurrentCurr = app('userCurrentCurr');
-
-            if (!is_null($userCurrentCurr)) {
-                $min = $min / $userCurrentCurr->value;
-                $max = $max / $userCurrentCurr->value;
-                $min = (float) $min;
-                $max = (float) $max;
-            } else {
-                $min = (float) $min;
-                $max = (float) $max;
+            $userCurrentCurr = app()->bound('userCurrentCurr') ? app('userCurrentCurr') : null;
+            $currVal = $userCurrentCurr->value ?? 1;
+            if ($currVal > 0) {
+                $min = $min / $currVal;
+                $max = $max / $currVal;
             }
         }
         if ($request->filled('keyword')) {
@@ -671,11 +674,17 @@ class ShopController extends Controller
         if (empty($slug)) {
             $slug = $domain;
         }
-        $userCurrentLang = app('userCurrentLang');
+        $user = app()->bound('user') ? app('user') : getUser();
+        $userCurrentLang = app()->bound('userCurrentLang') ? app('userCurrentLang') : null;
+        if (empty($userCurrentLang) && !empty($user)) {
+            $userCurrentLang = \App\Models\User\Language::where('user_id', $user->id)->first();
+        }
 
-        session()->put('user_lang', $userCurrentLang->code);
+        if (!empty($userCurrentLang)) {
+            session()->put('user_lang', $userCurrentLang->code);
+        }
 
-        $uLang = $userCurrentLang->id;
+        $uLang = $userCurrentLang ? $userCurrentLang->id : 0;
         $data['uLang'] = $uLang;
 
         $data['product'] = UserItemContent::with(['item', 'item.sliders', 'variations'])

@@ -19,9 +19,9 @@
           @if (!onlyDigitalItemsInCart())
             @if ($input == 'checkout')
               <div class="form-group">
-                <h3 class="text-center text-muted  mb-20">
+                <h3 class="text-center text-muted mb-20">
                   <a href="{{ route('front.user.checkout', [getParam(), 'type' => 'guest']) }}"
-                    class="underline checkout-guest">{{ $keywords['Checkout as Guest'] ?? __('Checkout as Guest') }}</a>
+                    class="underline checkout-guest">{{ $keywords['Instant Order'] ?? ($keywords['Checkout as Guest'] ?? __('Instant Order')) }}</a>
                 </h3>
               </div>
               <div class="mt-4 mb-3 text-center">
@@ -50,9 +50,12 @@
                   <p class="text-danger">{{ $message }}</p>
                 @enderror
               </div>
-              <div class="form-group mb-30">
-                <input type="password" class="form-control" name="password"
+              <div class="form-group mb-30 position-relative">
+                <input type="password" id="loginPassword" class="form-control" name="password"
                   placeholder="{{ $keywords['Enter Password'] ?? __('Enter Password') }}" required>
+                <span toggle="#loginPassword" class="show-password-field">
+                  <i class="show-icon"></i>
+                </span>
                 @error('password')
                   <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -68,7 +71,7 @@
                 <div class="col-7 col-xs-12">
                   <div class="link go-signup">
                     {{ $keywords['Dont_have_an_account'] ?? __('Dont have an account') }} ? <a
-                      href="{{ route('customer.signup', getParam()) }}">{{ $keywords['Signup'] ?? __('Signup') }}</a>
+                      href="{{ route('customer.signup', array_merge((array) getParam(), $input ? ['redirected' => $input] : [])) }}">{{ $keywords['Signup'] ?? __('Signup') }}</a>
                   </div>
                 </div>
               </div>

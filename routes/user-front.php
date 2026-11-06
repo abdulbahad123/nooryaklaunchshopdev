@@ -17,6 +17,8 @@ $tenantBaseHosts = array_values(array_unique(array_filter([
 $tenantRoutes = function () {
     Route::get('/', 'UserFront\HomeController@userDetailView')
         ->name('front.user.detail.view');
+    Route::get('/manifest.json', 'PwaController@manifest');
+    Route::get('/pwa-icon/{size}', 'PwaController@icon')->where('size', '[0-9]+');
     Route::get('/invoice', 'UserFront\HomeController@invoice')
         ->name('front.user.detail.invoice');
 
