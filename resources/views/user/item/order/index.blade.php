@@ -93,12 +93,16 @@
                 <option value="all" {{ request()->input('range') == 'all' || !request()->has('range') ? 'selected' : '' }}>{{ __('All Time') }}</option>
                 <option value="today" {{ request()->input('range') == 'today' ? 'selected' : '' }}>{{ __('Today') }}</option>
                 <option value="yesterday" {{ request()->input('range') == 'yesterday' ? 'selected' : '' }}>{{ __('Yesterday') }}</option>
-                <option value="7" {{ request()->input('range') == '7' ? 'selected' : '' }}>{{ __('7 Days') }}</option>
+                <option value="7" {{ request()->input('range') == '7' ? 'selected' : '' }}>{{ __('7 Days (Week Ago)') }}</option>
                 <option value="30" {{ request()->input('range') == '30' ? 'selected' : '' }}>{{ __('30 Days') }}</option>
                 <option value="90" {{ request()->input('range') == '90' ? 'selected' : '' }}>{{ __('90 Days') }}</option>
                 <option value="365" {{ request()->input('range') == '365' ? 'selected' : '' }}>{{ __('This Year') }}</option>
                 <option value="custom" {{ request()->input('range') == 'custom' ? 'selected' : '' }}>{{ __('Custom Date') }}</option>
               </select>
+
+              <a href="{{ route('user.completed.orders.pdf', request()->query()) }}" class="btn btn-success btn-sm" style="height: 38px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 0 14px; box-shadow: 0 2px 4px rgba(16,185,129,0.2);" title="{{ __('Download PDF report of completed orders for selected filter') }}">
+                <i class="fas fa-file-pdf"></i> {{ __('Download Completed Orders (PDF)') }}
+              </a>
             </div>
           </form>
         </div>

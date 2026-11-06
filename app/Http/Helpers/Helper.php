@@ -744,7 +744,7 @@ if (!function_exists('getAgencyFromHost')) {
         $rawHost = preg_replace('/:\d+$/', '', $rawHost);
         $rawHost = preg_replace('/^www\./i', '', $rawHost);
 
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $rawHost);
+        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $rawHost);
 
         $platformBaseHosts = [
             'saasreselling.com',
@@ -1092,7 +1092,7 @@ if (!function_exists('normalizeRequestHost')) {
         $host = preg_replace('/^https?:\/\//i', '', $host);
         $host = explode('/', $host)[0];
         $host = explode(':', $host)[0];
-        $host = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa)\./i', '', $host);
+        $host = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $host);
 
         return trim($host, './ ');
     }

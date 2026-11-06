@@ -305,6 +305,30 @@ class ItemOrderController extends Controller
         // Apply date range filter if provided
         $filteredQuery = $this->applyRangeFilter($query, $request);
 
+        $range = $request->get('range', 'all');
+        $rangeLabel = 'All Time';
+        if ($range === 'today') {
+            $rangeLabel = 'Today (' . Carbon::today()->format('d M Y') . ')';
+        } elseif ($range === 'yesterday') {
+            $rangeLabel = 'Yesterday (' . Carbon::yesterday()->format('d M Y') . ')';
+        } elseif ($range === '7') {
+            $rangeLabel = 'Last 7 Days (' . Carbon::now()->subDays(6)->format('d M Y') . ' to ' . Carbon::now()->format('d M Y') . ')';
+        } elseif ($range === '30') {
+            $rangeLabel = 'Last 30 Days (' . Carbon::now()->subDays(29)->format('d M Y') . ' to ' . Carbon::now()->format('d M Y') . ')';
+        } elseif ($range === '90') {
+            $rangeLabel = 'Last 90 Days';
+        } elseif ($range === '365') {
+            $rangeLabel = 'This Year (' . Carbon::now()->format('Y') . ')';
+        } elseif ($range === 'custom') {
+            $s = $request->get('start_date');
+            $e = $request->get('end_date');
+            if ($s && $e) {
+                $rangeLabel = 'Custom Range (' . Carbon::parse($s)->format('d M Y') . ' to ' . Carbon::parse($e)->format('d M Y') . ')';
+            } else {
+                $rangeLabel = 'Custom Range';
+            }
+        }
+
         if ($request->filled('search')) {
             $filteredQuery->where('order_number', $request->search);
         }
@@ -326,6 +350,7 @@ class ItemOrderController extends Controller
             'user' => $user,
             'userBs' => $userBs,
             'keywords' => $keywords,
+            'rangeLabel' => $rangeLabel,
             'totalRevenue' => $totalRevenue,
             'totalTax' => $totalTax,
             'totalShipping' => $totalShipping,

@@ -7,12 +7,12 @@
   @php
     $font_family = 'DejaVu Sans, sans-serif';
     $primary_color = !empty($userBs->base_color) ? ('#' . str_replace('#', '', $userBs->base_color)) : '#1e3a8a';
-    $currSymbol = !empty($userBs->base_currency_symbol) ? $userBs->base_currency_symbol : '₹';
-    $currPos = !empty($userBs->base_currency_symbol_position) ? $userBs->base_currency_symbol_position : 'left';
+    $currSymbol = '₹';
+    $currPos = 'left';
     
-    function fmtPrice($amt, $sym, $pos) {
+    function fmtPrice($amt, $sym = '₹', $pos = 'left') {
         $val = number_format((float)$amt, 2, '.', ',');
-        return $pos === 'right' ? ($val . ' ' . $sym) : ($sym . ' ' . $val);
+        return '₹ ' . $val;
     }
   @endphp
   <style>
@@ -137,6 +137,7 @@
       <td style="width: 40%;" class="text-right">
         <div style="font-size: 10px; color: #64748b;">
           <strong>Filter:</strong> Order Status = Completed &bull; Payment = Completed<br>
+          <strong>Date Range:</strong> <span style="color: #0f172a; font-weight: bold;">{{ $rangeLabel ?? 'All Time' }}</span><br>
           <strong>Generated At:</strong> {{ $generatedAt }}<br>
           <strong>Total Records:</strong> {{ count($orders) }} orders
         </div>
@@ -243,3 +244,4 @@
 
 </body>
 </html>
+

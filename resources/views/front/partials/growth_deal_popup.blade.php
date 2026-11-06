@@ -252,7 +252,7 @@
     box-sizing: border-box;
 }
 
-/* ── Overlay ── */
+/* ── Overlay: fixed fullscreen container, no scroll, centered ── */
 .gd-overlay {
     position: fixed;
     top: 0;
@@ -265,16 +265,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 16px;
+    padding: 0;
+    margin: 0;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.32s ease, visibility 0.32s ease;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    overflow: hidden;
+    pointer-events: none;
 }
 .gd-overlay.gd-show {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 /* ── Backdrop ── */
@@ -286,21 +288,24 @@
     bottom: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.58);
+    background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     cursor: pointer;
     z-index: 1;
 }
 
-/* ── Dialog Wrapper (positions gift box + white box together) ── */
+/* ── Dialog: permanently fixed in exact center of viewport ── */
 .gd-dialog {
-    position: relative;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 2;
-    width: 100%;
-    max-width: 760px;
-    /* On desktop, shift right slightly so gift box doesn't overflow viewport */
-    margin: auto auto;
+    width: calc(100% - 32px);
+    max-width: 730px;
+    max-height: 94vh;
+    margin: 0;
     display: flex;
     flex-direction: column;
 }
@@ -308,9 +313,9 @@
 /* ── 3D Gift Box ── */
 .gd-giftbox {
     position: absolute;
-    left: -90px;
-    top: 24px;
-    width: 148px;
+    left: -82px;
+    top: 18px;
+    width: 130px;
     pointer-events: none;
     z-index: 10;
     animation: gdFloat 4s ease-in-out infinite;
@@ -320,35 +325,36 @@
 
 @keyframes gdFloat {
     0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-9px); }
+    50%       { transform: translateY(-8px); }
 }
 
-/* ── White Box ── */
+/* ── White Box: compact padding, fits laptop viewports without scrolling ── */
 .gd-box {
     background: linear-gradient(180deg, #FFFFFF 0%, #FFFDFB 100%);
-    border: 1.5px solid rgba(255, 90, 44, 0.12);
-    border-radius: 22px;
-    padding: 11px 36px 22px;
-    box-shadow: 0 30px 80px rgba(255, 90, 44, 0.08), 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1.5px solid rgba(255, 90, 44, 0.14);
+    border-radius: 20px;
+    padding: 14px 26px 14px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(255, 90, 44, 0.12);
     position: relative;
     width: 100%;
+    max-height: 94vh;
     overflow-y: auto;
-    overflow-x: visible;
+    overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: #f0ece9 transparent;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overscroll-behavior: contain;
 }
-.gd-box::-webkit-scrollbar { width: 3px; }
-.gd-box::-webkit-scrollbar-thumb { background: #e2ded9; border-radius: 3px; }
-
+.gd-box::-webkit-scrollbar { width: 4px; }
+.gd-box::-webkit-scrollbar-thumb { background: #e2ded9; border-radius: 4px; }
 
 /* ── Close Button ── */
 .gd-close {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 34px;
-    height: 34px;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: #FF5A2C;
     border: none;
@@ -366,13 +372,13 @@
 /* ── Celebration Ornaments ── */
 .gd-celebration {
     position: absolute;
-    width: 90px;
-    height: 90px;
+    width: 75px;
+    height: 75px;
     pointer-events: none;
     z-index: 1;
 }
 .gd-cel-left {
-    top: 3%;
+    top: 2%;
     left: 2%;
     transform: rotate(-10deg);
 }
@@ -388,125 +394,118 @@
 }
 
 /* ── Ribbon Badge ── */
-.gd-ribbon-wrap { text-align: center; margin-bottom: 14px; }
+.gd-ribbon-wrap { text-align: center; margin-bottom: 6px; }
 .gd-ribbon {
     display: inline-flex;
     align-items: center;
     background: linear-gradient(90deg, #FF6B3D 0%, #FF3D1F 100%);
     color: #fff;
-    padding: 8px 22px;
+    padding: 4px 14px;
     border-radius: 30px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1.3px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    box-shadow: 0 5px 16px rgba(255, 90, 44, 0.38);
+    box-shadow: 0 4px 14px rgba(255, 90, 44, 0.35);
     animation: gdRibbonBlink 2.5s ease-in-out infinite;
 }
 
 /* ── Heading ── */
 .gd-heading {
     text-align: center;
-    font-size: 34px;
+    font-size: 24px;
     font-weight: 800;
     color: #0F172A;
-    line-height: 1.18;
-    margin: 0 0 10px;
+    line-height: 1.15;
+    margin: 0 0 3px;
     letter-spacing: -0.5px;
 }
 .gd-heading span { color: #FF5A2C; }
 
-.gd-subtext {
+/* ── Subtitle / Timer Label ── */
+.gd-timer-lbl {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0 0 5px;
+    letter-spacing: 0.3px;
     text-align: center;
-    font-size: 14px;
-    color: #64748B;
-    line-height: 1.6;
-    margin: 0 0 20px;
 }
 
 /* ── Timer ── */
 .gd-timer-section {
     position: relative;
-    max-width: 350px;
-    margin: 0 auto 22px;
+    max-width: 300px;
+    margin: 0 auto 10px;
     background: linear-gradient(180deg, #ffffff 0%, #FFFDFB 100%);
-    border: 2px dashed rgba(255, 90, 44, 0.16);
-    border-radius: 20px;
-    padding: 12px 20px 10px;
-    box-shadow: 0 8px 30px rgba(255, 90, 44, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1.5px dashed rgba(255, 90, 44, 0.2);
+    border-radius: 14px;
+    padding: 6px 14px;
+    box-shadow: 0 6px 20px rgba(255, 90, 44, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     text-align: center;
     animation: gdTimerBlink 2.5s ease-in-out infinite;
-}
-.gd-timer-lbl {
-    font-size: 15.5px;
-    font-weight: 600;
-    color: #475569;
-    margin: 0 0 -6px;
-    letter-spacing: 0.5px;
-    text-align: center;
-    margin-bottom: 10px;
 }
 .gd-timer-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 10px;
 }
 .gd-tblock {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 58px;
+    min-width: 46px;
 }
 .gd-tnum {
-    font-size: 35px;
+    font-size: 26px;
     font-weight: 800;
     color: #FF5A2C;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -1.2px;
+    letter-spacing: -0.8px;
 }
 .gd-tunit {
-    font-size: 8.5px;
+    font-size: 7.5px;
     font-weight: 700;
     color: #94A3B8;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 6px;
+    letter-spacing: 0.8px;
+    margin-top: 2px;
 }
 .gd-tsep {
-    font-size: 34px;
+    font-size: 22px;
     font-weight: 700;
     color: #FF5A2C;
     line-height: 1;
-    padding-bottom: 12px;
+    padding-bottom: 4px;
     align-self: center;
 }
 .gd-sparkle-left, .gd-sparkle-right, .gd-card-sparkle {
     position: absolute;
-    font-size: 16px;
+    font-size: 15px;
     color: #FFB700;
     animation: gdTwinkle 2s ease-in-out infinite;
     pointer-events: none;
     line-height: 1;
 }
 .gd-sparkle-left {
-    left: -12px;
+    left: -10px;
     top: 55%;
     transform: translateY(-50%);
     animation-delay: 0.3s;
 }
 .gd-sparkle-right {
-    right: -12px;
+    right: -10px;
     top: 45%;
     transform: translateY(-50%);
     animation-delay: 0.7s;
 }
 .gd-card-sparkle {
-    right: 12px;
-    bottom: 12px;
+    right: 10px;
+    bottom: 10px;
     animation-delay: 1.1s;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 @keyframes gdTwinkle {
@@ -517,46 +516,44 @@
 @keyframes gdRibbonBlink {
     0%, 100% {
         transform: scale(1);
-        box-shadow: 0 5px 16px rgba(255, 90, 44, 0.38);
+        box-shadow: 0 4px 14px rgba(255, 90, 44, 0.35);
     }
     50% {
-        transform: scale(1.05);
-        box-shadow: 0 8px 24px rgba(255, 90, 44, 0.6);
+        transform: scale(1.04);
+        box-shadow: 0 6px 20px rgba(255, 90, 44, 0.55);
     }
 }
 
 @keyframes gdTimerBlink {
     0%, 100% {
-        box-shadow: 0 8px 30px rgba(255, 90, 44, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-        border-color: rgba(255, 90, 44, 0.16);
-        transform: scale(1);
+        box-shadow: 0 6px 20px rgba(255, 90, 44, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 90, 44, 0.2);
     }
     50% {
-        box-shadow: 0 8px 30px rgba(255, 90, 44, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-        border-color: rgba(255, 90, 44, 0.4);
-        transform: scale(1.015);
+        box-shadow: 0 6px 20px rgba(255, 90, 44, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 90, 44, 0.45);
     }
 }
 
-/* ── Cards Outer (holds grid + 65% badge) ── */
+/* ── Cards Outer ── */
 .gd-cards-outer {
     position: relative;
     padding-right: 0 !important;
-    margin-bottom: 18px;
+    margin-bottom: 8px;
 }
 
 /* ── Cards Grid ── */
 .gd-cards-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 10px;
 }
 
 /* ── Card Base ── */
 .gd-card {
     background: #ffffff;
-    border-radius: 16px;
-    padding: 22px 20px 20px;
+    border-radius: 12px;
+    padding: 12px 14px 10px;
     border: 1.5px solid #E5E7EB;
     position: relative;
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
@@ -565,21 +562,21 @@
 }
 .gd-pre {
     background: #FFFCEB !important;
-    border: 2.5px solid #F59E0B !important;
-    box-shadow: 0 6px 28px rgba(245, 158, 11, 0.15);
+    border: 2px solid #F59E0B !important;
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
 }
 
 /* ── Card Header ── */
 .gd-card-header {
     display: flex;
     align-items: center;
-    gap: 13px;
+    gap: 10px;
     margin-bottom: 0;
 }
 .gd-hexagon-icon {
     position: relative;
-    width: 48px;
-    height: 48px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -596,100 +593,78 @@
 .gd-hex-inner-icon {
     position: relative;
     z-index: 2;
-    font-size: 18px;
+    font-size: 14px;
     color: #FF5A2C;
 }
 .gd-card-name {
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 800;
     color: #0F172A;
-    margin: 0 0 3px;
+    margin: 0 0 2px;
     line-height: 1.2;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
 }
 .gd-card-tagline {
-    font-size: 15px;
+    font-size: 11.5px;
     margin: 0;
     font-weight: 500;
 }
-.gd-tagline-standard {
-    color: #C25E3D;
-}
-.gd-tagline-premium {
-    color: #D97706;
-}
+.gd-tagline-standard { color: #C25E3D; }
+.gd-tagline-premium { color: #D97706; }
 
 /* ── Great Value Badge ── */
 .gd-great-val {
-        margin: 12px 0;
+    margin: 5px auto;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 14.5px;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
     font-weight: 700;
     color: #FF5A2C;
     background: #FFF5F2;
     border: 1px solid rgba(255, 90, 44, 0.16);
-    padding: 4px 12px;
-    border-radius: 20px;
-    width: 178px;
-    /* text-align: center; */
-    margin: 7px auto;
+    padding: 2px 8px;
+    border-radius: 14px;
 }
-.gd-great-val i { font-size: 11px; }
-
-/* ── Most Loved Badge ── */
-.gd-most-loved {
-    background: #F59E0B !important;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 20px;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    vertical-align: middle;
-}
-.gd-most-loved i { font-size: 9px; }
+.gd-great-val i { font-size: 9px; }
 
 /* ── 65% OFF Badge ── */
 .gd-off-badge {
     position: absolute;
     left: 50%;
-    top: -26px; /* Centered below clock, overlapping cards top border */
+    top: -16px;
     transform: translateX(-50%);
-    width: 86px;
-    height: 86px;
+    width: 60px;
+    height: 60px;
     background: #ffffff;
-    border: 2.5px solid #FF5A2C;
+    border: 2px solid #FF5A2C;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(255, 90, 44, 0.14), 0 0 15px rgba(255, 90, 44, 0.15);
+    box-shadow: 0 6px 18px rgba(255, 90, 44, 0.16);
     z-index: 5;
-    line-height: 1.15;
+    line-height: 1.1;
 }
-.gd-off-badge i    { font-size: 14px; color: #FF5A2C; margin-bottom: 2px; }
-.gd-off-badge span { font-size: 9px; font-weight: 700; color: #C25E3D; text-transform: uppercase; }
-.gd-off-badge strong { font-size: 24px; font-weight: 900; color: #FF5A2C; display: block; }
+.gd-off-badge i    { font-size: 9px; color: #FF5A2C; margin-bottom: 1px; }
+.gd-off-badge span { font-size: 6.5px; font-weight: 700; color: #C25E3D; text-transform: uppercase; }
+.gd-off-badge strong { font-size: 16px; font-weight: 900; color: #FF5A2C; display: block; }
 
 /* ── Pricing ── */
 .gd-price-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 14px 0 4px;
+    gap: 6px;
+    margin: 5px 0 2px;
 }
 .gd-original-price {
-    font-size: 15.5px;
+    font-size: 13px;
     color: #94A3B8;
     text-decoration: line-through;
     font-weight: 500;
@@ -697,28 +672,28 @@
 .gd-save-tag {
     background: #DCFCE7;
     color: #16A34A;
-    font-size: 12.5px;
+    font-size: 10.5px;
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
+    padding: 1px 6px;
+    border-radius: 6px;
     white-space: nowrap;
 }
 .gd-price-big {
-    font-size: 36px;
+    font-size: 24px;
     font-weight: 800;
     color: #0F172A;
     line-height: 1;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 .gd-per {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     color: #64748B;
 }
 .gd-billed {
-    font-size: 12px;
+    font-size: 10.5px;
     color: #64748B;
-    margin: 0 0 14px;
+    margin: 0 0 6px;
 }
 
 /* ── Feature List ── */
@@ -729,16 +704,16 @@
     flex: 1;
 }
 .gd-feats li {
-    font-size: 15.5px;
+    font-size: 12px;
     color: #475569;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
 }
 .gd-check-circle {
-    width: 17px;
-    height: 17px;
+    width: 14px;
+    height: 14px;
     background: #FFF0EB;
     border: 1px solid rgba(255, 90, 44, 0.15);
     border-radius: 50%;
@@ -749,14 +724,14 @@
     flex-shrink: 0;
 }
 .gd-check-circle i {
-    font-size: 8px;
+    font-size: 6.5px;
     color: #FF5A2C;
     line-height: 1;
 }
 .gd-feat-green-highlight {
     background: #E8F5E9 !important;
-    border-radius: 8px;
-    padding: 6px 10px !important;
+    border-radius: 6px;
+    padding: 4px 8px !important;
     color: #1B5E20 !important;
     font-weight: 700;
 }
@@ -767,22 +742,6 @@
 .gd-check-green i {
     color: #2E7D32 !important;
 }
-@media (max-width: 767px) {
-    .gd-feat-green-highlight {
-        padding: 4px 8px !important;
-        border-radius: 6px;
-    }
-}
-@media (max-width: 480px) {
-    .gd-feat-green-highlight {
-        padding: 3px 6px !important;
-        border-radius: 4px;
-    }
-    /* ── Card Header ── */
-.gd-card-header {
-    gap: 6px;
-}
-}
 .gd-more-features {
     text-decoration: none !important;
     color: #16A34A !important;
@@ -790,10 +749,10 @@
     padding: 0 !important;
     border-radius: 0 !important;
     font-weight: 700;
-    font-size: 13.5px !important;
+    font-size: 11.5px !important;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap !important;
     transition: color 0.2s ease, transform 0.2s ease;
 }
@@ -803,8 +762,8 @@
     background: transparent !important;
 }
 .gd-plus-circle {
-    width: 17px;
-    height: 17px;
+    width: 14px;
+    height: 14px;
     background: #16A34A;
     border: none;
     border-radius: 50%;
@@ -815,7 +774,7 @@
     flex-shrink: 0;
 }
 .gd-plus-circle i {
-    font-size: 8px;
+    font-size: 6.5px;
     color: #ffffff;
     line-height: 1;
 }
@@ -826,10 +785,10 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 12px 16px;
-    margin-top: 16px;
-    border-radius: 10px;
-    font-size: 14px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    font-size: 12px;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.22s ease;
@@ -844,7 +803,7 @@
 
 .gd-select-premium-wrap {
     position: relative;
-    margin-top: 16px;
+    margin-top: 8px;
 }
 .gd-select-premium-wrap .gd-btn-fill {
     margin-top: 0;
@@ -856,9 +815,9 @@
 }
 .gd-click-hand {
     position: absolute;
-    right: -10px;
-    bottom: -18px;
-    font-size: 26px;
+    right: -6px;
+    bottom: -12px;
+    font-size: 20px;
     z-index: 10;
     pointer-events: none;
     animation: gdHandBounce 1.2s ease-in-out infinite;
@@ -867,259 +826,88 @@
 }
 @keyframes gdHandBounce {
     0%, 100% { transform: translateY(0) rotate(-10deg); opacity: 1; }
-    30%       { transform: translateY(-8px) rotate(0deg); opacity: 1; }
+    30%       { transform: translateY(-6px) rotate(0deg); opacity: 1; }
     60%       { transform: translateY(-2px) rotate(-5deg); opacity: 0.7; }
 }
 @keyframes gdPremiumPulse {
     0%, 100% {
         background: #FF5A2C;
-        box-shadow: 0 4px 18px rgba(255, 90, 44, 0.32);
+        box-shadow: 0 4px 14px rgba(255, 90, 44, 0.32);
         transform: scale(1);
     }
     50% {
         background: #FF7340;
-        box-shadow: 0 6px 28px rgba(255, 90, 44, 0.65), 0 0 0 5px rgba(255, 90, 44, 0.18);
-        transform: scale(1.025);
+        box-shadow: 0 6px 20px rgba(255, 90, 44, 0.55), 0 0 0 4px rgba(255, 90, 44, 0.16);
+        transform: scale(1.02);
     }
 }
 .gd-btn-fill {
     background: #FF5A2C;
     color: #fff;
     border: none;
-    box-shadow: 0 4px 18px rgba(255, 90, 44, 0.32);
+    box-shadow: 0 4px 14px rgba(255, 90, 44, 0.32);
 }
-.gd-btn-fill:hover { background: #E04E22; color: #fff; text-decoration: none; transform: translateY(-1px); box-shadow: 0 7px 24px rgba(255,90,44,0.42); }
-
-/* ── Trust Row ── */
-.gd-trust {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    background: #FFFBF9;
-    border: 1px solid rgba(255, 90, 44, 0.1);
-    border-radius: 12px;
-    padding: 13px 8px;
-    margin-bottom: 14px;
-}
-.gd-ti {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 8px;
-    border-right: 1px solid #E2E8F0;
-}
-.gd-ti:last-child { border-right: none; }
-.gd-ti-ico {
-    width: 30px;
-    height: 30px;
-    background: #FFF0EB;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FF5A2C;
-    font-size: 13px;
-    flex-shrink: 0;
-}
-.gd-ti strong {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    color: #0F172A;
-    margin-bottom: 2px;
-}
-.gd-ti span {
-    display: block;
-    font-size: 10px;
-    color: #64748B;
-    line-height: 1.3;
-}
+.gd-btn-fill:hover { background: #E04E22; color: #fff; text-decoration: none; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,90,44,0.42); }
 
 /* ── Footer / Dismiss ── */
-.gd-footer { text-align: center; }
+.gd-footer { text-align: center; margin-top: 6px; }
 .gd-dismiss {
-    font-size: 13.5px;
+    font-size: 11.5px;
     color: #64748B;
     font-weight: 500;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     transition: color 0.18s;
 }
-.gd-dismiss:hover { color: #1E293B; text-decoration: none; }
+.gd-dismiss:hover { color: #1E293B; text-decoration: underline; }
 
 /* ===========================================
    RESPONSIVE
    =========================================== */
-
-/* Hide gift box on screens too narrow to accommodate it */
 @media (max-width: 960px) {
-    .gd-dialog { margin: auto 0; }
-    .gd-giftbox { display: none; }
+    .gd-giftbox { display: none !important; }
 }
 
-/* Tablet adjustments */
 @media (max-width: 767px) {
-    .gd-overlay { padding: 30px 12px; }
-    .gd-dialog { margin: 0 auto 30px; width: 100%; }
-    .gd-box {
-        padding: 20px 24px 14px;
-        border-radius: 18px;
+    .gd-dialog {
+        width: calc(100% - 20px);
+        max-height: 92vh;
     }
-    .gd-heading { font-size: 24px; }
-    .gd-subtext { font-size: 12.5px; }
-    .gd-timer-section { max-width: 325px; padding: 10px 14px; }
-    .gd-timer-lbl { font-size: 13.5px; }
-    .gd-tnum { font-size: 40px; }
-    .gd-tsep { font-size: 24px; padding-bottom: 6px; }
-    .gd-tblock { min-width: 42px; }
-    .gd-timer-row { padding: 8px 12px 6px; gap: 8px; }
-    .gd-sparkle-left, .gd-sparkle-right { display: none; }
-
-    /* Show cards side-by-side (2 columns) */
-    .gd-cards-outer { padding-right: 0 !important; margin-bottom: 12px; }
-    .gd-cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    /* Adjust Card elements for tablet side-by-side */
-    .gd-card { padding: 14px 12px 12px; }
-    .gd-hexagon-icon { width: 38px; height: 38px; }
-    .gd-hex-inner-icon { font-size: 14px; }
-    .gd-card-name { font-size: 16px; }
-    .gd-card-tagline { font-size: 11px; }
-    .gd-great-val { font-size: 10px; padding: 2px 8px; margin: 8px 0; }
-    .gd-price-row { margin: 8px 0 2px; gap: 6px; }
-    .gd-original-price { font-size: 13.5px; }
-    .gd-save-tag { font-size: 11px; padding: 1px 6px; }
-    .gd-price-big { font-size: 24px; }
-    .gd-billed { font-size: 11px; margin-bottom: 8px; }
-    .gd-feats li { font-size: 13px; margin-bottom: 6px; gap: 6px; }
-    .gd-check-circle { width: 15px; height: 15px; }
-    .gd-check-circle i { font-size: 7px; }
-    .gd-more-features { font-size: 13px; }
-    .gd-plus-circle { width: 15px; height: 15px; }
-    .gd-plus-circle i { font-size: 7px; }
-    .gd-btn-border, .gd-btn-fill { padding: 8px 10px; font-size: 12px; margin-top: 8px; }
-
-    /* Move 65% badge inside premium card area but styled for side-by-side */
-    .gd-off-badge {
-        position: absolute;
-        left: 50%;
-        top: -18px;
-        right: auto;
-        transform: translateX(-50%);
-        width: 58px;
-        height: 58px;
-        border-width: 2px;
-    }
-    .gd-off-badge strong { font-size: 16px; }
-    .gd-off-badge i { font-size: 10px; }
-    .gd-off-badge span { font-size: 7.5px; }
-    .gd-pre { margin-top: 0; } /* Reset top margin since it is side-by-side */
-
-    /* Trust 2 columns */
-    .gd-trust { grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-    .gd-ti { border-right: none !important; border-bottom: 1px solid #E2E8F0; padding: 6px 4px; }
-    .gd-ti:nth-child(odd)  { border-right: 1px solid #E2E8F0 !important; }
-    .gd-ti:nth-child(3),
-    .gd-ti:nth-child(4)    { border-bottom: none; }
-}
-
-/* Small mobile */
-@media (max-width: 480px) {
-    .gd-overlay { padding: 19px 10px; }
     .gd-box {
-        padding: 14px 14px 10px;
+        padding: 10px 12px 10px;
         border-radius: 14px;
+        max-height: 92vh;
     }
-    .gd-heading { font-size: 22px !important;}
-    .gd-ribbon { font-size: 10px; padding: 5px 12px; letter-spacing: 0.8px; }
-    .gd-timer-section { max-width: 328px; padding: 8px 10px; }
-    .gd-timer-lbl { font-size: 17.5px; font-weight: 700;         text-align: center;
-        margin-bottom: 4px;}
-    .gd-tnum { font-size: 30px; }
+    .gd-heading { font-size: 20px !important; }
+    .gd-timer-section { max-width: 280px; padding: 6px 10px; }
+    .gd-tnum { font-size: 22px; }
     .gd-tsep { font-size: 18px; }
-    .gd-tblock { min-width: 32px; }
-    .gd-tunit { font-size: 7px; }
-    .gd-timer-row { gap: 4px; padding: 6px 8px 4px; }
-
-    .gd-cards-outer { padding-right: 10px; }
-    .gd-cards-grid { gap: 6px; }
+    .gd-cards-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
     .gd-card { padding: 10px 8px 8px; }
-    .gd-hexagon-icon { width: 38px; height: 38px; }
-    .gd-hex-inner-icon { font-size: 11px; }
-    .gd-card-name { font-size: 13px !important;}
-    .gd-card-tagline { font-size: 11px; }
-    .gd-great-val { font-size: 9px;
-        padding: 1px 6px;
-        margin: 4px 0;
-        width: 64%;
-        margin: 10px auto;
-    }
-    .gd-original-price { font-size: 11.5px; }
-    .gd-save-tag { font-size: 10px; padding: 1px 4px; }
-    .gd-price-big { font-size: 18px; }
-    .gd-billed { font-size: 10px; margin-bottom: 6px; }
-    .gd-feats li { font-size: 11.5px; margin-bottom: 4px; gap: 4px; }
-    .gd-check-circle { width: 12px; height: 12px; }
-    .gd-check-circle i { font-size: 5.5px; }
-    .gd-more-features { font-size: 11.5px; }
-    .gd-plus-circle { width: 12px; height: 12px; }
-    .gd-plus-circle i { font-size: 5.5px; }
-    .gd-btn-border, .gd-btn-fill { padding: 6px 8px; font-size: 10.5px; margin-top: 6px; }
-
+    .gd-card-name { font-size: 13px !important; }
+    .gd-price-big { font-size: 19px; }
+    .gd-feats li { font-size: 11px; margin-bottom: 3px; }
+    .gd-btn-border, .gd-btn-fill { padding: 6px 8px; font-size: 11px; margin-top: 6px; }
     .gd-off-badge {
-        left: 50%;
-        top: -21px;
-        right: auto;
-        transform: translateX(-50%);
-        width: 44px;
-        height: 44px;
-        border-width: 1.5px;
+        width: 48px;
+        height: 48px;
+        top: -14px;
     }
-    .gd-off-badge strong { font-size: 12px; }
+    .gd-off-badge strong { font-size: 13px; }
     .gd-off-badge i { font-size: 8px; }
-    .gd-off-badge span { font-size: 6px; }
-
-    .gd-trust { grid-template-columns: 1fr 1fr; font-size: 8.5px; }
+    .gd-off-badge span { font-size: 5.5px; }
 }
 
-/* Viewport height-based layout scaling to prevent vertical scrollbars on desktop */
-@media (min-width: 768px) and (max-height: 900px) {
-    .gd-dialog {
-        transform: scale(0.88);
-        transform-origin: center center;
-    }
-}
-@media (min-width: 768px) and (max-height: 820px) {
-    .gd-dialog {
-        transform: scale(0.80);
-        transform-origin: center center;
-    }
-}
-@media (min-width: 768px) and (max-height: 750px) {
-    .gd-dialog {
-        transform: scale(0.72);
-        transform-origin: center center;
-    }
-}
-@media (min-width: 768px) and (max-height: 680px) {
-    .gd-dialog {
-        transform: scale(0.64);
-        transform-origin: center center;
-    }
-}
-@media (min-width: 768px) and (max-height: 600px) {
-    .gd-dialog {
-        transform: scale(0.56);
-        transform-origin: center center;
-    }
-}
-@media (min-width: 768px) and (max-height: 520px) {
-    .gd-dialog {
-        transform: scale(0.48);
-        transform-origin: center center;
-    }
+@media (max-height: 600px) {
+    .gd-dialog { max-height: 96vh; }
+    .gd-box { max-height: 96vh; padding: 8px 16px; }
+    .gd-heading { font-size: 18px !important; margin-bottom: 2px; }
+    .gd-ribbon { padding: 3px 10px; font-size: 9.5px; }
+    .gd-timer-section { margin-bottom: 6px; padding: 4px 10px; }
+    .gd-tnum { font-size: 20px; }
+    .gd-feats li { font-size: 10.5px; margin-bottom: 2px; }
 }
 </style>
 
@@ -1160,6 +948,20 @@
     if (backdrop)  backdrop.addEventListener('click', closePopup);
     if (dismissEl) dismissEl.addEventListener('click', function(e){ e.preventDefault(); closePopup(); });
     document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closePopup(); });
+
+    // Lock background scroll when popup is open
+    if (overlay) {
+        overlay.addEventListener('wheel', function(e) {
+            var box = document.getElementById('gdBox');
+            if (box && box.contains(e.target)) return;
+            e.preventDefault();
+        }, { passive: false });
+        overlay.addEventListener('touchmove', function(e) {
+            var box = document.getElementById('gdBox');
+            if (box && box.contains(e.target)) return;
+            e.preventDefault();
+        }, { passive: false });
+    }
 
     /* Mobile-only scroll to plans */
     var standardBtn = document.getElementById('gdChooseStandard');
