@@ -143,6 +143,27 @@
       }
     }
 
+    if (!window.pwaPromptAttempted && !isPwaInstalled()) {
+      window.pwaPromptAttempted = true;
+      var pollCount = 0;
+      var checkInterval = setInterval(function() {
+        pollCount++;
+        if (window.deferredPwaPrompt) {
+          clearInterval(checkInterval);
+          window.pwaPromptAttempted = false;
+          triggerPwaInstall();
+        } else if (pollCount >= 10) {
+          clearInterval(checkInterval);
+          executePwaFallback();
+        }
+      }, 150);
+      return;
+    }
+
+    executePwaFallback();
+  }
+
+  function executePwaFallback() {
     var isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIos) {
       showPwaFallback(
@@ -200,7 +221,7 @@
   });
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then(function(r){ console.log('[PWA] SW registered', r.scope); })
       .catch(function(e){ console.warn('[PWA] SW failed', e); });
   }

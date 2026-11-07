@@ -130,11 +130,20 @@ class PwaController extends Controller
             ],
         ];
 
-        return response()->json($manifest, 200, [
-            'Content-Type' => 'application/manifest+json',
-            'Access-Control-Allow-Origin' => '*',
+        $headers = [
+            'Content-Type' => 'application/manifest+json; charset=utf-8',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Access-Control-Allow-Methods' => 'GET, OPTIONS',
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        ];
+        $origin = $request->header('Origin');
+        if (!empty($origin)) {
+            $headers['Access-Control-Allow-Origin'] = $origin;
+            $headers['Access-Control-Allow-Credentials'] = 'true';
+        } else {
+            $headers['Access-Control-Allow-Origin'] = '*';
+        }
+
+        return response()->json($manifest, 200, $headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     public function icon(int $size, Request $request)
@@ -156,11 +165,15 @@ class PwaController extends Controller
         try {
             $image = $this->buildIcon($size, $logoPath, '#ffffff', $shopName, $maskable);
 
-            return $image->response('png', 90)->header('Cache-Control', 'public, max-age=604800');
+            return $image->response('png', 90)
+                ->header('Cache-Control', 'public, max-age=604800')
+                ->header('Access-Control-Allow-Origin', '*');
         } catch (\Throwable $e) {
             $image = Image::canvas($size, $size, '#ffffff');
 
-            return $image->response('png', 90)->header('Cache-Control', 'public, max-age=604800');
+            return $image->response('png', 90)
+                ->header('Cache-Control', 'public, max-age=604800')
+                ->header('Access-Control-Allow-Origin', '*');
         }
     }
 
@@ -188,6 +201,16 @@ class PwaController extends Controller
             }
 
             return $path;
+        }
+
+        $defaultLogo = public_path('assets/front/img/logo.png');
+        if (is_file($defaultLogo)) {
+            return $defaultLogo;
+        }
+
+        $pushIcon = public_path('assets/front/img/pushnotification_icon.png');
+        if (is_file($pushIcon)) {
+            return $pushIcon;
         }
 
         return null;

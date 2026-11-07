@@ -19,7 +19,7 @@
   <meta name="description" content="@yield('meta-description')">
   <meta name="keywords" content="@yield('meta-keywords')">
   <link rel="canonical" href="{{ canonicalUrl() }}">
-  <link rel="manifest" href="/manifest.json?u={{ $user->username ?? 'LaunchShop' }}" crossorigin="use-credentials">
+  <link rel="manifest" href="/manifest.json?u={{ $user->username ?? 'LaunchShop' }}">
   <link rel="apple-touch-icon" href="/pwa-icon/192?u={{ $user->username ?? 'LaunchShop' }}">
   <meta name="theme-color" content="#{{ $userBs->base_color ?? '007bff' }}">
 
@@ -41,7 +41,7 @@
       if (banner) banner.style.display = 'none';
     });
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(function() {});
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function() {});
     }
   </script>
   @endif
@@ -211,8 +211,6 @@
   @yield('scripts')
   @includeIf('user-front.partials.plugins')
   @includeIf('user-front.partials.pwa-banner')
-  @includeif('partials.debug_status')
-  @include('website_builder.partials.launch_celebration')
 </body>
 
 </html>
