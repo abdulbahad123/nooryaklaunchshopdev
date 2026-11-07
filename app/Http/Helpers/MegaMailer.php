@@ -72,7 +72,7 @@ class MegaMailer
         }
 
         if ($data['templateType'] == 'email_verification' && array_key_exists('password', $data)) {
-            $login_link = array_key_exists('login_link', $data) ? $data['login_link'] : (\Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login'));
+            $login_link = array_key_exists('login_link', $data) ? $data['login_link'] : self::getProductLinks()['login'];
             $plan_info = '';
             if (array_key_exists('package_title', $data) && !empty($data['package_title'])) {
                 $plan_info = '<p style="margin: 0 0 6px 0; font-size: 14px; color: #334155;"><strong>Purchased Plan:</strong> ' . htmlspecialchars($data['package_title']) . '</p>';
@@ -315,6 +315,35 @@ class MegaMailer
     }
 
     /**
+     * Get clean store live and login dashboard links based on agency domain and product name.
+     */
+    public static function getProductLinks($username = null, $product = 'ecombuilder')
+    {
+        $rawReqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+        $rawReqHost = preg_replace('/:\d+$/', '', $rawReqHost);
+        $rawReqHost = preg_replace('/^www\./i', '', $rawReqHost);
+
+        if (str_contains($rawReqHost, 'localhost') || str_contains($rawReqHost, '127.0.0.1')) {
+            return [
+                'store' => !empty($username) ? url('/' . $username) : url('/'),
+                'login' => \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login')
+            ];
+        }
+
+        $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $rawReqHost);
+        if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
+            $cleanAgencyHost = env('WEBSITE_HOST', 'saasreselling.in');
+        }
+
+        $prefix = ($product === 'websitebuilder' || $product === 'website-builder') ? 'websitebuilder' : 'ecombuilder';
+
+        return [
+            'store' => !empty($username) ? ('https://' . $prefix . '.' . $cleanAgencyHost . '/' . $username) : ('https://' . $prefix . '.' . $cleanAgencyHost),
+            'login' => 'https://' . $prefix . '.' . $cleanAgencyHost . '/login'
+        ];
+    }
+
+    /**
      * Send a beautifully formatted welcome email containing credentials and plan details.
      */
     public function sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName = null, $otp = null)
@@ -327,14 +356,9 @@ class MegaMailer
         $be = $currentLang->basic_extended;
         $bs = $currentLang->basic_setting;
 
-        $storeLiveLink = '';
-        $host = request()->getHost();
-        if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
-            $storeLiveLink = 'http://' . $user->username . '.localhost:8000';
-        } else {
-            $storeLiveLink = 'https://' . $user->username . '.' . $host;
-        }
-        $loginLink = \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login');
+        $links = self::getProductLinks($user->username, 'ecombuilder');
+        $storeLiveLink = $links['store'];
+        $loginLink = $links['login'];
 
         // Optional invoice card if generated
         $invoiceCard = '';
@@ -347,17 +371,6 @@ class MegaMailer
                 <div>
                     <a href="' . $invoiceUrl . '" target="_blank" style="display: inline-block; padding: 8px 16px; background: #166534; color: #ffffff !important; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 13px;">📥 Download Invoice PDF</a>
                 </div>
-            </div>';
-        }
-
-        // Optional OTP highlight card
-        $otpCard = '';
-        if (!empty($otp)) {
-            $otpCard = '
-            <div style="background: #fff7ed; border: 2px dashed #f97316; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 24px;">
-                <div style="font-size: 13px; font-weight: 700; color: #c2410c; text-transform: uppercase; letter-spacing: 1px;">🔐 Important Security / Login OTP</div>
-                <div style="font-size: 32px; font-weight: 900; letter-spacing: 6px; color: #ea580c; margin: 8px 0; font-family: monospace;">' . htmlspecialchars($otp) . '</div>
-                <div style="font-size: 12px; color: #9a3412;">Use this OTP code for instant login or account verification. Valid for 24 hours.</div>
             </div>';
         }
 
@@ -394,8 +407,6 @@ class MegaMailer
                 <div class="content">
                     <p class="welcome-msg">Hi <strong>' . htmlspecialchars($user->first_name) . '</strong>,</p>
                     <p class="welcome-msg">Your online store has been successfully created. Below are your store details, login credentials, and links to get started:</p>
-                    
-                    ' . $otpCard . '
 
                     <div class="info-box">
                         <div class="info-row">
@@ -418,11 +429,6 @@ class MegaMailer
                             <div class="info-label">🔑 Password:</div>
                             <div class="info-value"><code>' . htmlspecialchars($password) . '</code></div>
                         </div>
-                        ' . (!empty($otp) ? '
-                        <div class="info-row">
-                            <div class="info-label">🔐 Security OTP:</div>
-                            <div class="info-value"><strong style="color:#ea580c;font-size:16px;letter-spacing:1px;">' . htmlspecialchars($otp) . '</strong></div>
-                        </div>' : '') . '
                         <div class="info-row">
                             <div class="info-label">📦 Plan:</div>
                             <div class="info-value">' . htmlspecialchars($planName) . ($planPrice ? ' (' . $planPrice . ')' : '') . '</div>

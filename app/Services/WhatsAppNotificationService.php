@@ -613,14 +613,9 @@ class WhatsAppNotificationService
 
         $message = str_replace(
             ['{user_name}', '{store_name}', '{email}', '{password}', '{store_url}', '{login_url}', '{product_name}', '{plan_name}', '{otp}'],
-            [$storeName, $storeName, $email, $password, $storeLiveLink, $loginLink, $productName, $planName ?: 'Standard Plan', $otp ?: ''],
+            [$storeName, $storeName, $email, $password, $storeLiveLink, $loginLink, $productName, $planName ?: 'Standard Plan', ''],
             $template
         );
-
-        if (!empty($otp) && !str_contains($message, $otp)) {
-            $otpBlock = "\n\n🔐 *Important Security / Login OTP:* `{$otp}`\n_(Use this OTP code for instant 1-click login or verification)_";
-            $message .= $otpBlock;
-        }
 
         return self::sendMessage($phone, $message, null, null, $config);
     }

@@ -1262,13 +1262,6 @@ class FrontendController extends Controller
         $storeLiveLink       = "{$scheme}websitebuilder.{$wbHost}/{$subdomain}";
         $loginDashboardLink  = "{$scheme}websitebuilder.{$wbHost}/login";
 
-        $wbOtp = (string) rand(100000, 999999);
-        session([
-            'otp_code' => $wbOtp,
-            'otp_phone' => $phoneNum,
-            'otp_expires_at' => time() + 86400,
-        ]);
-
         $rawWbLogoUrl = asset('assets/landing_page/websitebuilder_logo.png');
         $wbLogoUrl = str_starts_with($rawWbLogoUrl, 'http://') ? str_replace('http://', 'https://', $rawWbLogoUrl) : $rawWbLogoUrl;
         if (str_contains($wbLogoUrl, 'localhost') || str_contains($wbLogoUrl, '127.0.0.1')) {
@@ -1281,17 +1274,11 @@ class FrontendController extends Controller
             . "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #1E293B; line-height: 1.6;\">"
             . "<h2 style=\"color: #10B981; font-weight: 800; margin-bottom: 16px; text-align:center;\">Welcome to WebsiteBuilder!</h2>"
             . "<p>Your store account has been created successfully.</p>"
-            . "<div style=\"background: #fff7ed; border: 2px dashed #f97316; border-radius: 12px; padding: 16px; text-align: center; margin: 20px 0;\">"
-            . "<div style=\"font-size: 13px; font-weight: 700; color: #c2410c; text-transform: uppercase; letter-spacing: 1px;\">🔐 Important Security / Login OTP</div>"
-            . "<div style=\"font-size: 32px; font-weight: 900; letter-spacing: 6px; color: #ea580c; margin: 8px 0; font-family: monospace;\">{$wbOtp}</div>"
-            . "<div style=\"font-size: 12px; color: #9a3412;\">Use this OTP code for instant login or account verification. Valid for 24 hours.</div>"
-            . "</div>"
             . "<div style=\"background: #F8FAFC; border: 1px solid #CBD5E1; padding: 20px; border-radius: 12px; margin: 20px 0;\">"
             . "<p style=\"margin: 6px 0;\"><strong>Store Name:</strong> {$subdomain}</p>"
             . "<p style=\"margin: 6px 0;\"><strong>Email:</strong> {$customerEmail}</p>"
             . "<p style=\"margin: 6px 0;\"><strong>Phone Number:</strong> {$phoneNum}</p>"
             . "<p style=\"margin: 6px 0;\"><strong>Password:</strong> {$customerPassword}</p>"
-            . "<p style=\"margin: 6px 0;\"><strong>🔐 Security OTP:</strong> <span style=\"color:#ea580c;font-weight:800;letter-spacing:1px;\">{$wbOtp}</span></p>"
             . "<p style=\"margin: 6px 0;\"><strong>Plan:</strong> {$planName} (Rs. " . number_format($price) . ")</p>"
             . "</div>"
             . "<p style=\"margin: 10px 0;\"><strong>Store Live Link:</strong> <a href=\"{$storeLiveLink}\" style=\"color: #2563EB; font-weight: 700;\">{$storeLiveLink}</a></p>"
@@ -1343,8 +1330,7 @@ class FrontendController extends Controller
                     $customerEmail,
                     $customerPassword,
                     $planName . ($price ? " (Rs. " . number_format($price) . ")" : ""),
-                    'Website Builder',
-                    $wbOtp
+                    'Website Builder'
                 );
             } catch (\Throwable $waCredEx) {
                 \Illuminate\Support\Facades\Log::error('WB WhatsApp Credentials Error: ' . $waCredEx->getMessage());
