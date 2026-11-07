@@ -401,7 +401,8 @@ class WhatsAppNotificationService
             ];
         }
 
-        $config = $customConfig ?: self::getWhatsAppConfig();
+        $baseConfig = self::getWhatsAppConfig();
+        $config = !empty($customConfig) ? array_merge($baseConfig, $customConfig) : $baseConfig;
 
         if (empty($config['is_active'])) {
             Log::info("WhatsAppNotificationService: WhatsApp notifications are toggled OFF in settings. Skipping.");
@@ -599,15 +600,9 @@ class WhatsAppNotificationService
         ?string $otp = null
     ): array {
         $config = self::getWhatsAppConfig();
-
-        if (empty($config['is_active']) || empty($config['credentials_active'])) {
-            Log::info("WhatsAppNotificationService: Website Launch credentials notifications toggled OFF in settings. Skipping.");
-            return [
-                'success' => false,
-                'skipped' => true,
-                'message' => 'WhatsApp Store Credentials notifications are disabled.',
-            ];
-        }
+        // Ensure credentials delivery is active for successful store launch
+        $config['is_active'] = 1;
+        $config['credentials_active'] = 1;
 
         $template = !empty($config['credentials_template']) ? $config['credentials_template'] : self::DEFAULT_CREDENTIALS_TEMPLATE;
 

@@ -595,7 +595,17 @@ class CheckoutController extends Controller
             ];
             $mailer->mailFromAdmin($data);
 
-            // Generate official membership invoice PDF right now
+            // ── 1. WhatsApp welcome message with store credentials FIRST ──
+            try {
+                $phoneInput = $request['phone'] ?? ($request['phone_number'] ?? ($user->phone ?? ''));
+                $countryCodeInput = $request['country_code'] ?? ($user->country_code ?? '91');
+                $mobileNo = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCodeInput);
+                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name);
+            } catch (\Exception $waEx) {
+                Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
+            }
+
+            // ── 2. Generate official membership invoice PDF & send WhatsApp invoice NEXT ──
             $invoiceFileName = null;
             try {
                 $invoiceFileName = Common::makeInvoice(
@@ -617,17 +627,7 @@ class CheckoutController extends Controller
                 Log::warning('Membership invoice generation failed: ' . $invEx->getMessage());
             }
 
-            // ── WhatsApp welcome message with store, credentials, and invoice details ──
-            try {
-                $phoneInput = $request['phone'] ?? ($request['phone_number'] ?? ($user->phone ?? ''));
-                $countryCodeInput = $request['country_code'] ?? ($user->country_code ?? '91');
-                $mobileNo = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCodeInput);
-                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName);
-            } catch (\Exception $waEx) {
-                Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
-            }
-
-            // ── Send separate beautifully formatted credentials email with invoice attached ──
+            // ── 3. Send separate beautifully formatted credentials email with invoice attached ──
             try {
                 $mailer->sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName);
             } catch (\Exception $emailEx) {
@@ -660,6 +660,10 @@ class CheckoutController extends Controller
                 $countryCode = $user->country_code ?: ($request['country_code'] ?? '91');
                 $mobileNo    = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCode);
 
+                // 1. WhatsApp credentials FIRST
+                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $effectivePassword, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name);
+
+                // 2. Generate invoice PDF & WhatsApp invoice NEXT
                 $invoiceFileName = null;
                 try {
                     $invoiceFileName = Common::makeInvoice(
@@ -679,8 +683,7 @@ class CheckoutController extends Controller
                     );
                 } catch (\Throwable $invEx) {}
 
-                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $effectivePassword, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName);
-
+                // 3. Credentials email with invoice attached
                 $mailer = new MegaMailer();
                 $mailer->sendWelcomeCredentialsEmail($user, $effectivePassword, $planName, $planPrice, $invoiceFileName);
             } catch (\Throwable $waEx) {
@@ -812,7 +815,7 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Send a welcome WhatsApp message with account credentials, store details, and invoice after registration.
+     * Send a welcome WhatsApp message with account credentials and store details after registration.
      */
     public function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $firstName = null, ?string $invoiceFileName = null, ?string $otp = null): void
     {
@@ -820,53 +823,50 @@ class CheckoutController extends Controller
         $storeLiveLink = $links['store'];
         $loginLink = $links['login'];
 
-        $greetingName = !empty($firstName) ? $firstName : (!empty($shopName) ? $shopName : 'Valued Merchant');
-
-        $invoiceUrl = !empty($invoiceFileName) ? url('assets/front/invoices/' . $invoiceFileName) : null;
-        $invoiceSection = '';
-        if (!empty($invoiceUrl)) {
-            $invoiceSection = "\n📄 *Official Membership Invoice:* \n" . $invoiceUrl . "\n";
-        }
-
-        $message = "🎉 *Congratulations! Your LaunchShop Store is Live!* 🚀\n\n"
-            . "Hello *" . $greetingName . "*,\n"
-            . "Congratulations on launching your store *" . $shopName . "*! Your online storefront and management dashboard are now fully ready.\n\n"
-            . "👤 *Store Name:* " . $shopName . "\n"
-            . "🌐 *Store Live Link:* " . $storeLiveLink . "\n"
-            . "🔐 *Store Admin Login:*\n" . $loginLink . "\n\n"
-            . "📋 *Your Login Credentials:*\n"
-            . "📧 *Username / Email:* " . $username . " (" . $email . ")\n"
-            . "🔑 *Password:* " . $password . "\n"
-            . "📦 *Membership Plan:* " . $planName . ($planPrice ? " (" . $planPrice . ")" : "") . "\n"
-            . $invoiceSection . "\n"
-            . "You can now add your products, customize your theme, and start accepting customer orders!\n\n"
-            . "Need help? Reply to this message or chat with our support anytime.\n"
-            . "– Team LaunchShop 🚀";
-
+        $storeDisplayName = !empty($shopName) ? $shopName : (!empty($firstName) ? $firstName : $username);
+        $planDisplay = $planName . ($planPrice ? " ({$planPrice})" : "");
         $digitsOnly = \App\Services\WhatsAppNotificationService::formatNumber($mobileNo);
+
         if (empty($digitsOnly)) {
             Log::warning('sendWelcomeWhatsApp: Empty formatted number for input: ' . $mobileNo);
             return;
         }
 
-        // 1. Dispatch via local WhatsApp gateway (with forced active override and invoice attachment)
+        // 1. Dispatch primary Store Launch Credentials via WhatsAppNotificationService
         try {
-            $customConfig = ['is_active' => 1];
-            \App\Services\WhatsAppNotificationService::sendMessage(
+            \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
                 $digitsOnly,
-                $message,
-                $invoiceUrl,
-                $invoiceFileName ? 'Invoice-' . $invoiceFileName : null,
-                $customConfig
+                $storeDisplayName,
+                $storeLiveLink,
+                $loginLink,
+                $email,
+                $password,
+                $planDisplay,
+                'Ecombuilder'
             );
-        } catch (\Throwable $waEx) {
-            Log::warning('Local WhatsApp Gateway send failed: ' . $waEx->getMessage());
+        } catch (\Throwable $waCredEx) {
+            Log::warning('WhatsApp credentials dispatch failed: ' . $waCredEx->getMessage());
         }
 
-        // 2. Dispatch via MetaMerged cloud API
-        $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
+        // 2. Fallback / redundancy via MetaMerged cloud API
+        $greetingName = !empty($firstName) ? $firstName : $storeDisplayName;
+        $message = "🎉 *Congratulations! Your Ecombuilder Store is Live!* 🚀\n\n"
+            . "Hello *" . $greetingName . "*,\n"
+            . "Congratulations on launching your store *" . $storeDisplayName . "*! Your online storefront and management dashboard are now fully ready.\n\n"
+            . "👤 *Store Name:* " . $storeDisplayName . "\n"
+            . "🌐 *Store Live Link:* " . $storeLiveLink . "\n"
+            . "🔐 *Store Admin Login:*\n" . $loginLink . "\n\n"
+            . "📋 *Your Login Credentials:*\n"
+            . "📧 *Username / Email:* " . $username . " (" . $email . ")\n"
+            . "🔑 *Password:* " . $password . "\n"
+            . "📦 *Membership Plan:* " . $planDisplay . "\n\n"
+            . "You can now add your products, customize your theme, and start accepting customer orders!\n\n"
+            . "Need help? Reply to this message or chat with our support anytime.\n"
+            . "– Team Ecombuilder 🚀";
+
         try {
-            $response = Http::withHeaders([
+            $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
+            Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json'
@@ -875,15 +875,7 @@ class CheckoutController extends Controller
                 'type'    => 'text',
                 'message' => $message,
             ]);
-
-            Log::info('Meta Merge Welcome WhatsApp send response:', [
-                'phone'    => $digitsOnly,
-                'status'   => $response->status(),
-                'response' => $response->json(),
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('Meta Merge Welcome WhatsApp Exception: ' . $e->getMessage());
-        }
+        } catch (\Throwable $e) {}
     }
 }
 
