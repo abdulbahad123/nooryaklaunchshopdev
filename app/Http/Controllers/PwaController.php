@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\User\BasicSetting;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
 
 class PwaController extends Controller
 {
@@ -155,26 +154,99 @@ class PwaController extends Controller
         $user = $this->resolveUser($request->query('u'));
         $userBs = $this->resolveUserBs($user);
 
-        $shopName = !empty($userBs->website_title)
-            ? $userBs->website_title
-            : ($user ? ($user->shop_name ?? $user->username) : 'LaunchShop');
-
         $maskable = $request->boolean('maskable');
         $logoPath = $this->resolveIconPath($userBs);
 
-        try {
-            $image = $this->buildIcon($size, $logoPath, '#ffffff', $shopName, $maskable);
+        $pngData = $this->renderPngIcon($size, $logoPath, $maskable);
 
-            return $image->response('png', 90)
-                ->header('Cache-Control', 'public, max-age=604800')
-                ->header('Access-Control-Allow-Origin', '*');
-        } catch (\Throwable $e) {
-            $image = Image::canvas($size, $size, '#ffffff');
+        return response($pngData, 200, [
+            'Content-Type' => 'image/png',
+            'Cache-Control' => 'public, max-age=604800',
+            'Access-Control-Allow-Origin' => '*',
+        ]);
+    }
 
-            return $image->response('png', 90)
-                ->header('Cache-Control', 'public, max-age=604800')
-                ->header('Access-Control-Allow-Origin', '*');
+    protected function renderPngIcon(int $size, ?string $logoPath, bool $maskable): string
+    {
+        // Try PHP GD first if available (zero dependency on fileinfo or Intervention Image)
+        if (function_exists('imagecreatetruecolor') && function_exists('imagepng')) {
+            try {
+                $canvas = imagecreatetruecolor($size, $size);
+                if ($canvas) {
+                    $white = imagecolorallocate($canvas, 255, 255, 255);
+                    imagefilledrectangle($canvas, 0, 0, $size, $size, $white);
+
+                    if ($logoPath && is_file($logoPath)) {
+                        $rawLogo = @file_get_contents($logoPath);
+                        if (!empty($rawLogo)) {
+                            $src = @imagecreatefromstring($rawLogo);
+                            if ($src) {
+                                $srcW = imagesx($src);
+                                $srcH = imagesy($src);
+
+                                if ($srcW > 0 && $srcH > 0) {
+                                    $scaleFactor = $maskable ? 0.70 : 0.88;
+                                    $aspect = $srcW / $srcH;
+
+                                    if ($aspect >= 1.0) {
+                                        $dstW = (int) round($size * $scaleFactor);
+                                        $dstH = (int) round($dstW / $aspect);
+                                        if ($dstH > (int) round($size * $scaleFactor)) {
+                                            $dstH = (int) round($size * $scaleFactor);
+                                            $dstW = (int) round($dstH * $aspect);
+                                        }
+                                    } else {
+                                        $dstH = (int) round($size * $scaleFactor);
+                                        $dstW = (int) round($dstH * $aspect);
+                                        if ($dstW > (int) round($size * $scaleFactor)) {
+                                            $dstW = (int) round($size * $scaleFactor);
+                                            $dstH = (int) round($dstW / $aspect);
+                                        }
+                                    }
+
+                                    $dstX = (int) round(($size - $dstW) / 2);
+                                    $dstY = (int) round(($size - $dstH) / 2);
+
+                                    imagecopyresampled($canvas, $src, $dstX, $dstY, 0, 0, $dstW, $dstH, $srcW, $srcH);
+                                }
+                                imagedestroy($src);
+                            }
+                        }
+                    }
+
+                    ob_start();
+                    imagepng($canvas, null, 6);
+                    $data = ob_get_clean();
+                    imagedestroy($canvas);
+
+                    if (!empty($data)) {
+                        return $data;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Ignore and fall through to static file
+            }
         }
+
+        // Static file fallback
+        $fallbackFiles = array_filter([
+            $logoPath,
+            public_path('assets/front/img/logo.png'),
+            public_path('assets/front/img/pushnotification_icon.png'),
+            public_path('assets/front/img/673095353bc62.png'),
+        ]);
+
+        foreach ($fallbackFiles as $file) {
+            if (is_file($file)) {
+                $content = @file_get_contents($file);
+                if (!empty($content)) {
+                    return $content;
+                }
+            }
+        }
+
+        // Ultimate failsafe: 1x1 transparent PNG
+        return base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
     }
 
     protected function resolveIconPath(?BasicSetting $userBs): ?string
@@ -214,56 +286,5 @@ class PwaController extends Controller
         }
 
         return null;
-    }
-
-    protected function buildIcon(int $size, ?string $logoPath, string $color, string $shopName, bool $maskable)
-    {
-        $canvas = Image::canvas($size, $size, '#ffffff');
-
-        if (!$logoPath) {
-            return $canvas;
-        }
-
-        $logo = Image::make($logoPath);
-        $w = $logo->width();
-        $h = $logo->height();
-
-        if ($w <= 0 || $h <= 0) {
-            return $canvas;
-        }
-
-        $aspectRatio = $w / $h;
-
-        if ($aspectRatio > 1.2) {
-            // Horizontal logo: scale width to 92% of canvas width
-            $targetWidth = (int) round($size * 0.92);
-            $targetHeight = (int) round($targetWidth / $aspectRatio);
-            if ($targetHeight > (int) round($size * 0.85)) {
-                $targetHeight = (int) round($size * 0.85);
-                $targetWidth = (int) round($targetHeight * $aspectRatio);
-            }
-            $logo->resize($targetWidth, $targetHeight);
-        } elseif ($aspectRatio < 0.8) {
-            // Vertical logo: scale height to 92% of canvas height
-            $targetHeight = (int) round($size * 0.92);
-            $targetWidth = (int) round($targetHeight * $aspectRatio);
-            if ($targetWidth > (int) round($size * 0.85)) {
-                $targetWidth = (int) round($size * 0.85);
-                $targetHeight = (int) round($targetWidth / $aspectRatio);
-            }
-            $logo->resize($targetWidth, $targetHeight);
-        } else {
-            // Square or near-square logo: scale to 88% of canvas
-            $targetWidth = (int) round($size * 0.88);
-            $targetHeight = (int) round($size * 0.88);
-            $logo->resize($targetWidth, $targetHeight, function ($constraint) {
-                $constraint->aspectRatio();
-            });
-        }
-
-        $x = (int) round(($size - $logo->width()) / 2);
-        $y = (int) round(($size - $logo->height()) / 2);
-
-        return $canvas->insert($logo, 'top-left', $x, $y);
     }
 }

@@ -50,26 +50,6 @@ class CheckoutController extends Controller
 {
     public function checkout(CheckoutRequest $request)
     {
-        // Website Builder checkouts also POST to checkout.{host}/membership/checkout.
-        // Route them into WB provisioning so LaunchShop does not create a grocery store.
-        if ($this->isWebsiteBuilderCheckout($request)) {
-            if (!$request->filled('customer_name')) {
-                $request->merge([
-                    'customer_name' => $request->input('first_name') ?: $request->input('shop_name'),
-                ]);
-            }
-            if (!$request->filled('customer_email')) {
-                $request->merge(['customer_email' => $request->input('email')]);
-            }
-            if (!$request->filled('customer_phone')) {
-                $request->merge(['customer_phone' => $request->input('phone')]);
-            }
-            if (!$request->filled('subdomain')) {
-                $request->merge(['subdomain' => $request->input('username')]);
-            }
-            return (new \App\Http\Controllers\WebsiteBuilder\FrontendController())->processCheckout($request);
-        }
-
         $offline_payment_gateways = OfflineGateway::all()->pluck('name')->toArray();
         $currentLang = session()->has('lang') ?
             (Language::where('code', session()->get('lang'))->first())
@@ -368,7 +348,6 @@ class CheckoutController extends Controller
         } elseif (in_array($request->payment_method, $offline_payment_gateways)) {
             $request['mode'] = 'offline';
             $request['status'] = 0;
-            $request['user_status'] = 1;
             $request['receipt_name'] = null;
             if (!$request->has('selected_template') || empty($request->selected_template)) {
                 $request['selected_template'] = $request->template ?: session('selected_template', '');
@@ -400,165 +379,40 @@ class CheckoutController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store($request, $transaction_id = null, $transaction_details = null, $amount = 0, $be = null, $password = null)
+    public function store($request, $transaction_id, $transaction_details, $amount, $be, $password)
     {
+        $password = !empty($password) ? $password : ($request['password'] ?? (session('user_password') ?: 'Password@123'));
+
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {
             $currentLang = Language::where('is_default', 1)->first();
         }
         $bs = $currentLang->basic_setting;
-        $getValue = function($key) use ($request) {
-            if (is_array($request)) {
-                return $request[$key] ?? null;
-            } elseif (is_object($request)) {
-                return $request->$key ?? (method_exists($request, 'input') ? $request->input($key) : null);
-            }
-            return null;
-        };
+        $token = md5(time() . $request['username'] . $request['email']);
+        $verification_link = "<a href='" . url('register/mode/' . $request['mode'] . '/verify/' . $token) . "' style=\"display: inline-block; padding: 10px 20px; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #007bff; border-radius: 6px; text-decoration: none;\">Click Here</a>";
 
-        $username = $getValue('username') ?: $getValue('subdomain');
-        $email = $getValue('email') ?: $getValue('customer_email');
-        $shopName = $getValue('shop_name');
-        $firstName = $getValue('first_name') ?: $getValue('customer_name') ?: 'Store Owner';
-        $phone = $getValue('phone') ?: $getValue('customer_phone') ?: '';
-        $countryCode = $getValue('country_code') ?: '+91';
-        $userPassword = $getValue('password') ?: ($password ?: \Illuminate\Support\Str::random(12));
-
-        if (empty($username) && !empty($shopName)) {
-            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));
-        }
-        if (empty($username) && !empty($firstName)) {
-            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower($firstName)) . rand(100, 999);
-        }
-        if (empty($username) && !empty($email)) {
-            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(explode('@', $email)[0]));
-        }
-        if (!empty($username)) {
-            $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower($username));
-        }
-
-        $mode = $getValue('mode') ?? 'online';
-        $token = md5(time() . ($username ?: 'user') . ($email ?: 'email'));
-        $verification_link = "<a href='" . url('register/mode/' . $mode . '/verify/' . $token) . "' style=\"display: inline-block; padding: 10px 20px; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #007bff; border-radius: 6px; text-decoration: none;\">Click Here</a>";
-
-        $user = null;
-        if (!empty($username)) {
-            $user = User::where('username', $username)->first();
-        }
-        if (!$user && !empty($email)) {
-            $user = User::where('email', $email)->first();
-            if ($user) {
-                if (!empty($username)) $user->username = $username;
-                if (!empty($shopName)) $user->shop_name = $shopName;
-                if (!empty($firstName)) $user->first_name = $firstName;
-                if (!empty($phone)) $user->phone = $phone;
-                $user->email_verified = 1;
-                $user->save();
-            }
-        }
-
-        if (!$user) {
+        $user = User::where('username', $request['username']);
+        if ($user->count() == 0) {
             $user = User::create([
-                'first_name' => $firstName ?: 'User',
-                'shop_name' => $shopName ?: ($username ?: 'My Store'),
-                'email' => $email ?: (($username ?: 'client') . '@saasreselling.com'),
-                'country_code' => $countryCode,
-                'phone' => $phone,
-                'username' => $username,
-                'password' => bcrypt($userPassword),
-                'status' => ($getValue('mode') === 'offline') ? 1 : ($getValue('user_status') ?? ($getValue('status') ?? 1)),
-                'address' => $getValue('address') ?? null,
-                'city' => $getValue('city') ?? null,
-                'state' => $getValue('district') ?? $getValue('state') ?? null,
-                'country' => $getValue('country') ?? null,
+                'first_name' => $request['first_name'],
+                'shop_name' => $request['shop_name'],
+                'email' => $request['email'],
+                'country_code' => $request['country_code'],
+                'phone' => $request['phone'],
+                'username' => $request['username'],
+                'password' => bcrypt($password),
+                'status' => $request["status"],
+                'address' => $request["address"] ? $request["address"] : null,
+                'city' => $request["city"] ? $request["city"] : null,
+                'state' => $request["district"] ? $request["district"] : null,
+                'country' => $request["country"] ? $request["country"] : null,
                 'verification_link' => $token,
-                'category_id' => $getValue('category') ?? $getValue('category_id') ?? null,
+                'category_id' => $request['category'],
             ]);
             
             $user->email_verified = 1;
             $user->save();
-        }
-
-        // Sync Website Builder Customer only for WB checkouts. LaunchShop theme
-        // purchases must not create/overwrite a website-builder agency.
-        try {
-            $isWbCheckout = (string) $getValue('is_website_builder') === '1'
-                || $getValue('is_website_builder') === 1
-                || $getValue('is_website_builder') === true;
-
-            if ($isWbCheckout && !empty($email) && \Illuminate\Support\Facades\Schema::hasTable('wb_customers')) {
-                $wbCust = \App\Models\WebsiteBuilder\WbCustomer::updateOrCreate(
-                    ['email' => $email],
-                    [
-                        'name'         => $firstName ?: 'Store Owner',
-                        'email'        => $email,
-                        'phone'        => $phone,
-                        'password'     => \Illuminate\Support\Facades\Hash::make($userPassword),
-                        'company_name' => $shopName ?: ($firstName . ' Studio'),
-                        'subdomain'    => $username,
-                        'status'       => 1,
-                    ]
-                );
-
-                $rawTmpl = strtolower(trim($getValue('template') ?: ($getValue('template_slug') ?: ($getValue('theme') ?: ($getValue('selected_template') ?: session()->get('selected_template', 'digital_agency'))))));
-                if (in_array($rawTmpl, ['interior', 'interiorcraft', 'interior_template'])) $templateSlug = 'interior';
-                elseif (in_array($rawTmpl, ['texigo', 'taxigo', 'texigo_agency', 'texigo_theme', 'taxi', 'tex'])) $templateSlug = 'texigo';
-                elseif (in_array($rawTmpl, ['construction', 'buildcraft', 'construction_agency', 'construction_theme', 'build'])) $templateSlug = 'construction';
-                elseif (in_array($rawTmpl, ['evently', 'evently_theme', 'event', 'events'])) $templateSlug = 'evently';
-                else $templateSlug = 'digital_agency';
-
-                $templateNames = [
-                    'digital_agency' => 'Digital Agency',
-                    'interior'       => 'InteriorCRAFT',
-                    'texigo'         => 'TaxiGo Mobility',
-                    'construction'   => 'BuildCraft Construction',
-                    'evently'        => 'Evently',
-                ];
-                $templateName = $templateNames[$templateSlug] ?? 'Digital Agency';
-
-                if ($wbCust && \Illuminate\Support\Facades\Schema::hasTable('wb_agency_settings')) {
-                    $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::where('customer_id', $wbCust->id)->first();
-                    if (!$wbAgency) {
-                        if ($templateSlug === 'interior') {
-                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createInteriorDefaultInstance($wbCust->id);
-                        } elseif ($templateSlug === 'texigo') {
-                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createTexigoDefaultInstance($wbCust->id);
-                        } elseif ($templateSlug === 'construction') {
-                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createConstructionDefaultInstance($wbCust->id);
-                        } elseif ($templateSlug === 'evently') {
-                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createEventlyDefaultInstance($wbCust->id);
-                        } else {
-                            $wbAgency = \App\Models\WebsiteBuilder\WbAgencySetting::createDefaultInstance($wbCust->id);
-                        }
-                    } else {
-                        $wbAgency->applyTemplateDefaults($templateSlug, true);
-                        $wbAgency->template_type = $templateSlug;
-                    }
-                    $wbAgency->template_type = $templateSlug;
-                    $wbAgency->site_title = $shopName ?: ($firstName ?: ($username . ' Agency'));
-                    if ($email) $wbAgency->email = $email;
-                    if ($phone) $wbAgency->phone = $phone;
-                    $wbAgency->save();
-                }
-
-                if (\Illuminate\Support\Facades\Schema::hasTable('wb_template_purchases')) {
-                    \App\Models\WebsiteBuilder\WbTemplatePurchase::create([
-                        'customer_name'       => $firstName ?: 'Store Owner',
-                        'customer_email'      => $email,
-                        'customer_phone'      => $phone,
-                        'template_slug'       => $templateSlug,
-                        'template_name'       => $templateName,
-                        'razorpay_payment_id' => 'PAY_' . strtoupper(\Illuminate\Support\Str::random(10)),
-                        'amount'              => $amount ?: 499.00,
-                        'currency'            => 'INR',
-                        'status'              => 'completed',
-                    ]);
-                }
-            }
-        } catch (\Throwable $wbEx) {
-            \Illuminate\Support\Facades\Log::warning('WB Customer/Agency sync in CheckoutController failed: ' . $wbEx->getMessage());
-        }
 
             //customize
             $langCount = User\Language::where('user_id', $user->id)->count();
@@ -625,35 +479,25 @@ class CheckoutController extends Controller
                 $status = $request["status"];
             }
 
-            $actualPackage = null;
-            if (is_array($request) && !empty($request['package_id'])) {
-                $actualPackage = Package::find($request['package_id']);
-            } elseif (is_object($request) && !empty($request->package_id)) {
-                $actualPackage = Package::find($request->package_id);
-            }
-            if (!$actualPackage) {
-                $actualPackage = Package::where('status', '1')->first() ?? Package::first();
-            }
-            $package = $actualPackage;
-            $packageId = $package ? $package->id : 1;
+            $package = Package::find($request['package_id']);
 
             //create memership
             Membership::create([
                 'price' => $amount,
                 'currency' => $be->base_currency_text ? $be->base_currency_text : "USD",
                 'currency_symbol' => $be->base_currency_symbol ? $be->base_currency_symbol : $be->base_currency_text,
-                'payment_method' => $request["payment_method"] ?? 'Razorpay',
+                'payment_method' => $request["payment_method"],
                 'transaction_id' => $transaction_id ? $transaction_id : 0,
                 'status' => $status,
-                'is_trial' => ($request["package_type"] ?? 'regular') == "regular" ? 0 : 1,
-                'trial_days' => ($request["package_type"] ?? 'regular') == "regular" ? 0 : ($request["trial_days"] ?? 0),
-                'receipt' => $request["receipt_name"] ?? null,
-                'transaction_details' => $transaction_details ?? null,
+                'is_trial' => $request["package_type"] == "regular" ? 0 : 1,
+                'trial_days' => $request["package_type"] == "regular" ? 0 : $request["trial_days"],
+                'receipt' => $request["receipt_name"] ? $request["receipt_name"] : null,
+                'transaction_details' => $transaction_details ? $transaction_details : null,
                 'settings' => json_encode($be),
-                'package_id' => $packageId,
+                'package_id' => $request['package_id'],
                 'user_id' => $user->id,
-                'start_date' => Carbon::parse($request['start_date'] ?? now()),
-                'expire_date' => Carbon::parse($request['expire_date'] ?? now()->addYear()),
+                'start_date' => Carbon::parse($request['start_date']),
+                'expire_date' => Carbon::parse($request['expire_date']),
                 'ai_engine' => $package->ai_engine ?? null,
                 'ai_token_limit' => $package->ai_token_limit ?? 0,
                 'ai_image_limit' => $package->ai_image_limit ?? 0,
@@ -661,40 +505,35 @@ class CheckoutController extends Controller
             ]);
 
             // create user permission form package
-            $features = $package && !empty($package->features) ? json_decode($package->features, true) : [];
-            if (!is_array($features)) {
-                $features = [];
-            }
+            $package = Package::findOrFail($request['package_id']);
+            $features = json_decode($package->features, true);
             $features[] = "Contact";
             $features[] = "Footer Mail";
             $features[] = "Profile Listing";
             UserPermission::create([
-                'package_id' => $packageId,
+                'package_id' => $request['package_id'],
                 'user_id' => $user->id,
                 'permissions' => json_encode($features)
             ]);
 
             //create user basic settings table
-            $selectedTheme = $this->resolveLaunchshopTheme($getValue);
-
-            $basicSetting = BasicSetting::where('user_id', $user->id)->first();
-            if ($basicSetting) {
-                $basicSetting->theme = $selectedTheme;
-                if (!empty($email)) {
-                    $basicSetting->email = $email;
+            // Resolve the actual theme from the selected template user's basic settings
+            $selectedTheme = 'vegetables'; // default
+            if (!empty($request['selected_template'])) {
+                $templateUser = User::where('username', $request['selected_template'])->first();
+                if ($templateUser) {
+                    $templateTheme = BasicSetting::where('user_id', $templateUser->id)->value('theme');
+                    if (!empty($templateTheme)) {
+                        $selectedTheme = $templateTheme;
+                    }
                 }
-                if (!empty($shopName)) {
-                    $basicSetting->from_name = $shopName;
-                }
-                $basicSetting->save();
-            } else {
-                BasicSetting::create([
-                    'user_id' => $user->id,
-                    'theme' => $selectedTheme,
-                    'email' => $email,
-                    'from_name' => $shopName
-                ]);
             }
+            BasicSetting::create([
+                'user_id' => $user->id,
+                'theme' => $selectedTheme,
+                'email' => $request['email'],
+                'from_name' => $request['shop_name']
+            ]);
 
             // create payment gateways
             $payment_keywords = ['flutterwave', 'razorpay', 'paytm', 'paystack', 'instamojo', 'stripe', 'paypal', 'mollie', 'mercadopago', 'authorize.net', 'midtrans', 'iyzico', 'toyyibpay', 'phonepe', 'yoco', 'xendit', 'myfatoorah', 'paytabs', 'perfect_money'];
@@ -724,13 +563,10 @@ class CheckoutController extends Controller
             $shop_settings->top_selling_count = 5;
             $shop_settings->save();
 
-            $userLang = User\Language::where('user_id', $user->id)->first();
-            $langId = $userLang ? $userLang->id : (isset($language->id) ? $language->id : 1);
-
             $footer = new UserFooter();
             $footer->footer_text = 'lorem ispum dummy text.';
             $footer->user_id = $user->id;
-            $footer->language_id = $langId;
+            $footer->language_id = $language->id;
             $footer->useful_links_title = 'Useful Links';
             $footer->copyright_text = null;
             $footer->footer_logo =  null;
@@ -742,17 +578,6 @@ class CheckoutController extends Controller
             $planName    = $packageObj ? $packageObj->title : 'Your Plan';
             $planPrice   = $packageObj ? ($be->base_currency_symbol . $packageObj->price) : '';
 
-            // Determine login URL safely across subdomains
-            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
-            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $userLoginUrl = "{$scheme}ecombuilder.{$cleanAgencyHost}/login";
-            try {
-                if (\Illuminate\Support\Facades\Route::has('user.login')) {
-                    $userLoginUrl = route('user.login');
-                }
-            } catch (\Throwable $e) {}
-
             //send verification email to user
             $mailer = new MegaMailer();
             $data = [
@@ -763,23 +588,23 @@ class CheckoutController extends Controller
                 'website_title' => $bs->website_title,
                 'templateType' => 'email_verification',
                 'type' => 'emailVerification',
-                'password' => $userPassword,
+                'password' => $password,
                 'package_title' => $planName,
-                'login_link' => $userLoginUrl
+                'login_link' => route('user.login')
             ];
             $mailer->mailFromAdmin($data);
 
-            // Generate official membership invoice PDF
+            // Generate official membership invoice PDF right now
             $invoiceFileName = null;
             try {
                 $invoiceFileName = Common::makeInvoice(
                     $request,
                     "membership",
                     $user,
-                    $userPassword,
+                    $password,
                     $amount,
-                    $getValue('payment_method') ?? 'Online',
-                    $getValue('phone') ?? $user->phone,
+                    $request["payment_method"] ?? 'Online',
+                    $request['phone'] ?? $user->phone,
                     $be->base_currency_symbol_position ?? 'left',
                     $be->base_currency_symbol ?? '₹',
                     $be->base_currency_text ?? 'INR',
@@ -791,19 +616,19 @@ class CheckoutController extends Controller
                 Log::warning('Membership invoice generation failed: ' . $invEx->getMessage());
             }
 
-            // ── WhatsApp welcome message with store and plan details ──
+            // ── WhatsApp welcome message with store, credentials, and invoice details ──
             try {
-                $cleanPhone  = preg_replace('/[^0-9]/', '', $getValue('phone') ?? '');
-                $cleanCode   = preg_replace('/[^0-9]/', '', $getValue('country_code') ?? '');
-                $mobileNo    = (strpos($cleanPhone, $cleanCode) === 0) ? $cleanPhone : $cleanCode . $cleanPhone;
-                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $userPassword, $planName, $planPrice, $user->shop_name, $user->email, $user->phone, $invoiceFileName);
+                $phoneInput = $request['phone'] ?? ($request['phone_number'] ?? ($user->phone ?? ''));
+                $countryCodeInput = $request['country_code'] ?? ($user->country_code ?? '91');
+                $mobileNo = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCodeInput);
+                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName);
             } catch (\Exception $waEx) {
                 Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
             }
 
-            // ── Send separate beautifully formatted credentials email ──
+            // ── Send separate beautifully formatted credentials email with invoice attached ──
             try {
-                $mailer->sendWelcomeCredentialsEmail($user, $userPassword, $planName, $planPrice, $invoiceFileName);
+                $mailer->sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName);
             } catch (\Exception $emailEx) {
                 Log::warning('Welcome credentials email send failed: ' . $emailEx->getMessage());
             }
@@ -815,21 +640,52 @@ class CheckoutController extends Controller
                     'user'    => $user->id,
                     '--force' => true,
                 ];
-                $seedSource = $getValue('selected_template')
-                    ?: ($getValue('template')
-                    ?: ($getValue('template_slug')
-                    ?: ($selectedTheme ?? session()->get('selected_template'))));
-
-                if (!empty($seedSource)) {
-                    $seedArgs['--source'] = $seedSource;
+                if (!empty($request['selected_template'])) {
+                    $seedArgs['--source'] = $request['selected_template'];
                 }
                 Artisan::call('template:seed-user', $seedArgs);
-
-                // Clear stored template and checkout data from session after successful store launch
-                session()->forget(['selected_template', 'data.selected_template', 'request', 'data', 'paymentFor', 'wb_checkout_req']);
             } catch (\Exception $e) {
                 \Log::warning('Template seeding failed for user ' . $user->id . ': ' . $e->getMessage());
             }
+        } else {
+            $user = $user->first();
+            $effectivePassword = !empty($password) ? $password : ($request['password'] ?? '[Unchanged / Use your existing password]');
+            // Send WhatsApp congratulations & store credentials + invoice for existing user launching/renewing theme
+            try {
+                $packageObj  = Package::find($request['package_id']);
+                $planName    = $packageObj ? $packageObj->title : 'Your Plan';
+                $planPrice   = $packageObj ? ($be->base_currency_symbol . $packageObj->price) : '';
+                $phoneInput  = $user->phone ?: ($request['phone'] ?? ($request['phone_number'] ?? ''));
+                $countryCode = $user->country_code ?: ($request['country_code'] ?? '91');
+                $mobileNo    = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCode);
+
+                $invoiceFileName = null;
+                try {
+                    $invoiceFileName = Common::makeInvoice(
+                        $request,
+                        "membership",
+                        $user,
+                        $effectivePassword,
+                        $amount,
+                        $request["payment_method"] ?? 'Online',
+                        $phoneInput,
+                        $be->base_currency_symbol_position ?? 'left',
+                        $be->base_currency_symbol ?? '₹',
+                        $be->base_currency_text ?? 'INR',
+                        $transaction_id,
+                        $planName,
+                        $status
+                    );
+                } catch (\Throwable $invEx) {}
+
+                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $effectivePassword, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName);
+
+                $mailer = new MegaMailer();
+                $mailer->sendWelcomeCredentialsEmail($user, $effectivePassword, $planName, $planPrice, $invoiceFileName);
+            } catch (\Throwable $waEx) {
+                Log::warning('Welcome WhatsApp/Email for existing user failed: ' . $waEx->getMessage());
+            }
+        }
 
         // Mark the verified phone lead as purchased (if one exists for this number)
         try {
@@ -937,15 +793,6 @@ class CheckoutController extends Controller
 
     public function paymentSuccess()
     {
-        $newUsername = session('new_user_username');
-        if ($newUsername) {
-            $reqHost = strtolower(str_replace('www.', '', request()->getHost()));
-            $agencyDomain = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
-            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            $liveUrl = "{$scheme}ecombuilder.{$agencyDomain}/{$newUsername}";
-            return redirect()->to($liveUrl)->with('success', "🚀 Congratulations! Your store is live at {$liveUrl}");
-        }
-
         return view('front.success', [
             'new_user_username' => session('new_user_username'),
         ]);
@@ -957,205 +804,93 @@ class CheckoutController extends Controller
         $paymentFor = Session::get('paymentFor');
         session()->flash('warning', __('cancel_payment'));
         if ($paymentFor == "membership") {
-            $pkgType = is_array($requestData) ? ($requestData['package_type'] ?? 'regular') : 'regular';
-            $pkgId = is_array($requestData) ? ($requestData['package_id'] ?? null) : null;
-
-            $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
-            $reqHost = preg_replace('/:\d+$/', '', $reqHost);
-            $reqHost = preg_replace('/^www\./i', '', $reqHost);
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
-            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://') || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) ? 'https://' : 'http://';
-
-            if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
-                $cancelUrl = "{$scheme}ecombuilder.{$cleanAgencyHost}/registration/step-1/{$pkgType}/{$pkgId}";
-                return redirect()->to($cancelUrl)->withInput(is_array($requestData) ? $requestData : []);
-            }
-
-            return redirect()->route('front.register.view', ['status' => $pkgType, 'id' => $pkgId])->withInput(is_array($requestData) ? $requestData : []);
+            return redirect()->route('front.register.view', ['status' => $requestData['package_type'], 'id' => $requestData['package_id']])->withInput($requestData);
         } else {
             return redirect()->route('user.plan.extend.checkout', ['package_id' => $requestData['package_id']])->withInput($requestData);
         }
     }
 
     /**
-     * Send a welcome WhatsApp message with account credentials and store details after registration.
+     * Send a welcome WhatsApp message with account credentials, store details, and invoice after registration.
      */
-    private function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $invoiceFileName = null): void
+    public function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $firstName = null, ?string $invoiceFileName = null): void
     {
-        $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
-        $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
-        $cleanHost = preg_replace('/:\d+$/', '', $cleanHost);
-        $baseDomain = !empty($cleanHost) ? $cleanHost : 'saasreselling.in';
+        $host = request()->getHost();
+        $mainDomains = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
 
-        if (strpos($reqHost, 'localhost') !== false || strpos($reqHost, '127.0.0.1') !== false) {
+        if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
             $storeLiveLink = 'http://localhost:8000/' . $username;
             $loginLink = 'http://localhost:8000/login';
         } else {
-            $storeLiveLink = 'https://ecombuilder.' . $baseDomain . '/' . $username;
-            $loginLink = 'https://ecombuilder.' . $baseDomain . '/login';
+            $cleanHost = str_replace('www.', '', $host);
+            $storeLiveLink = 'https://' . $username . '.' . $cleanHost;
+            $loginLink = 'https://' . $cleanHost . '/login';
         }
 
-        try {
-            $planWithPrice = $planName . ($planPrice ? " ({$planPrice})" : "");
-            if (!empty($invoiceFileName)) {
-                $invUrl = url('assets/front/invoices/' . $invoiceFileName);
-                $planWithPrice .= "\n📄 *Membership Invoice:* " . $invUrl;
-            }
+        $greetingName = !empty($firstName) ? $firstName : (!empty($shopName) ? $shopName : 'Valued Merchant');
 
-            \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
-                $mobileNo,
-                $shopName ?: $username,
-                $storeLiveLink,
-                $loginLink,
-                $email,
-                $password,
-                $planWithPrice,
-                'Ecombuilder'
+        $invoiceUrl = !empty($invoiceFileName) ? url('assets/front/invoices/' . $invoiceFileName) : null;
+        $invoiceSection = '';
+        if (!empty($invoiceUrl)) {
+            $invoiceSection = "\n📄 *Official Membership Invoice:* \n" . $invoiceUrl . "\n";
+        }
+
+        $message = "🎉 *Congratulations! Your LaunchShop Store is Live!* 🚀\n\n"
+            . "Hello *" . $greetingName . "*,\n"
+            . "Congratulations on launching your store *" . $shopName . "*! Your online storefront and management dashboard are now fully ready.\n\n"
+            . "👤 *Store Name:* " . $shopName . "\n"
+            . "🌐 *Store Live Link:* " . $storeLiveLink . "\n"
+            . "🔐 *Store Admin Login:*\n" . $loginLink . "\n\n"
+            . "📋 *Your Login Credentials:*\n"
+            . "📧 *Username / Email:* " . $username . " (" . $email . ")\n"
+            . "🔑 *Password:* " . $password . "\n"
+            . "📦 *Membership Plan:* " . $planName . ($planPrice ? " (" . $planPrice . ")" : "") . "\n"
+            . $invoiceSection . "\n"
+            . "You can now add your products, customize your theme, and start accepting customer orders!\n\n"
+            . "Need help? Reply to this message or chat with our support anytime.\n"
+            . "– Team LaunchShop 🚀";
+
+        $digitsOnly = \App\Services\WhatsAppNotificationService::formatNumber($mobileNo);
+        if (empty($digitsOnly)) {
+            Log::warning('sendWelcomeWhatsApp: Empty formatted number for input: ' . $mobileNo);
+            return;
+        }
+
+        // 1. Dispatch via local WhatsApp gateway (with forced active override and invoice attachment)
+        try {
+            $customConfig = ['is_active' => 1];
+            \App\Services\WhatsAppNotificationService::sendMessage(
+                $digitsOnly,
+                $message,
+                $invoiceUrl,
+                $invoiceFileName ? 'Invoice-' . $invoiceFileName : null,
+                $customConfig
             );
         } catch (\Throwable $waEx) {
-            Log::error('LaunchShop Welcome WhatsApp Exception: ' . $waEx->getMessage());
+            Log::warning('Local WhatsApp Gateway send failed: ' . $waEx->getMessage());
         }
-    }
 
-    public function syncLaunchshopUserFromClient(\Illuminate\Http\Request $request)
-    {
+        // 2. Dispatch via MetaMerged cloud API
+        $apiKey = 'a09a0ee3aae408f843020cbd6bccf590';
         try {
-            $input = $request->all();
-            if (empty($input)) {
-                $content = $request->getContent();
-                if ($content) {
-                    $input = json_decode($content, true) ?: [];
-                }
-            }
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json'
+            ])->withoutVerifying()->post('https://app.metamerged.com/api/send', [
+                'number'  => $digitsOnly,
+                'type'    => 'text',
+                'message' => $message,
+            ]);
 
-            $username = $input['username'] ?? $input['subdomain'] ?? null;
-            $email = $input['email'] ?? $input['customer_email'] ?? null;
-            $firstName = $input['first_name'] ?? $input['name'] ?? $input['customer_name'] ?? 'Store Owner';
-            $shopName = $input['shop_name'] ?? ($username ? ucfirst($username) : 'My Store');
-            $phone = $input['phone'] ?? $input['customer_phone'] ?? '';
-            $countryCode = $input['country_code'] ?? '+91';
-            $password = !empty($input['password']) ? $input['password'] : \Illuminate\Support\Str::random(12);
-            $packageId = $input['package_id'] ?? null;
-            $selectedTemplate = $input['selected_template'] ?? $input['template'] ?? $input['theme'] ?? session()->get('selected_template');
-            if (empty($packageId) || !Package::where('id', $packageId)->exists()) {
-                $actPkg = Package::where('status', '1')->first() ?? Package::first();
-                $packageId = $actPkg ? $actPkg->id : 1;
-            }
-
-            if (empty($username) && !empty($shopName)) {
-                $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(str_replace(' ', '-', $shopName)));
-            }
-            if (empty($username) && !empty($firstName)) {
-                $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower($firstName)) . rand(100, 999);
-            }
-            if (empty($username) && !empty($email)) {
-                $username = preg_replace('/[^a-zA-Z0-9-]/', '', strtolower(explode('@', $email)[0]));
-            }
-
-            if (!$username && !$email) {
-                return response()->json(['success' => false, 'message' => 'Missing username or email']);
-            }
-
-            $cleanUsername = strtolower(trim(preg_replace('/[^a-zA-Z0-9-]/', '', $username)));
-
-            $user = null;
-            if ($cleanUsername) {
-                $user = User::where('username', $cleanUsername)->first();
-            }
-            if (!$user && $email) {
-                $user = User::where('email', $email)->first();
-                if ($user) {
-                    if ($cleanUsername) $user->username = $cleanUsername;
-                    if ($shopName) $user->shop_name = $shopName;
-                    if ($firstName) $user->first_name = $firstName;
-                    if ($phone) $user->phone = $phone;
-                    $user->save();
-                }
-            }
-
-            if (!$user) {
-                return response()->json(['success' => false, 'message' => 'User account will be created only after payment confirmation.']);
-            } elseif (!empty($selectedTemplate)) {
-                $getValue = function ($key) use ($selectedTemplate, $input) {
-                    if ($key === 'selected_template') return $selectedTemplate;
-                    return $input[$key] ?? null;
-                };
-                $resolvedTheme = $this->resolveLaunchshopTheme($getValue);
-                $basicSetting = BasicSetting::where('user_id', $user->id)->first();
-                if ($basicSetting && $basicSetting->theme !== $resolvedTheme) {
-                    $basicSetting->theme = $resolvedTheme;
-                    $basicSetting->save();
-                }
-            }
-
-            session(['new_user_username' => $user->username]);
-
-            return response()->json(['success' => true, 'username' => $user->username, 'user_id' => $user->id]);
+            Log::info('Meta Merge Welcome WhatsApp send response:', [
+                'phone'    => $digitsOnly,
+                'status'   => $response->status(),
+                'response' => $response->json(),
+            ]);
         } catch (\Throwable $e) {
-            Log::error('syncLaunchshopUserFromClient error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+            Log::error('Meta Merge Welcome WhatsApp Exception: ' . $e->getMessage());
         }
-    }
-
-    private function isWebsiteBuilderCheckout($request): bool
-    {
-        return isWebsiteBuilderCheckout($request);
-    }
-
-
-    private function resolveLaunchshopTheme(callable $getValue): string
-    {
-        $sessionData = session('data');
-        $rawSelectedTemplate = $getValue('selected_template')
-            ?: ($getValue('template')
-            ?: ($getValue('template_slug')
-            ?: ($getValue('theme')
-            ?: (session()->get('selected_template')
-            ?: (is_array($sessionData) ? ($sessionData['selected_template'] ?? null) : null)))));
-
-        $themeAliasMap = [
-            'multipurpose' => 'manti',
-            'manti'        => 'manti',
-            'grocery'      => 'vegetables',
-            'vegetables'   => 'vegetables',
-            'grocery2'     => 'grocery2',
-            'ecomgrocery'  => 'grocery2',
-            'electronics'  => 'electronics',
-            'electi'       => 'electronics',
-            'fashion'      => 'fashion',
-            'fashclo'      => 'fashion',
-            'furniture'    => 'furniture',
-            'furial'       => 'furniture',
-            'clothing'     => 'clothing',
-            'skinflow'     => 'skinflow',
-            'beauty'       => 'skinflow',
-            'jewellery'    => 'jewellery',
-            'pet'          => 'pet',
-            'petrashop'    => 'pet',
-            'kids'         => 'kids',
-            'kidsfa'       => 'kids',
-        ];
-
-        $selectedTheme = null;
-        if (!empty($rawSelectedTemplate)) {
-            $cleanKey = strtolower(trim((string) $rawSelectedTemplate));
-            if (isset($themeAliasMap[$cleanKey])) {
-                $selectedTheme = $themeAliasMap[$cleanKey];
-            } else {
-                $templateUser = User::where('username', $cleanKey)
-                    ->orWhere('email', $cleanKey)
-                    ->orWhere('shop_name', 'like', "%{$cleanKey}%")
-                    ->first();
-                if ($templateUser) {
-                    $templateTheme = BasicSetting::where('user_id', $templateUser->id)->value('theme');
-                    if (!empty($templateTheme)) {
-                        $selectedTheme = $templateTheme;
-                    }
-                }
-            }
-        }
-
-        return $selectedTheme ?: 'vegetables';
     }
 }
 
