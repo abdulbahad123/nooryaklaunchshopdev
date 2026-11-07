@@ -54,8 +54,8 @@ class PwaController extends Controller
             return ['start_url' => '/', 'scope' => '/'];
         }
 
-        // Check if tenant subdomain (e.g. mercado.saasreselling.in)
-        $tenantBaseHosts = ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
+        // Check if tenant subdomain (e.g. newstore3.launchshop.in, mercado.saasreselling.in)
+        $tenantBaseHosts = ['launchshop.in', 'launchshop.top', 'saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
         if (env('WEBSITE_HOST')) {
             $tenantBaseHosts[] = strtolower(str_replace('www.', '', env('WEBSITE_HOST')));
         }

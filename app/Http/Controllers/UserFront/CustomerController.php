@@ -388,37 +388,57 @@ class CustomerController extends Controller
 
     public function resetPassword(Request $request, $domain = null)
     {
-        if (empty($request->token)) {
+        $token = $request->query('token') ?: $request->input('token');
+        if (empty($token)) {
+            Session::flash('error', __('Invalid or expired reset link.'));
             return redirect()->route('front.index');
         }
-        $user = getUser();
-        return view('user-front.customer.reset-password');
+        $user = getUser() ?: getRootUser();
+        return view('user-front.customer.reset-password', compact('token', 'user'));
     }
 
     public function resetPasswordSubmit(Request $request, $domain = null)
     {
-        $user = getUser();
         $keywords = Common::get_keywords();
+        $token = $request->input('token') ?: $request->query('token');
+
         $rules = [
-            'new_password' => 'required|confirmed',
+            'new_password' => 'required|confirmed|min:6',
             'new_password_confirmation' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
+            return redirect()->back()->withInput()->withErrors($validator);
         }
 
-        $user = Customer::where('verification_token', $request->token)->where('user_id', $user->id)->first();
-        if (empty($user)) {
-            Session::flash('error', $keywords['Something went wrong'] ?? __('Something went wrong'));
-            return back();
+        if (empty($token)) {
+            Session::flash('error', $keywords['Invalid or expired reset link. Please request a new one.'] ?? __('Invalid or expired reset link. Please request a new one.'));
+            return back()->withInput();
         }
-        $user->update([
-            'password' => Hash::make($request->new_password),
-            'verification_token' => null,
-        ]);
-        Session::flash('success', $keywords['Updated Successfully'] ?? __('Updated Successfully'));
+
+        $rootUser = getRootUser() ?: getUser();
+        $customer = null;
+
+        if ($rootUser && isset($rootUser->id)) {
+            $customer = Customer::where('verification_token', $token)->where('user_id', $rootUser->id)->first();
+        }
+
+        if (empty($customer)) {
+            // Failsafe: verification_token is globally unique (uniqid)
+            $customer = Customer::where('verification_token', $token)->first();
+        }
+
+        if (empty($customer)) {
+            Session::flash('error', $keywords['This password reset link is invalid or has already been used. Please request a new one.'] ?? __('This password reset link is invalid or has already been used. Please request a new one.'));
+            return back()->withInput();
+        }
+
+        $customer->password = Hash::make($request->new_password);
+        $customer->verification_token = null;
+        $customer->save();
+
+        Session::flash('success', $keywords['Password reset successfully! You can now log in with your new password.'] ?? __('Password reset successfully! You can now log in with your new password.'));
         return redirect()->route('customer.login', getParam());
     }
 

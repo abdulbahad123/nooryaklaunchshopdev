@@ -26,10 +26,13 @@
               <p class="auth-card-subtitle mb-0 text-muted">{{ __('Create a new secure password for your account') }}</p>
             </div>
 
-            <form id="authForm" action="{{ route('customer.reset_password_submit', getParam()) }}" method="POST">
+            @php
+              $currentToken = $token ?? (request()->input('token') ?? old('token'));
+            @endphp
+            <form id="authForm" action="{{ route('customer.reset_password_submit', array_merge([getParam()], !empty($currentToken) ? ['token' => $currentToken] : [])) }}" method="POST">
               @csrf
-              <input type="hidden" name="user_id" value="{{ $user->id }}">
-              <input type="hidden" name="token" value="{{ request()->input('token') }}">
+              <input type="hidden" name="user_id" value="{{ $user->id ?? '' }}">
+              <input type="hidden" name="token" value="{{ $currentToken }}">
 
               <!-- New Password -->
               <div class="form-group modern-input-group mb-3">

@@ -181,6 +181,15 @@
       return;
     }
 
+    var isDesktop = !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    if (isDesktop) {
+      showPwaFallback(
+        "Install App on Computer",
+        "To install this app on your PC or Mac, click the Install icon in the right side of your address bar (next to the bookmark star), or click Chrome Menu (⋮) → 'Install App'."
+      );
+      return;
+    }
+
     showPwaFallback(
       {!! json_encode($pwaTextDefaultTitle) !!},
       {!! json_encode($pwaTextDefaultMsg) !!}

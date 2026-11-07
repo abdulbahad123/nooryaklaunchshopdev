@@ -16,7 +16,7 @@ if (str_starts_with($requestHost, 'launchshop.') && !in_array($requestHost, ['la
 }
 
 $cleanRequestHost = preg_replace('/^(launchshop|checkout|www|app|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $requestHost);
-if ($cleanRequestHost === 'in' || $cleanRequestHost === 'com' || str_ends_with($requestHost, 'launchshop.in') || in_array($requestHost, ['launchshop.in', 'www.launchshop.in'])) {
+if ($cleanRequestHost === 'in' || $cleanRequestHost === 'com' || in_array($requestHost, ['launchshop.in', 'www.launchshop.in', 'launchshop.top', 'www.launchshop.top'])) {
     $cleanRequestHost = 'launchshop.in';
 }
 
@@ -26,6 +26,10 @@ $appHost = strtolower((string) parse_url(env('APP_URL', ''), PHP_URL_HOST));
 $tenantBaseHosts = array_values(array_unique(array_filter([
     'localhost',
     '127.0.0.1',
+    'launchshop.in',
+    'launchshop.top',
+    'saasreselling.com',
+    'saasreselling.in',
     $envHost,
     $appHost,
     $cleanRequestHost,
