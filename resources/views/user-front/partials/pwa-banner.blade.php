@@ -127,16 +127,20 @@
 
   function triggerPwaInstall() {
     if (window.deferredPwaPrompt) {
-      window.deferredPwaPrompt.prompt();
-      window.deferredPwaPrompt.userChoice.then(function(result) {
-        if (result && result.outcome === 'accepted') {
-          try { localStorage.setItem('pwa_installed', '1'); } catch(e) {}
-          dismissPwaBanner();
-          updatePwaInstallUi();
-        }
-        window.deferredPwaPrompt = null;
-      });
-      return;
+      try {
+        window.deferredPwaPrompt.prompt();
+        window.deferredPwaPrompt.userChoice.then(function(result) {
+          if (result && result.outcome === 'accepted') {
+            try { localStorage.setItem('pwa_installed', '1'); } catch(e) {}
+            dismissPwaBanner();
+            updatePwaInstallUi();
+          }
+          window.deferredPwaPrompt = null;
+        });
+        return;
+      } catch (err) {
+        console.warn('PWA prompt error:', err);
+      }
     }
 
     var isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

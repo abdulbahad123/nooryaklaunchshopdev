@@ -59,6 +59,17 @@ Route::get('myfatoorah/cancel', 'MyFatoorahController@cancel')->name('myfatoorah
 
 Route::get('/manifest.json', 'PwaController@manifest');
 Route::get('/pwa-icon/{size}', 'PwaController@icon')->where('size', '[0-9]+');
+Route::get('/sw.js', function () {
+    $swPath = public_path('sw.js');
+    if (!file_exists($swPath)) {
+        return response("self.addEventListener('fetch', function(e){});", 200, ['Content-Type' => 'application/javascript']);
+    }
+    return response()->file($swPath, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+        'Service-Worker-Allowed' => '/',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+});
 
 Route::get('/invoice', 'Front\FrontendController@invoice')->name('front.invoice');
 

@@ -661,4 +661,168 @@ class Common
             return $body;
         }
     }
+
+    /**
+     * Send instant order status notification email (Pending, Completed, Processing, Rejected) to customer's billing email.
+     */
+    public static function sendOrderStatusEmail($po, $root_user, $newStatus)
+    {
+        try {
+            $user_id = $root_user->id ?? ($po->user_id ?? null);
+            $billingEmail = !empty($po->billing_email) ? trim($po->billing_email) : null;
+            if (empty($billingEmail) && !empty($po->customer_id)) {
+                $cust = \App\Models\Customer::where('id', $po->customer_id)->first();
+                if ($cust) {
+                    $billingEmail = trim($cust->email);
+                }
+            }
+            if (empty($billingEmail)) {
+                return false;
+            }
+
+            $customerName = trim(($po->billing_fname ?? '') . ' ' . ($po->billing_lname ?? ''));
+            if (empty($customerName) && !empty($po->customer_id)) {
+                $cust = $cust ?? \App\Models\Customer::where('id', $po->customer_id)->first();
+                if ($cust) {
+                    $customerName = trim(($cust->first_name ?? '') . ' ' . ($cust->last_name ?? ''));
+                }
+            }
+            if (empty($customerName)) {
+                $customerName = 'Valued Customer';
+            }
+
+            $storeTitle = $root_user->shop_name ?? $root_user->username ?? 'Our Store';
+            $statusFormatted = ucfirst(strtolower($newStatus));
+
+            // Load user template if configured
+            $mail_template = \App\Models\UserEmailTemplate::where([['user_id', $user_id], ['email_type', 'product_order_status']])->first();
+            $subject = $mail_template && !empty($mail_template->email_subject)
+                ? str_replace(['{order_number}', '{order_status}', '{website_title}'], [$po->order_number, $statusFormatted, $storeTitle], $mail_template->email_subject)
+                : ("Update on your Order #{$po->order_number}: {$statusFormatted}");
+
+            $userBs = \App\Models\User\BasicSetting::where('user_id', $user_id)->first();
+            $brandColor = !empty($userBs->base_color) ? '#' . str_replace('#', '', $userBs->base_color) : '#059669';
+
+            $statusColor = '#059669';
+            if (in_array(strtolower($newStatus), ['rejected', 'cancelled'])) {
+                $statusColor = '#dc2626';
+            } elseif (in_array(strtolower($newStatus), ['pending'])) {
+                $statusColor = '#d97706';
+            } elseif (in_array(strtolower($newStatus), ['processing'])) {
+                $statusColor = '#2563eb';
+            }
+
+            $invoiceUrl = !empty($po->invoice_number) ? asset('assets/front/invoices/' . $po->invoice_number) : '';
+
+            $bodyHtml = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f1f5f9; margin: 0; padding: 15px; color: #1e293b; }
+                    .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+                    .header-bar { height: 6px; background-color: ' . $brandColor . '; }
+                    .header { padding: 24px 20px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+                    .status-banner { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 24px 20px; text-align: center; }
+                    .status-badge { display: inline-block; background-color: ' . $statusColor . '; color: #ffffff; font-size: 13px; font-weight: 700; text-transform: uppercase; padding: 5px 14px; border-radius: 9999px; letter-spacing: 0.5px; margin-bottom: 10px; }
+                    .content { padding: 24px 20px; font-size: 14px; line-height: 1.6; color: #334155; }
+                    .info-box { background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 16px; margin: 18px 0; }
+                    .btn-invoice { display: inline-block; background-color: ' . $brandColor . '; color: #ffffff !important; padding: 12px 24px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 13px; margin-top: 10px; }
+                    .footer { background: #f8fafc; padding: 18px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+                    @media only screen and (max-width: 600px) {
+                        body { padding: 0 !important; background: #fff !important; }
+                        .card { width: 100% !important; border: none !important; border-radius: 0 !important; }
+                        .content { padding: 18px 14px !important; }
+                        .btn-invoice { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <div class="header-bar"></div>
+                    <div class="header">
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a;">' . htmlspecialchars($storeTitle) . '</h2>
+                    </div>
+                    <div class="status-banner">
+                        <span class="status-badge">Order ' . $statusFormatted . '</span>
+                        <h3 style="margin: 6px 0 0; font-size: 18px; font-weight: 700; color: #0f172a;">Your Order is ' . $statusFormatted . '</h3>
+                    </div>
+                    <div class="content">
+                        <p style="margin-top: 0;">Hi <strong>' . htmlspecialchars($customerName) . '</strong>,</p>
+                        <p>We are writing to inform you that your order <strong>#' . htmlspecialchars($po->order_number) . '</strong> status has been updated to: <strong style="color: ' . $statusColor . ';">' . $statusFormatted . '</strong>.</p>
+                        
+                        <div class="info-box">
+                            <table width="100%" cellpadding="4" cellspacing="0" style="font-size: 13px; color: #475569;">
+                                <tr>
+                                    <td><strong>Order Number:</strong></td>
+                                    <td align="right">#' . htmlspecialchars($po->order_number) . '</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Order Status:</strong></td>
+                                    <td align="right" style="font-weight: 700; color: ' . $statusColor . ';">' . $statusFormatted . '</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Payment Method:</strong></td>
+                                    <td align="right">' . htmlspecialchars(ucfirst($po->method)) . '</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Amount:</strong></td>
+                                    <td align="right" style="font-weight: 700; color: #0f172a;">' . ($po->currency_sign ?? '₹') . number_format((float)$po->total, 2) . '</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Billing Email:</strong></td>
+                                    <td align="right">' . htmlspecialchars($billingEmail) . '</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        ' . (!empty($invoiceUrl) ? '
+                        <div style="text-align: center; margin: 20px 0;">
+                            <a href="' . $invoiceUrl . '" target="_blank" class="btn-invoice">📥 Download Updated Invoice (PDF)</a>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 8px;">Your official invoice is also attached to this email.</div>
+                        </div>' : '') . '
+
+                        <p style="margin-bottom: 0;">If you have any questions or require support, simply reply to this email.</p>
+                    </div>
+                    <div class="footer">
+                        &copy; ' . date('Y') . ' ' . htmlspecialchars($storeTitle) . '. All rights reserved.
+                    </div>
+                </div>
+            </body>
+            </html>
+            ';
+
+            $info = \Illuminate\Support\Facades\DB::table('basic_extendeds')
+                ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
+                ->first();
+
+            $data = [
+                'smtp_status'   => $info ? $info->is_smtp : 1,
+                'smtp_host'     => $info->smtp_host ?? env('MAIL_HOST'),
+                'smtp_port'     => $info->smtp_port ?? env('MAIL_PORT'),
+                'encryption'    => $info->encryption ?? env('MAIL_ENCRYPTION'),
+                'smtp_username' => $info->smtp_username ?? env('MAIL_USERNAME'),
+                'smtp_password' => $info->smtp_password ?? env('MAIL_PASSWORD'),
+                'from_mail'     => $info->from_mail ?? env('MAIL_FROM_ADDRESS', 'admin@saasreselling.com'),
+                'from_name'     => $storeTitle,
+                'recipient'     => $billingEmail,
+                'subject'       => $subject,
+                'body'          => $bodyHtml,
+            ];
+
+            if (!empty($po->invoice_number)) {
+                $invFile = public_path('assets/front/invoices/' . $po->invoice_number);
+                if (file_exists($invFile)) {
+                    $data['invoice'] = $invFile;
+                }
+            }
+
+            BasicMailer::sendMail($data);
+            return true;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('sendOrderStatusEmail Exception: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

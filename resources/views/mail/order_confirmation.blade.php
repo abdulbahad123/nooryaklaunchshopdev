@@ -193,6 +193,28 @@
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .text-left { text-align: left; }
+
+        @media only screen and (max-width: 600px) {
+            body { padding: 0 !important; background-color: #ffffff !important; }
+            .email-wrapper { padding: 6px 2px !important; background-color: #ffffff !important; }
+            .email-container { max-width: 100% !important; width: 100% !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
+            .email-header { padding: 18px 14px 14px 14px !important; }
+            .hero-banner { padding: 18px 14px !important; }
+            .hero-title { font-size: 19px !important; }
+            .hero-subtitle { font-size: 13px !important; }
+            .content-body { padding: 16px 12px !important; }
+            .info-grid td { padding: 10px 10px !important; font-size: 12px !important; }
+            .section-title { font-size: 14px !important; margin-bottom: 10px !important; }
+            .items-table th, .items-table td { padding: 8px 6px !important; font-size: 12px !important; }
+            .totals-table { max-width: 100% !important; width: 100% !important; margin: 0 0 20px 0 !important; }
+            .totals-table td { padding: 5px 8px !important; font-size: 13px !important; }
+            .responsive-address-col { display: block !important; width: 100% !important; box-sizing: border-box !important; margin-bottom: 14px !important; }
+            .responsive-address-spacer { display: none !important; }
+            .address-box { padding: 14px !important; font-size: 13px !important; }
+            .btn-invoice { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; padding: 14px 16px !important; font-size: 14px !important; }
+            .cta-box { padding: 18px 0 10px 0 !important; }
+            .email-footer { padding: 20px 14px !important; }
+        }
     </style>
 </head>
 <body>
@@ -328,7 +350,7 @@
                 <!-- Addresses Grid -->
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
                     <tr>
-                        <td width="48%" valign="top">
+                        <td width="48%" valign="top" class="responsive-address-col">
                             <div class="section-title">Billing Address</div>
                             <div class="address-box">
                                 <strong>{{ $order->billing_fname }} {{ $order->billing_lname }}</strong><br>
@@ -339,8 +361,8 @@
                                 &#9993; {{ $order->billing_email }}
                             </div>
                         </td>
-                        <td width="4%">&nbsp;</td>
-                        <td width="48%" valign="top">
+                        <td width="4%" class="responsive-address-spacer">&nbsp;</td>
+                        <td width="48%" valign="top" class="responsive-address-col">
                             <div class="section-title">Shipping Address</div>
                             <div class="address-box">
                                 <strong>{{ $order->shipping_fname ?: $order->billing_fname }} {{ $order->shipping_lname ?: $order->billing_lname }}</strong><br>

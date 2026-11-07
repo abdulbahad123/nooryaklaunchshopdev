@@ -19,8 +19,8 @@
   <meta name="description" content="@yield('meta-description')">
   <meta name="keywords" content="@yield('meta-keywords')">
   <link rel="canonical" href="{{ canonicalUrl() }}">
-  <link rel="manifest" href="{{ url('/manifest.json?u=' . ($user->username ?? 'LaunchShop')) }}">
-  <link rel="apple-touch-icon" href="{{ url('/pwa-icon/192?u=' . ($user->username ?? 'LaunchShop')) }}">
+  <link rel="manifest" href="/manifest.json?u={{ $user->username ?? 'LaunchShop' }}" crossorigin="use-credentials">
+  <link rel="apple-touch-icon" href="/pwa-icon/192?u={{ $user->username ?? 'LaunchShop' }}">
   <meta name="theme-color" content="#{{ $userBs->base_color ?? '007bff' }}">
 
   {{-- PWA: capture beforeinstallprompt EARLY (fires before DOM ready, before bottom scripts) --}}

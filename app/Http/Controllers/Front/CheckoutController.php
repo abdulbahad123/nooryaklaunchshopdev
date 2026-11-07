@@ -769,19 +769,41 @@ class CheckoutController extends Controller
             ];
             $mailer->mailFromAdmin($data);
 
+            // Generate official membership invoice PDF
+            $invoiceFileName = null;
+            try {
+                $invoiceFileName = Common::makeInvoice(
+                    $request,
+                    "membership",
+                    $user,
+                    $userPassword,
+                    $amount,
+                    $getValue('payment_method') ?? 'Online',
+                    $getValue('phone') ?? $user->phone,
+                    $be->base_currency_symbol_position ?? 'left',
+                    $be->base_currency_symbol ?? '₹',
+                    $be->base_currency_text ?? 'INR',
+                    $transaction_id,
+                    $planName,
+                    $status
+                );
+            } catch (\Throwable $invEx) {
+                Log::warning('Membership invoice generation failed: ' . $invEx->getMessage());
+            }
+
             // ── WhatsApp welcome message with store and plan details ──
             try {
                 $cleanPhone  = preg_replace('/[^0-9]/', '', $getValue('phone') ?? '');
                 $cleanCode   = preg_replace('/[^0-9]/', '', $getValue('country_code') ?? '');
                 $mobileNo    = (strpos($cleanPhone, $cleanCode) === 0) ? $cleanPhone : $cleanCode . $cleanPhone;
-                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $userPassword, $planName, $planPrice, $user->shop_name, $user->email, $user->phone);
+                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $userPassword, $planName, $planPrice, $user->shop_name, $user->email, $user->phone, $invoiceFileName);
             } catch (\Exception $waEx) {
                 Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
             }
 
             // ── Send separate beautifully formatted credentials email ──
             try {
-                $mailer->sendWelcomeCredentialsEmail($user, $userPassword, $planName, $planPrice);
+                $mailer->sendWelcomeCredentialsEmail($user, $userPassword, $planName, $planPrice, $invoiceFileName);
             } catch (\Exception $emailEx) {
                 Log::warning('Welcome credentials email send failed: ' . $emailEx->getMessage());
             }
@@ -958,7 +980,7 @@ class CheckoutController extends Controller
     /**
      * Send a welcome WhatsApp message with account credentials and store details after registration.
      */
-    private function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone): void
+    private function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $invoiceFileName = null): void
     {
         $reqHost = strtolower(str_replace('www.', '', request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? '')));
         $cleanHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|ecombuilder|ecom-builder)\./i', '', $reqHost);
@@ -974,6 +996,12 @@ class CheckoutController extends Controller
         }
 
         try {
+            $planWithPrice = $planName . ($planPrice ? " ({$planPrice})" : "");
+            if (!empty($invoiceFileName)) {
+                $invUrl = url('assets/front/invoices/' . $invoiceFileName);
+                $planWithPrice .= "\n📄 *Membership Invoice:* " . $invUrl;
+            }
+
             \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
                 $mobileNo,
                 $shopName ?: $username,
@@ -981,7 +1009,7 @@ class CheckoutController extends Controller
                 $loginLink,
                 $email,
                 $password,
-                $planName . ($planPrice ? " ({$planPrice})" : ""),
+                $planWithPrice,
                 'Ecombuilder'
             );
         } catch (\Throwable $waEx) {

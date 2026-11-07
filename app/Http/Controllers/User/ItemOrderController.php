@@ -109,37 +109,8 @@ class ItemOrderController extends Controller
         $invoice = Common::generateInvoice($po, $root_user);
         $po->update(['invoice_number' => $invoice]);
 
-        //send mail
-        $mail_template = UserEmailTemplate::where([['user_id', $user_id], ['email_type', 'product_order_status']])->first();
-        $mail_subject = $mail_template->email_subject;
-        $mail_body = $mail_template->email_body;
-
-        $info = DB::table('basic_extendeds')
-            ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
-            ->first();
-
-        $mail_body = str_replace('{customer_name}', $f_name . ' ' . $l_name, $mail_body);
-        $mail_body = str_replace('{order_status}', $request->order_status, $mail_body);
-        $mail_body = str_replace('{website_title}', $root_user->shop_name ?? $root_user->username, $mail_body);
-
-        $to = $email;
-
-        /******** Send mail to user ********/
-        $data = [];
-        $data['smtp_status'] = $info->is_smtp;
-        $data['smtp_host'] = $info->smtp_host;
-        $data['smtp_port'] = $info->smtp_port;
-        $data['encryption'] = $info->encryption;
-        $data['smtp_username'] = $info->smtp_username;
-        $data['smtp_password'] = $info->smtp_password;
-
-        //mail info in array
-        $data['from_mail'] = $info->from_mail;
-        $data['recipient'] = $to;
-        $data['subject'] = $mail_subject;
-        $data['body'] = $mail_body;
-        $data['invoice'] = public_path('assets/front/invoices/' . $po->invoice_number);
-        BasicMailer::sendMail($data);
+        // Send order status notification to customer's billing email
+        Common::sendOrderStatusEmail($po, $root_user, $request->order_status);
 
         Session::flash('success', __('Updated Successfully'));
         return back();
@@ -407,49 +378,9 @@ class ItemOrderController extends Controller
             $invoice = Common::generateInvoice($po, $root_user);
             $po->update(['invoice_number' => $invoice]);
 
-            // send mail
+            // send order status update email to billing email
             try {
-                $customer = Customer::where('id', $po->customer_id)->first();
-                if ($customer) {
-                    $f_name = $customer->first_name;
-                    $l_name = $customer->last_name;
-                    $email = $customer->email;
-                } else {
-                    $f_name = $po->billing_fname;
-                    $l_name = $po->billing_lname;
-                    $email = $po->billing_email;
-                }
-
-                $mail_template = UserEmailTemplate::where([['user_id', $user_id], ['email_type', 'product_order_status']])->first();
-                if ($mail_template) {
-                    $mail_subject = $mail_template->email_subject;
-                    $mail_body = $mail_template->email_body;
-
-                    $info = DB::table('basic_extendeds')
-                        ->select('is_smtp', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
-                        ->first();
-
-                    $mail_body = str_replace('{customer_name}', $f_name . ' ' . $l_name, $mail_body);
-                    $mail_body = str_replace('{order_status}', 'processing', $mail_body);
-                    $mail_body = str_replace('{website_title}', $root_user->shop_name ?? $root_user->username, $mail_body);
-
-                    $to = $email;
-
-                    $data = [];
-                    $data['smtp_status'] = $info->is_smtp;
-                    $data['smtp_host'] = $info->smtp_host;
-                    $data['smtp_port'] = $info->smtp_port;
-                    $data['encryption'] = $info->encryption;
-                    $data['smtp_username'] = $info->smtp_username;
-                    $data['smtp_password'] = $info->smtp_password;
-
-                    $data['from_mail'] = $info->from_mail;
-                    $data['recipient'] = $to;
-                    $data['subject'] = $mail_subject;
-                    $data['body'] = $mail_body;
-                    $data['invoice'] = public_path('assets/front/invoices/' . $po->invoice_number);
-                    BasicMailer::sendMail($data);
-                }
+                Common::sendOrderStatusEmail($po, $root_user, 'processing');
             } catch (\Exception $mailEx) {
                 \Log::error('Bulk processing mail send failed: ' . $mailEx->getMessage());
             }

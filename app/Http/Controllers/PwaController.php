@@ -42,6 +42,19 @@ class PwaController extends Controller
             return ['start_url' => '/', 'scope' => '/'];
         }
 
+        // Any custom domain (like cuckroachjanlaparly.top) is served from root
+        $mainHosts = ['launchshop.in', 'launchshop.top', 'saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
+        $isMainPlatformHost = false;
+        foreach ($mainHosts as $mh) {
+            if ($host === $mh || str_ends_with($host, '.' . $mh)) {
+                $isMainPlatformHost = true;
+                break;
+            }
+        }
+        if (!$isMainPlatformHost) {
+            return ['start_url' => '/', 'scope' => '/'];
+        }
+
         // Check if tenant subdomain (e.g. mercado.saasreselling.in)
         $tenantBaseHosts = ['saasreselling.com', 'saasreselling.in', 'localhost', '127.0.0.1'];
         if (env('WEBSITE_HOST')) {
@@ -78,6 +91,11 @@ class PwaController extends Controller
 
         $iconQuery = $username !== '' ? '?u=' . urlencode($username) : '';
 
+        // Use relative URLs so that icons match current origin, HTTPS, and custom domain
+        $icon192 = '/pwa-icon/192' . $iconQuery;
+        $icon512 = '/pwa-icon/512' . $iconQuery;
+        $iconMaskable = '/pwa-icon/512' . $iconQuery . ($iconQuery ? '&' : '?') . 'maskable=1';
+
         $manifest = [
             'name'             => $shopName,
             'short_name'       => mb_substr($shopName, 0, 12),
@@ -92,19 +110,19 @@ class PwaController extends Controller
             'categories'       => ['shopping'],
             'icons'            => [
                 [
-                    'src'     => url('/pwa-icon/192' . $iconQuery),
+                    'src'     => $icon192,
                     'sizes'   => '192x192',
                     'type'    => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src'     => url('/pwa-icon/512' . $iconQuery),
+                    'src'     => $icon512,
                     'sizes'   => '512x512',
                     'type'    => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src'     => url('/pwa-icon/512' . $iconQuery . ($iconQuery ? '&' : '?') . 'maskable=1'),
+                    'src'     => $iconMaskable,
                     'sizes'   => '512x512',
                     'type'    => 'image/png',
                     'purpose' => 'maskable',
@@ -114,6 +132,8 @@ class PwaController extends Controller
 
         return response()->json($manifest, 200, [
             'Content-Type' => 'application/manifest+json',
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'GET, OPTIONS',
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
