@@ -19,7 +19,7 @@
   <meta name="description" content="@yield('meta-description')">
   <meta name="keywords" content="@yield('meta-keywords')">
   <link rel="canonical" href="{{ canonicalUrl() }}">
-  <link rel="manifest" href="/manifest.json?u={{ $user->username ?? 'LaunchShop' }}">
+  <link rel="manifest" href="/site.webmanifest?u={{ $user->username ?? 'LaunchShop' }}">
   <link rel="apple-touch-icon" href="/pwa-icon/192?u={{ $user->username ?? 'LaunchShop' }}">
   <meta name="theme-color" content="#{{ $userBs->base_color ?? '007bff' }}">
 
