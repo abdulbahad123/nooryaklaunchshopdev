@@ -453,6 +453,71 @@ class RazorpayController extends Controller
                     $token = \Illuminate\Support\Str::random(32);
                     \Illuminate\Support\Facades\DB::update("UPDATE `{$waDb}`.users SET secret_key = ? WHERE id = ?", [$token, $uid]);
                 }
+
+                // 6. Dual-share OTP, credentials, and plan activation to Email & WhatsApp
+                try {
+                    $waOtp = (string) rand(100000, 999999);
+                    $uInfo = \Illuminate\Support\Facades\DB::select("SELECT email, fullname, phone FROM `{$waDb}`.users WHERE id = ? LIMIT 1", [$uid]);
+                    $targetEmail = !empty($uInfo[0]->email) ? $uInfo[0]->email : ($sessionData['email'] ?? null);
+                    $targetPhone = !empty($uInfo[0]->phone) ? $uInfo[0]->phone : ($sessionData['phone'] ?? null);
+                    $targetName  = !empty($uInfo[0]->fullname) ? $uInfo[0]->fullname : 'Customer';
+
+                    if (!empty($targetPhone)) {
+                        $waMsg = "🎉 *Congratulations! WhatsApp Bulk Plan Activated!* 🚀\n\n"
+                            . "Hello *" . $targetName . "*,\n"
+                            . "Your WhatsApp Bulk subscription has been successfully activated.\n\n"
+                            . "📦 *Plan:* " . $planName . " (" . ucfirst($cycle) . ")\n"
+                            . "💰 *Amount:* ₹" . number_format($price) . "\n"
+                            . "🆔 *Payment ID:* " . $razorpayPaymentId . "\n"
+                            . "🔐 *Important Security / Login OTP:* `" . $waOtp . "`\n"
+                            . "_(Use this OTP code for instant account verification & secure login)_\n\n"
+                            . "– Team WhatsApp Bulk";
+
+                        \App\Services\WhatsAppNotificationService::sendMessage($targetPhone, $waMsg);
+                    }
+
+                    if (!empty($targetEmail)) {
+                        $emailHtml = "<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;background:#f8fafc;padding:24px;'>"
+                            . "<div style='max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;border:1px solid #e2e8f0;'>"
+                            . "<h2 style='color:#10b981;margin-top:0;'>🎉 WhatsApp Bulk Plan Activated!</h2>"
+                            . "<p>Hi <strong>" . htmlspecialchars($targetName) . "</strong>,</p>"
+                            . "<p>Your payment was successful and your WhatsApp Bulk subscription is now active.</p>"
+                            . "<div style='background:#fff7ed;border:2px dashed #f97316;border-radius:10px;padding:16px;text-align:center;margin:20px 0;'>"
+                            . "<div style='font-size:12px;font-weight:700;color:#c2410c;text-transform:uppercase;'>🔐 Important Security / Login OTP</div>"
+                            . "<div style='font-size:28px;font-weight:900;letter-spacing:5px;color:#ea580c;margin:6px 0;'>" . $waOtp . "</div>"
+                            . "<div style='font-size:12px;color:#9a3412;'>Use this OTP for instant login or verification. Valid for 24 hours.</div>"
+                            . "</div>"
+                            . "<p><strong>Plan:</strong> " . htmlspecialchars($planName) . " (" . ucfirst($cycle) . ")<br>"
+                            . "<strong>Amount Paid:</strong> ₹" . number_format($price) . "<br>"
+                            . "<strong>Transaction ID:</strong> " . htmlspecialchars($razorpayPaymentId) . "</p>"
+                            . "<p>Best regards,<br><strong>Team WhatsApp Bulk</strong></p>"
+                            . "</div></body></html>";
+
+                        $be = \App\Models\BasicExtended::first();
+                        $mailData = [
+                            'smtp_status'   => $be->is_smtp ?? 1,
+                            'smtp_host'     => (!empty($be->smtp_host) && !str_contains($be->smtp_host, 'metroshop.in')) ? $be->smtp_host : env('MAIL_HOST', 'mail.saasreselling.com'),
+                            'smtp_username' => (!empty($be->smtp_username) && !str_contains($be->smtp_username, 'metroshop.in')) ? $be->smtp_username : env('MAIL_USERNAME', 'admin@saasreselling.com'),
+                            'smtp_password' => $be->smtp_password ?? env('MAIL_PASSWORD', 'Admin@nooryak'),
+                            'encryption'    => $be->encryption ?? env('MAIL_ENCRYPTION', 'ssl'),
+                            'smtp_port'     => $be->smtp_port ?? env('MAIL_PORT', 465),
+                            'from_mail'     => (!empty($be->from_mail) && !str_contains($be->from_mail, 'metroshop.in')) ? $be->from_mail : 'admin@saasreselling.com',
+                            'from_name'     => 'WhatsApp Bulk',
+                            'recipient'     => $targetEmail,
+                            'subject'       => '🎉 WhatsApp Bulk Plan Activated & Security OTP',
+                            'body'          => $emailHtml,
+                        ];
+
+                        try {
+                            \App\Http\Helpers\BasicMailer::sendMail($mailData);
+                        } catch (\Throwable $mEx) {
+                            $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: WhatsApp Bulk <admin@saasreselling.com>\r\n";
+                            @mail($targetEmail, '🎉 WhatsApp Bulk Plan Activated & Security OTP', $emailHtml, $headers);
+                        }
+                    }
+                } catch (\Throwable $dualEx) {
+                    \Illuminate\Support\Facades\Log::warning("WABulk Dual-Share notification warning: " . $dualEx->getMessage());
+                }
             } catch (\Throwable $ex) {
                 \Illuminate\Support\Facades\Log::error("WABulk Razorpay Success DB activation error: " . $ex->getMessage());
             }

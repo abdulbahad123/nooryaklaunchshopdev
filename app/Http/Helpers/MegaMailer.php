@@ -72,7 +72,7 @@ class MegaMailer
         }
 
         if ($data['templateType'] == 'email_verification' && array_key_exists('password', $data)) {
-            $login_link = array_key_exists('login_link', $data) ? $data['login_link'] : route('user.login');
+            $login_link = array_key_exists('login_link', $data) ? $data['login_link'] : (\Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login'));
             $plan_info = '';
             if (array_key_exists('package_title', $data) && !empty($data['package_title'])) {
                 $plan_info = '<p style="margin: 0 0 6px 0; font-size: 14px; color: #334155;"><strong>Purchased Plan:</strong> ' . htmlspecialchars($data['package_title']) . '</p>';
@@ -317,7 +317,7 @@ class MegaMailer
     /**
      * Send a beautifully formatted welcome email containing credentials and plan details.
      */
-    public function sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName = null)
+    public function sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName = null, $otp = null)
     {
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
@@ -334,7 +334,7 @@ class MegaMailer
         } else {
             $storeLiveLink = 'https://' . $user->username . '.' . $host;
         }
-        $loginLink = route('user.login');
+        $loginLink = \Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login');
 
         // Optional invoice card if generated
         $invoiceCard = '';
@@ -347,6 +347,17 @@ class MegaMailer
                 <div>
                     <a href="' . $invoiceUrl . '" target="_blank" style="display: inline-block; padding: 8px 16px; background: #166534; color: #ffffff !important; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 13px;">📥 Download Invoice PDF</a>
                 </div>
+            </div>';
+        }
+
+        // Optional OTP highlight card
+        $otpCard = '';
+        if (!empty($otp)) {
+            $otpCard = '
+            <div style="background: #fff7ed; border: 2px dashed #f97316; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 13px; font-weight: 700; color: #c2410c; text-transform: uppercase; letter-spacing: 1px;">🔐 Important Security / Login OTP</div>
+                <div style="font-size: 32px; font-weight: 900; letter-spacing: 6px; color: #ea580c; margin: 8px 0; font-family: monospace;">' . htmlspecialchars($otp) . '</div>
+                <div style="font-size: 12px; color: #9a3412;">Use this OTP code for instant login or account verification. Valid for 24 hours.</div>
             </div>';
         }
 
@@ -384,6 +395,8 @@ class MegaMailer
                     <p class="welcome-msg">Hi <strong>' . htmlspecialchars($user->first_name) . '</strong>,</p>
                     <p class="welcome-msg">Your online store has been successfully created. Below are your store details, login credentials, and links to get started:</p>
                     
+                    ' . $otpCard . '
+
                     <div class="info-box">
                         <div class="info-row">
                             <div class="info-label">👤 Store Name:</div>
@@ -405,6 +418,11 @@ class MegaMailer
                             <div class="info-label">🔑 Password:</div>
                             <div class="info-value"><code>' . htmlspecialchars($password) . '</code></div>
                         </div>
+                        ' . (!empty($otp) ? '
+                        <div class="info-row">
+                            <div class="info-label">🔐 Security OTP:</div>
+                            <div class="info-value"><strong style="color:#ea580c;font-size:16px;letter-spacing:1px;">' . htmlspecialchars($otp) . '</strong></div>
+                        </div>' : '') . '
                         <div class="info-row">
                             <div class="info-label">📦 Plan:</div>
                             <div class="info-value">' . htmlspecialchars($planName) . ($planPrice ? ' (' . $planPrice . ')' : '') . '</div>

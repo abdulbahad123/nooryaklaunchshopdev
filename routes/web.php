@@ -140,11 +140,9 @@ Route::get('/agency-portal/login', function () {
     return redirect()->away("https://{$host}/agency-portal/login");
 });
 
-// Always ensure front.index and user.login routes exist globally to prevent RouteNotFoundException in admin/subdomain views
-if ($isWbHost || $isTenantSubdomain || $isCustomDomain) {
-    Route::get('/platform-home', 'Front\FrontendController@index')->name('front.index');
-    Route::get('/platform-login', 'User\Auth\LoginController@showLoginForm')->name('user.login');
-}
+// Always ensure front.index and user.login routes exist globally across all subdomains and hosts
+Route::get('/platform-home', 'Front\FrontendController@index')->name('front.index');
+Route::get('/platform-login', 'User\Auth\LoginController@showLoginForm')->name('user.login');
 
 // Only register main landing page routes if NOT on a tenant subdomain, custom domain or websitebuilder subdomain!
 if (!$isWbHost && !$isWaHost && !$isTenantSubdomain && !$isCustomDomain) {

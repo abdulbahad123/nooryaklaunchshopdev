@@ -616,19 +616,27 @@ class CheckoutController extends Controller
                 Log::warning('Membership invoice generation failed: ' . $invEx->getMessage());
             }
 
-            // ── WhatsApp welcome message with store, credentials, and invoice details ──
+            // Generate important security & login OTP (valid for instant login & verification)
+            $importantOtp = (string) rand(100000, 999999);
+            Session::put('otp_code', $importantOtp);
+            if (!empty($user->phone)) {
+                Session::put('otp_phone', $user->phone);
+            }
+            Session::put('otp_expires_at', time() + 86400);
+
+            // ── WhatsApp welcome message with store, credentials, OTP, and invoice details ──
             try {
                 $phoneInput = $request['phone'] ?? ($request['phone_number'] ?? ($user->phone ?? ''));
                 $countryCodeInput = $request['country_code'] ?? ($user->country_code ?? '91');
                 $mobileNo = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCodeInput);
-                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName);
+                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName, $importantOtp);
             } catch (\Exception $waEx) {
                 Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
             }
 
-            // ── Send separate beautifully formatted credentials email with invoice attached ──
+            // ── Send separate beautifully formatted credentials email with OTP & invoice attached ──
             try {
-                $mailer->sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName);
+                $mailer->sendWelcomeCredentialsEmail($user, $password, $planName, $planPrice, $invoiceFileName, $importantOtp);
             } catch (\Exception $emailEx) {
                 Log::warning('Welcome credentials email send failed: ' . $emailEx->getMessage());
             }
@@ -678,10 +686,18 @@ class CheckoutController extends Controller
                     );
                 } catch (\Throwable $invEx) {}
 
-                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $effectivePassword, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName);
+                // Generate important security & login OTP
+                $importantOtp = (string) rand(100000, 999999);
+                Session::put('otp_code', $importantOtp);
+                if (!empty($user->phone)) {
+                    Session::put('otp_phone', $user->phone);
+                }
+                Session::put('otp_expires_at', time() + 86400);
+
+                $this->sendWelcomeWhatsApp($mobileNo, $user->username, $effectivePassword, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name, $invoiceFileName, $importantOtp);
 
                 $mailer = new MegaMailer();
-                $mailer->sendWelcomeCredentialsEmail($user, $effectivePassword, $planName, $planPrice, $invoiceFileName);
+                $mailer->sendWelcomeCredentialsEmail($user, $effectivePassword, $planName, $planPrice, $invoiceFileName, $importantOtp);
             } catch (\Throwable $waEx) {
                 Log::warning('Welcome WhatsApp/Email for existing user failed: ' . $waEx->getMessage());
             }
@@ -813,7 +829,7 @@ class CheckoutController extends Controller
     /**
      * Send a welcome WhatsApp message with account credentials, store details, and invoice after registration.
      */
-    public function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $firstName = null, ?string $invoiceFileName = null): void
+    public function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $firstName = null, ?string $invoiceFileName = null, ?string $otp = null): void
     {
         $host = request()->getHost();
         $mainDomains = ['launchshop.in', 'launchshop.top', 'www.launchshop.in', 'www.launchshop.top'];
@@ -835,6 +851,10 @@ class CheckoutController extends Controller
             $invoiceSection = "\n📄 *Official Membership Invoice:* \n" . $invoiceUrl . "\n";
         }
 
+        $otpSection = !empty($otp)
+            ? "🔐 *Important Security / Login OTP:* `{$otp}`\n_(Use this OTP code for instant login or verification)_\n"
+            : '';
+
         $message = "🎉 *Congratulations! Your LaunchShop Store is Live!* 🚀\n\n"
             . "Hello *" . $greetingName . "*,\n"
             . "Congratulations on launching your store *" . $shopName . "*! Your online storefront and management dashboard are now fully ready.\n\n"
@@ -844,6 +864,7 @@ class CheckoutController extends Controller
             . "📋 *Your Login Credentials:*\n"
             . "📧 *Username / Email:* " . $username . " (" . $email . ")\n"
             . "🔑 *Password:* " . $password . "\n"
+            . $otpSection
             . "📦 *Membership Plan:* " . $planName . ($planPrice ? " (" . $planPrice . ")" : "") . "\n"
             . $invoiceSection . "\n"
             . "You can now add your products, customize your theme, and start accepting customer orders!\n\n"

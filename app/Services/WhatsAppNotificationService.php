@@ -595,7 +595,8 @@ class WhatsAppNotificationService
         string $email,
         string $password,
         ?string $planName = null,
-        string $productName = 'Ecombuilder'
+        string $productName = 'Ecombuilder',
+        ?string $otp = null
     ): array {
         $config = self::getWhatsAppConfig();
 
@@ -611,10 +612,15 @@ class WhatsAppNotificationService
         $template = !empty($config['credentials_template']) ? $config['credentials_template'] : self::DEFAULT_CREDENTIALS_TEMPLATE;
 
         $message = str_replace(
-            ['{user_name}', '{store_name}', '{email}', '{password}', '{store_url}', '{login_url}', '{product_name}', '{plan_name}'],
-            [$storeName, $storeName, $email, $password, $storeLiveLink, $loginLink, $productName, $planName ?: 'Standard Plan'],
+            ['{user_name}', '{store_name}', '{email}', '{password}', '{store_url}', '{login_url}', '{product_name}', '{plan_name}', '{otp}'],
+            [$storeName, $storeName, $email, $password, $storeLiveLink, $loginLink, $productName, $planName ?: 'Standard Plan', $otp ?: ''],
             $template
         );
+
+        if (!empty($otp) && !str_contains($message, $otp)) {
+            $otpBlock = "\n\n🔐 *Important Security / Login OTP:* `{$otp}`\n_(Use this OTP code for instant 1-click login or verification)_";
+            $message .= $otpBlock;
+        }
 
         return self::sendMessage($phone, $message, null, null, $config);
     }
