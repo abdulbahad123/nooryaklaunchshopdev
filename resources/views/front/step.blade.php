@@ -528,14 +528,14 @@
                   <div id="otp-whatsapp-badge" class="d-none mb-20">
                     <div class="whatsapp-badge-wrapper">
                       <div class="whatsapp-badge-logo">
-                        @if(!empty($bs->otp_notice_image))
-                          <img src="{{ asset('assets/front/img/' . $bs->otp_notice_image) }}" alt="Logo">
+                        @if(!empty($agency->otp_notice_image) || !empty($bs->otp_notice_image))
+                          <img src="{{ asset('assets/front/img/' . (!empty($agency->otp_notice_image) ? $agency->otp_notice_image : $bs->otp_notice_image)) }}" alt="Logo">
                         @else
                           <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Logo">
                         @endif
                       </div>
                       <div class="whatsapp-badge-content">
-                        <p class="badge-desc">{{ !empty($bs->otp_notice_text) ? $bs->otp_notice_text : __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.') }}</p>
+                        <p class="badge-desc">{{ !empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.')) }}</p>
                       </div>
                     </div>
                   </div>
@@ -1142,10 +1142,12 @@
             
             if (response.channel === 'email') {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');
-              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.')));
+              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.'))); }
             } else {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Whatsapp Number')) + ' *');
-              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.')));
+              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.'))); }
             }
             
             $btn.text(@json(__('Sent')));
@@ -1192,10 +1194,12 @@
             $('#otp-whatsapp-badge').removeClass('d-none');
             if (response.channel === 'email') {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');
-              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.')));
+              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.'))); }
             } else {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Whatsapp Number')) + ' *');
-              $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.')));
+              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.'))); }
             }
             startOtpTimer();
           } else {

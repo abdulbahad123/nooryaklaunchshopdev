@@ -174,6 +174,26 @@
   $isBlogs     = request()->routeIs('website-builder.templates.construction.blogs')    || request()->routeIs('website-builder.subdomain.blogs');
 @endphp
 
+<!-- Fast Page Preloader to prevent white screen -->
+<div id="wb-page-preloader" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0f172a;z-index:9999999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.35s ease, visibility 0.35s ease;">
+  <div class="spinner-border text-warning" role="status" style="width: 2.8rem; height: 2.8rem;"></div>
+  <p style="margin-top:14px;font-weight:700;color:#f8fafc;font-size:14px;letter-spacing:0.5px;font-family:sans-serif;">Loading {{ $agency->site_title ?? 'BuildCraft' }}...</p>
+</div>
+<script>
+  (function(){
+    function hideLoader() {
+      var p = document.getElementById('wb-page-preloader');
+      if (p) {
+        p.style.opacity = '0';
+        p.style.visibility = 'hidden';
+        setTimeout(function(){ if(p && p.parentNode) p.parentNode.removeChild(p); }, 380);
+      }
+    }
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 1500);
+  })();
+</script>
+
 @if(session('success'))
 <div style="background:var(--cn-primary);color:#fff;text-align:center;padding:12px 20px;font-weight:700;font-size:14px;position:relative;z-index:9999;">
   <i class="fa-solid fa-helmet-safety me-2"></i> {{ session('success') }}
@@ -536,7 +556,15 @@
 
     <div class="cn-footer-bottom">
       <div class="cn-footer-copy">
-        &copy; {{ date('Y') }} {{ $agency->site_title ?? 'BuildCraft' }}. All rights reserved.
+        @php
+          $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
+          $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'saasreselling');
+          $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
+        @endphp
+        &copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
+        @if(!$wbHideAttr)
+          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
+        @endif
       </div>
       <div class="cn-footer-copy text-end">
         Building Today for a Better Tomorrow. <span class="cn-footer-yellow-line"></span>

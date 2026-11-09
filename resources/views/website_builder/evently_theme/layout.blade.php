@@ -173,6 +173,26 @@
     : $defaultLogo;
 @endphp
 
+<!-- Fast Page Preloader to prevent white screen -->
+<div id="wb-page-preloader" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0f172a;z-index:9999999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.35s ease, visibility 0.35s ease;">
+  <div class="spinner-border text-warning" role="status" style="width: 2.8rem; height: 2.8rem;"></div>
+  <p style="margin-top:14px;font-weight:700;color:#f8fafc;font-size:14px;letter-spacing:0.5px;font-family:sans-serif;">Loading {{ $siteTitle }}...</p>
+</div>
+<script>
+  (function(){
+    function hideLoader() {
+      var p = document.getElementById('wb-page-preloader');
+      if (p) {
+        p.style.opacity = '0';
+        p.style.visibility = 'hidden';
+        setTimeout(function(){ if(p && p.parentNode) p.parentNode.removeChild(p); }, 380);
+      }
+    }
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 1500);
+  })();
+</script>
+
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show rounded-0 mb-0 py-3 text-center border-0 fw-bold shadow-sm" style="background: var(--ev-primary); color: #fff; z-index: 9999; font-size: 14px;">
   <i class="fa-solid fa-star me-2"></i> {{ session('success') }}
@@ -409,11 +429,11 @@
               return $u;
           };
 
-          $fbUrl = $formatSocialUrl($evSocial['facebook'] ?? '#', 'facebook');
-          $igUrl = $formatSocialUrl($evSocial['instagram'] ?? '#', 'instagram');
-          $liUrl = $formatSocialUrl($evSocial['linkedin'] ?? '#', 'linkedin');
-          $ytUrl = $formatSocialUrl($evSocial['youtube'] ?? '#', 'youtube');
-          $twUrl = $formatSocialUrl($evSocial['twitter'] ?? '', 'twitter');
+          $fbUrl = $formatSocialUrl($evSocial['facebook'] ?? ($evSocial['fb'] ?? ($evSocial['facebook_url'] ?? '#')), 'facebook');
+          $igUrl = $formatSocialUrl($evSocial['instagram'] ?? ($evSocial['ig'] ?? ($evSocial['insta'] ?? ($evSocial['instagram_url'] ?? '#'))), 'instagram');
+          $liUrl = $formatSocialUrl($evSocial['linkedin'] ?? ($evSocial['li'] ?? ($evSocial['linkedin_url'] ?? '#')), 'linkedin');
+          $ytUrl = $formatSocialUrl($evSocial['youtube'] ?? ($evSocial['yt'] ?? ($evSocial['youtube_url'] ?? '#')), 'youtube');
+          $twUrl = $formatSocialUrl($evSocial['twitter'] ?? ($evSocial['tw'] ?? ($evSocial['x'] ?? ($evSocial['twitter_url'] ?? ''))), 'twitter');
         @endphp
         <div class="ev-footer-socials">
           <a href="{{ $fbUrl }}" class="ev-social-icon" target="{{ $fbUrl !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -533,7 +553,16 @@
 
     <!-- Bottom bar -->
     <div class="ev-footer-bottom">
-      <div>&copy; {{ date('Y') }} {{ $siteTitle }}. All rights reserved.</div>
+      @php
+        $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
+        $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($siteTitle ?? 'saasreselling');
+        $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
+      @endphp
+      <div>&copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
+        @if(!$wbHideAttr)
+          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
+        @endif
+      </div>
       <div>Events Beyond Expectations <i class="fa-solid fa-gem ms-1" style="color: var(--ev-primary);"></i></div>
     </div>
   </div>

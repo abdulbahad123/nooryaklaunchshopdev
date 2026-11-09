@@ -1080,7 +1080,16 @@
     </div>
     <hr class="footer-divider">
     <div class="footer-bottom">
-      <span>{{ $settings->footer_copyright ?? '© ' . date('Y') . ' website builder. All rights reserved.' }}</span>
+      @php
+        $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
+        $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($settings->brand_name ?? 'saasreselling');
+        $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
+      @endphp
+      <span>&copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
+        @if(!$wbHideAttr)
+          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
+        @endif
+      </span>
       <span>Made with ❤️ for builders everywhere</span>
     </div>
   </div>
@@ -1371,7 +1380,30 @@
       } catch(e) {}
 
       showLaunchingModal();
-      document.getElementById('mainCheckoutForm').submit();
+      var formEl = document.getElementById('mainCheckoutForm');
+      var formData = new FormData(formEl);
+      fetch(formEl.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        }
+      }).then(function(res) {
+        return res.json();
+      }).then(function(data) {
+        if (data && data.redirect_url) {
+          var bar = document.getElementById('launchProgressBar');
+          if (bar) bar.style.width = '100%';
+          var txt = document.getElementById('launchStatusText');
+          if (txt) txt.innerText = 'Website is Live! Redirecting...';
+          window.location.href = data.redirect_url;
+        } else {
+          formEl.submit();
+        }
+      }).catch(function(err) {
+        formEl.submit();
+      });
     } else {
       launchRazorpayCheckout();
     }

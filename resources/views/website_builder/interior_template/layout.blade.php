@@ -167,6 +167,26 @@
   $blogUrl = $subdomainParam ? route('website-builder.subdomain.blogs', ['subdomain' => $subdomainParam]) : route('website-builder.templates.interior.blogs');
 @endphp
 
+<!-- Fast Page Preloader to prevent white screen -->
+<div id="wb-page-preloader" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0f172a;z-index:9999999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.35s ease, visibility 0.35s ease;">
+  <div class="spinner-border text-success" role="status" style="width: 2.8rem; height: 2.8rem;"></div>
+  <p style="margin-top:14px;font-weight:700;color:#f8fafc;font-size:14px;letter-spacing:0.5px;font-family:sans-serif;">Loading InterioCRAFT...</p>
+</div>
+<script>
+  (function(){
+    function hideLoader() {
+      var p = document.getElementById('wb-page-preloader');
+      if (p) {
+        p.style.opacity = '0';
+        p.style.visibility = 'hidden';
+        setTimeout(function(){ if(p && p.parentNode) p.parentNode.removeChild(p); }, 380);
+      }
+    }
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 1500);
+  })();
+</script>
+
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show rounded-0 mb-0 py-3 text-center border-0 fw-bold fs-6 shadow-sm" style="background: var(--ic-secondary); color: #ffffff; z-index: 9999;">
   <i class="fa-solid fa-leaf me-2"></i> {{ session('success') }}
@@ -521,7 +541,16 @@
 
     <!-- Bottom Copyright Bar -->
     <div class="ic-footer-bottom-bar">
-      <div>&copy; {{ date('Y') }} InterioCRAFT. All rights reserved.</div>
+      @php
+        $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
+        $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'InterioCRAFT');
+        $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
+      @endphp
+      <div>&copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
+        @if(!$wbHideAttr)
+          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
+        @endif
+      </div>
       <div>Designing Better Spaces for a Brighter Tomorrow. <i class="fa-solid fa-leaf text-success ms-1"></i></div>
     </div>
   </div>

@@ -489,6 +489,26 @@
 </head>
 <body>
 
+<!-- Fast Page Preloader to prevent white screen -->
+<div id="wb-page-preloader" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0f172a;z-index:9999999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.35s ease, visibility 0.35s ease;">
+  <div class="spinner-border text-primary" role="status" style="width: 2.8rem; height: 2.8rem;"></div>
+  <p style="margin-top:14px;font-weight:700;color:#f8fafc;font-size:14px;letter-spacing:0.5px;font-family:sans-serif;">Loading {{ $agency->site_title ?? 'DesignAGENCY' }}...</p>
+</div>
+<script>
+  (function(){
+    function hideLoader() {
+      var p = document.getElementById('wb-page-preloader');
+      if (p) {
+        p.style.opacity = '0';
+        p.style.visibility = 'hidden';
+        setTimeout(function(){ if(p && p.parentNode) p.parentNode.removeChild(p); }, 380);
+      }
+    }
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 1500);
+  })();
+</script>
+
 @php
   $subdomainParam = isset($subdomain) && $subdomain ? $subdomain : null;
   $homeUrl = $subdomainParam ? route('website-builder.subdomain.site', ['subdomain' => $subdomainParam]) : route('website-builder.templates.digital_agency');
@@ -917,7 +937,15 @@
     <!-- BOTTOM COPYRIGHT BAR -->
     <div class="footer-bottom-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        &copy; {{ date('Y') }} <span class="fw-bold text-white">{{ $agency->site_title ?? 'DesignAGENCY' }}</span>. All Rights Reserved.
+        @php
+          $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
+          $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'saasreselling');
+          $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
+        @endphp
+        &copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
+        @if(!$wbHideAttr)
+          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
+        @endif
       </div>
       <div>
         Made with <i class="fa-solid fa-heart text-danger mx-1"></i> for your business growth.

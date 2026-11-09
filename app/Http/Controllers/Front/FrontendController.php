@@ -504,16 +504,16 @@ class FrontendController extends Controller
         }
 
         if ($whatsappSent && $emailSent) {
-            $msg = __('OTP sent successfully to both your WhatsApp (+:number) and Email (:email)!', ['number' => $mobileNo, 'email' => $email]);
+            $msg = __('OTP sent successfully.');
             $channel = 'both';
         } elseif ($whatsappSent) {
-            $msg = __('OTP sent successfully to your WhatsApp (+:number)!', ['number' => $mobileNo]);
+            $msg = __('OTP sent successfully.');
             $channel = 'whatsapp';
         } elseif ($emailSent) {
-            $msg = __('OTP sent successfully to your Email address (:email)!', ['email' => $email]);
+            $msg = __('OTP sent successfully.');
             $channel = 'email';
         } else {
-            $msg = __('OTP code generated! Check your email: :email', ['email' => $email]);
+            $msg = __('OTP sent successfully.');
             $channel = 'email';
         }
 
@@ -790,6 +790,8 @@ class FrontendController extends Controller
             return $template;
         });
         $data['templates'] = $templates;
+        $data['bs'] = BasicSetting::first();
+        $data['agency'] = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
 
         return view('front.step', $data);
     }

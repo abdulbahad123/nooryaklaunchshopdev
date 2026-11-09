@@ -113,7 +113,15 @@
         <div class="copy-right-content">
           @if (($bs->copyright_section ?? 1) == 1)
             <span>
-              {!! html_entity_decode(replaceBaseUrl($bs->copyright_text ?? 'Copyright © Ecom Builder')) !!}
+              @php
+                $footerAgency = $agency ?? (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null);
+                $agencyName = !empty($footerAgency->name) ? $footerAgency->name : ($bs->website_title ?? 'saasreselling');
+                $hideAttribution = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
+              @endphp
+              &copy; copyrights {{ strtolower($agencyName) }} , all rights reserved
+              @if(!$hideAttribution)
+                developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 500;">nooryak technologies</a>
+              @endif
             </span>
           @endif
         </div>

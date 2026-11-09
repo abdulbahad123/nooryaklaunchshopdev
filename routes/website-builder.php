@@ -267,6 +267,12 @@ $isWbAgencyDomain = !empty(isWbAgencyCustomDomain($currentReqHost)) && !str_star
 $isWbProductHost = str_starts_with($currentReqHost, 'websitebuilder.') || str_starts_with($currentReqHost, 'website-builder.') || str_contains($currentReqHost, 'websitebuilder.') || str_contains($currentReqHost, 'website-builder.');
 $isCheckoutHost = str_starts_with($currentReqHost, 'checkout.');
 
+if ($isCheckoutHost) {
+    Route::get('/', function() {
+        return redirect()->route('wb-subdomain.checkout', request()->query());
+    });
+}
+
 if ($isWbAgencyDomain) {
     Route::get('/', [FrontendController::class, 'viewCustomDomainSite'])->name('custom-domain.site');
     Route::get('/about', [FrontendController::class, 'viewCustomDomainAbout'])->name('custom-domain.about');
