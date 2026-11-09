@@ -269,7 +269,10 @@ $isCheckoutHost = str_starts_with($currentReqHost, 'checkout.');
 
 if ($isCheckoutHost) {
     Route::get('/', function() {
-        return redirect()->route('wb-subdomain.checkout', request()->query());
+        if (\Illuminate\Support\Facades\Route::has('website-builder.checkout')) {
+            return redirect()->route('website-builder.checkout', request()->query());
+        }
+        return redirect()->to('/website-builder/checkout?' . http_build_query(request()->query()));
     });
 }
 

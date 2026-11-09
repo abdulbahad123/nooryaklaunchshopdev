@@ -20,10 +20,12 @@ class LandingPageController extends Controller
         $langId = $lang ? $lang->id : 1;
 
         $settings = LandingPageSetting::getSettings($langId);
+        $rec = LandingPageSetting::ensureTableExistsAndSeeded();
 
         $data['language'] = $lang;
         $data['lang_id'] = $langId;
         $data['settings'] = $settings;
+        $data['rec'] = $rec;
 
         return view('admin.landing_page.index', $data);
     }

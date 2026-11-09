@@ -517,12 +517,50 @@ class FrontendController extends Controller
             $channel = 'email';
         }
 
+        $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+        $isWaBulkHost = str_starts_with($reqHost, 'whatsappbulk.') || str_starts_with($reqHost, 'whatsapp-bulk.') || str_starts_with($reqHost, 'whatsapp.');
+        
+        $noticeText = null;
+        $noticeImgUrl = null;
+
+        if ($isWaBulkHost) {
+            $waSetting = \App\Models\LandingPageSetting::first();
+            if ($waSetting && !empty($waSetting->otp_notice_text)) {
+                $noticeText = $waSetting->otp_notice_text;
+            }
+            if ($waSetting && !empty($waSetting->otp_notice_image)) {
+                $noticeImgUrl = str_starts_with($waSetting->otp_notice_image, 'http') ? $waSetting->otp_notice_image : asset('assets/front/img/' . $waSetting->otp_notice_image);
+            }
+        }
+
+        if (empty($noticeText)) {
+            $bsModel = \App\Models\BasicSetting::first();
+            $noticeText = !empty($agency->otp_notice_text)
+                ? $agency->otp_notice_text
+                : (!empty($bsModel->otp_notice_text)
+                    ? $bsModel->otp_notice_text
+                    : 'Check Your Whatsapp and Email For Ecom Builder Verification | Otp Recieve From Saasreselling');
+            $noticeImg = !empty($agency->otp_notice_image)
+                ? $agency->otp_notice_image
+                : (!empty($bsModel->otp_notice_image) ? $bsModel->otp_notice_image : null);
+            if ($noticeImg) {
+                $noticeImgUrl = str_starts_with($noticeImg, 'http') ? $noticeImg : asset('assets/front/img/' . $noticeImg);
+            } else {
+                $noticeImgUrl = asset('images/ecom builder_icon.png');
+            }
+        }
+        if (empty($noticeImgUrl)) {
+            $noticeImgUrl = asset('images/ecom builder_icon.png');
+        }
+
         return response()->json([
-            'success' => true,
-            'message' => $msg,
-            'channel' => $channel,
+            'success'       => true,
+            'message'       => $msg,
+            'channel'       => $channel,
+            'notice_text'   => $noticeText,
+            'notice_image'  => $noticeImgUrl,
             'whatsapp_sent' => $whatsappSent,
-            'email_sent' => $emailSent
+            'email_sent'    => $emailSent
         ]);
     }
 

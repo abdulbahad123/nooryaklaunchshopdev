@@ -650,12 +650,24 @@
             <h5 class="card-title mb-0" style="font-size: 14px;"><i class="fab fa-whatsapp mr-2"></i> {{ __('OTP Notice Box Settings') }}</h5>
           </div>
           <div class="card-body">
+            @php
+              $waOtpNoticeImg = is_array($settings) ? ($settings['otp_notice_image'] ?? null) : ($settings->otp_notice_image ?? null);
+              if (empty($waOtpNoticeImg) && !empty($rec->otp_notice_image)) {
+                  $waOtpNoticeImg = $rec->otp_notice_image;
+              }
+              $waOtpNoticeImgUrl = !empty($waOtpNoticeImg) ? (str_starts_with($waOtpNoticeImg, 'http') ? $waOtpNoticeImg : (str_starts_with($waOtpNoticeImg, 'assets/') ? asset($waOtpNoticeImg) : asset('assets/front/img/' . $waOtpNoticeImg))) : asset('images/ecom builder_icon.png');
+
+              $waOtpNoticeTxt = is_array($settings) ? ($settings['otp_notice_text'] ?? null) : ($settings->otp_notice_text ?? null);
+              if (empty($waOtpNoticeTxt) && !empty($rec->otp_notice_text)) {
+                  $waOtpNoticeTxt = $rec->otp_notice_text;
+              }
+            @endphp
             <div class="row align-items-center">
               <div class="col-md-3">
                 <div class="form-group">
                   <label class="font-weight-bold text-dark small">{{ __('Notice Profile Photo / Logo') }}</label>
                   <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: #F8FAFC; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center;">
-                    <img src="{{ !empty($settings->otp_notice_image) ? asset('assets/front/img/' . $settings->otp_notice_image) : asset('images/ecom builder_icon.png') }}"
+                    <img src="{{ $waOtpNoticeImgUrl }}"
                       alt="OTP Logo" id="waBulkOtpNoticePreview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                   </div>
                   <div class="mt-2">
@@ -668,7 +680,7 @@
                 <div class="form-group">
                   <label class="font-weight-bold text-dark small">{{ __('Notice Message Text') }}</label>
                   <textarea class="form-control" name="otp_notice_text" rows="3"
-                    placeholder="Check Your Whatsapp For Whatsapp Bulk Verification | Otp Recieve From Nooryak Technologies.">{{ $settings->otp_notice_text ?? 'Check Your Whatsapp For Whatsapp Bulk Verification | Otp Recieve From Nooryak Technologies.' }}</textarea>
+                    placeholder="Check Your Whatsapp For Whatsapp Bulk Verification | Otp Recieve From Saasreselling">{{ $waOtpNoticeTxt ?? 'Check Your Whatsapp For Whatsapp Bulk Verification | Otp Recieve From Saasreselling' }}</textarea>
                   <small class="text-muted d-block mt-1">{{ __('Displayed on the right side of the profile photo inside the registration notice box.') }}</small>
                 </div>
               </div>

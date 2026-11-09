@@ -535,7 +535,7 @@
                         @endif
                       </div>
                       <div class="whatsapp-badge-content">
-                        <p class="badge-desc">{{ !empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.')) }}</p>
+                        <p class="badge-desc">{{ !empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : __('Check Your Whatsapp and Email For Ecom Builder Verification | Otp Recieve From Saasreselling')) }}</p>
                       </div>
                     </div>
                   </div>
@@ -1142,12 +1142,14 @@
             
             if (response.channel === 'email') {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');
-              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              var customNotice = response.notice_text || @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (response.notice_image) { $('#otp-whatsapp-badge .whatsapp-badge-logo img').attr('src', response.notice_image); }
               if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.'))); }
             } else {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Whatsapp Number')) + ' *');
-              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
-              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.'))); }
+              var customNotice = response.notice_text || @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (response.notice_image) { $('#otp-whatsapp-badge .whatsapp-badge-logo img').attr('src', response.notice_image); }
+              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp and Email For Ecom Builder Verification | Otp Recieve From Saasreselling'))); }
             }
             
             $btn.text(@json(__('Sent')));
@@ -1194,12 +1196,14 @@
             $('#otp-whatsapp-badge').removeClass('d-none');
             if (response.channel === 'email') {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');
-              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              var customNotice = response.notice_text || @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (response.notice_image) { $('#otp-whatsapp-badge .whatsapp-badge-logo img').attr('src', response.notice_image); }
               if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Email (Inbox or Spam/Promotions folder) for Ecom Builder Verification Code.'))); }
             } else {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Whatsapp Number')) + ' *');
-              var customNotice = @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
-              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.'))); }
+              var customNotice = response.notice_text || @json(!empty($agency->otp_notice_text) ? $agency->otp_notice_text : (!empty($bs->otp_notice_text) ? $bs->otp_notice_text : ''));
+              if (response.notice_image) { $('#otp-whatsapp-badge .whatsapp-badge-logo img').attr('src', response.notice_image); }
+              if (customNotice) { $('#otp-whatsapp-badge .badge-desc').text(customNotice); } else { $('#otp-whatsapp-badge .badge-desc').text(@json(__('Check Your Whatsapp and Email For Ecom Builder Verification | Otp Recieve From Saasreselling'))); }
             }
             startOtpTimer();
           } else {

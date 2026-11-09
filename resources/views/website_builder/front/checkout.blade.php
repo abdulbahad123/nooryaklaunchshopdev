@@ -589,19 +589,9 @@
       <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
-            $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
-            $reqHost = preg_replace('/:\d+$/', '', $reqHost);
-            $reqHost = preg_replace('/^www\./i', '', $reqHost);
-            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
-
-            $scheme = (request()->secure() || str_contains(request()->fullUrl(), 'https://')) ? 'https://' : 'http://';
-            if (!empty($cleanAgencyHost) && $cleanAgencyHost !== 'localhost' && $cleanAgencyHost !== '127.0.0.1') {
-                $wbProcessAction = "{$scheme}checkout.{$cleanAgencyHost}/website-builder/checkout/process";
-            } else {
-                $wbProcessAction = Route::has('website-builder.checkout.process')
-                    ? route('website-builder.checkout.process')
-                    : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/checkout/process'));
-            }
+            $wbProcessAction = Route::has('website-builder.checkout.process')
+                ? route('website-builder.checkout.process')
+                : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/website-builder/checkout/process'));
 
             $tmplMap = [
                 'digital_agency' => [
@@ -846,19 +836,35 @@
                   <div style="display: flex; align-items: center; gap: 14px; background: #F0FDF4; border: 2px dashed #22C55E; border-radius: 12px; padding: 14px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.05); text-align: left;">
                     <div style="flex-shrink: 0; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
                       @php
+                        $wbActiveSettings = $settings ?? ($landingSettings ?? null);
+                        $wbAgencyObj = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
+                        $wbNoticeImageRaw = !empty($wbAgencyObj->otp_notice_image)
+                            ? $wbAgencyObj->otp_notice_image
+                            : (!empty($wbActiveSettings->otp_notice_image)
+                                ? $wbActiveSettings->otp_notice_image
+                                : (!empty($landingSettings->otp_notice_image) ? $landingSettings->otp_notice_image : null));
+
                         $wbNoticeImg = asset('assets/landing_page/websitebuilder_logo.png');
-                        if (!empty($landingSettings->otp_notice_image)) {
-                            $wbNoticeImg = str_starts_with($landingSettings->otp_notice_image, 'http')
-                                ? $landingSettings->otp_notice_image
-                                : (str_starts_with($landingSettings->otp_notice_image, 'assets/') ? asset($landingSettings->otp_notice_image) : asset('assets/front/img/' . $landingSettings->otp_notice_image));
+                        if (!empty($wbNoticeImageRaw)) {
+                            $wbNoticeImg = str_starts_with($wbNoticeImageRaw, 'http')
+                                ? $wbNoticeImageRaw
+                                : (str_starts_with($wbNoticeImageRaw, 'assets/') ? asset($wbNoticeImageRaw) : asset('assets/front/img/' . $wbNoticeImageRaw));
                         }
+
+                        $wbNoticeText = !empty($wbAgencyObj->otp_notice_text)
+                            ? $wbAgencyObj->otp_notice_text
+                            : (!empty($wbActiveSettings->otp_notice_text)
+                                ? $wbActiveSettings->otp_notice_text
+                                : (!empty($landingSettings->otp_notice_text)
+                                    ? $landingSettings->otp_notice_text
+                                    : 'Check Your Whatsapp For Website Builder Verification | Otp Recieve From saasreselling platform'));
                       @endphp
                       <img src="{{ $wbNoticeImg }}"
                         alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     </div>
                     <div>
                       <p style="font-size: 14px; color: #166534; margin: 0; font-weight: 700; line-height: 1.4;">
-                        {{ !empty($landingSettings->otp_notice_text) ? $landingSettings->otp_notice_text : __('Check Your Whatsapp For Website Builder Verification | Otp Recieve From Nooryak Technologies.') }}
+                        {{ $wbNoticeText }}
                       </p>
                     </div>
                   </div>
@@ -1550,6 +1556,18 @@
 
       document.getElementById('otp_container').style.display = 'block';
       document.getElementById('input_otp').value = '';
+      if (data.notice_text) {
+        var noticeTextEl = document.querySelector('#wb_otp_notice_badge p');
+        if (noticeTextEl) {
+          noticeTextEl.textContent = data.notice_text;
+        }
+      }
+      if (data.notice_image) {
+        var noticeImgEl = document.querySelector('#wb_otp_notice_badge img');
+        if (noticeImgEl) {
+          noticeImgEl.src = data.notice_image;
+        }
+      }
       var banner = document.getElementById('otp_status_banner');
       if (banner) {
         banner.style.display = 'none';

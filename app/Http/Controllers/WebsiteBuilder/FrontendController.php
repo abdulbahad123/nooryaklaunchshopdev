@@ -685,7 +685,7 @@ class FrontendController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package', 'upiGateway', 'upiInfo', 'term'));
+        return view('website_builder.front.checkout', compact('settings', 'templateSlug', 'plan', 'price', 'package', 'upiGateway', 'upiInfo', 'term') + ['landingSettings' => $settings]);
     }
 
     public function logout(Request $request)
@@ -818,9 +818,26 @@ class FrontendController extends Controller
             $statusMsg = "OTP verification code generated! Check your email ({$email})";
         }
 
+        $wbActiveSettings = WbLandingSetting::getSettings();
+        $noticeText = !empty($agency->otp_notice_text)
+            ? $agency->otp_notice_text
+            : (!empty($wbActiveSettings->otp_notice_text) ? $wbActiveSettings->otp_notice_text : 'Check Your Whatsapp For Website Builder Verification | Otp Recieve From saasreselling platform');
+
+        $noticeImgRaw = !empty($agency->otp_notice_image)
+            ? $agency->otp_notice_image
+            : (!empty($wbActiveSettings->otp_notice_image) ? $wbActiveSettings->otp_notice_image : null);
+        $noticeImgUrl = asset('assets/landing_page/websitebuilder_logo.png');
+        if (!empty($noticeImgRaw)) {
+            $noticeImgUrl = str_starts_with($noticeImgRaw, 'http')
+                ? $noticeImgRaw
+                : (str_starts_with($noticeImgRaw, 'assets/') ? asset($noticeImgRaw) : asset('assets/front/img/' . $noticeImgRaw));
+        }
+
         return response()->json([
             'success' => true,
             'message' => $statusMsg,
+            'notice_text' => $noticeText,
+            'notice_image' => $noticeImgUrl,
             'whatsapp_sent' => $whatsappSent,
             'email_sent' => $emailSent
         ]);

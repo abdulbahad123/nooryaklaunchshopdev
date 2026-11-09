@@ -98,13 +98,16 @@ class LandingPageSetting extends Model
     {
         $rec = self::ensureTableExistsAndSeeded();
         return [
-            'hero'         => json_decode($rec->hero_data ?? '{}', true) ?: self::defaultHeroData(),
-            'stack'        => json_decode($rec->stack_data ?? '{}', true) ?: self::defaultStackData(),
-            'modules'      => json_decode($rec->modules_data ?? '{}', true) ?: self::defaultModulesData(),
-            'pricing'      => json_decode($rec->pricing_data ?? '{}', true) ?: self::defaultPricingData(),
-            'testimonials' => json_decode($rec->testimonials_data ?? '{}', true) ?: self::defaultTestimonialsData(),
-            'faqs'         => json_decode($rec->faqs_data ?? '{}', true) ?: self::defaultFaqsData(),
-            'cta_footer'   => json_decode($rec->cta_footer_data ?? '{}', true) ?: self::defaultCtaFooterData(),
+            'hero'             => json_decode($rec->hero_data ?? '{}', true) ?: self::defaultHeroData(),
+            'stack'            => json_decode($rec->stack_data ?? '{}', true) ?: self::defaultStackData(),
+            'modules'          => json_decode($rec->modules_data ?? '{}', true) ?: self::defaultModulesData(),
+            'pricing'          => json_decode($rec->pricing_data ?? '{}', true) ?: self::defaultPricingData(),
+            'testimonials'     => json_decode($rec->testimonials_data ?? '{}', true) ?: self::defaultTestimonialsData(),
+            'faqs'             => json_decode($rec->faqs_data ?? '{}', true) ?: self::defaultFaqsData(),
+            'cta_footer'       => json_decode($rec->cta_footer_data ?? '{}', true) ?: self::defaultCtaFooterData(),
+            'otp_notice_image' => $rec->otp_notice_image,
+            'otp_notice_text'  => $rec->otp_notice_text,
+            'record'           => $rec,
         ];
     }
 
