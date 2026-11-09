@@ -387,11 +387,42 @@
         <p class="ev-footer-bio">
           {{ $evData->footer_text ?? 'We create unforgettable event experiences that bring people together and leave lasting memories.' }}
         </p>
+        @php
+          $evSocial = $evData->social_links ?? [];
+          if (is_string($evSocial)) {
+              $dec = json_decode($evSocial, true);
+              $evSocial = is_string($dec) ? json_decode($dec, true) : $dec;
+          }
+          if (!is_array($evSocial)) { $evSocial = []; }
+
+          $formatSocialUrl = function($url, $platform = '') {
+              if (empty($url) || $url === '#') return '#';
+              $u = trim((string)$url);
+              if (str_starts_with($u, '@')) {
+                  if ($platform === 'instagram') return 'https://instagram.com/' . ltrim($u, '@');
+                  if ($platform === 'twitter') return 'https://twitter.com/' . ltrim($u, '@');
+                  return 'https://' . ltrim($u, '@/');
+              }
+              if (!preg_match('#^https?://#i', $u) && !str_starts_with($u, 'mailto:') && !str_starts_with($u, 'tel:')) {
+                  return 'https://' . ltrim($u, '/');
+              }
+              return $u;
+          };
+
+          $fbUrl = $formatSocialUrl($evSocial['facebook'] ?? '#', 'facebook');
+          $igUrl = $formatSocialUrl($evSocial['instagram'] ?? '#', 'instagram');
+          $liUrl = $formatSocialUrl($evSocial['linkedin'] ?? '#', 'linkedin');
+          $ytUrl = $formatSocialUrl($evSocial['youtube'] ?? '#', 'youtube');
+          $twUrl = $formatSocialUrl($evSocial['twitter'] ?? '', 'twitter');
+        @endphp
         <div class="ev-footer-socials">
-          <a href="{{ $evData->social_links['facebook']  ?? '#' }}" class="ev-social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $evData->social_links['instagram'] ?? '#' }}" class="ev-social-icon" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-          <a href="{{ $evData->social_links['linkedin']  ?? '#' }}" class="ev-social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="{{ $evData->social_links['youtube']   ?? '#' }}" class="ev-social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+          <a href="{{ $fbUrl }}" class="ev-social-icon" target="{{ $fbUrl !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $igUrl }}" class="ev-social-icon" target="{{ $igUrl !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $liUrl }}" class="ev-social-icon" target="{{ $liUrl !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $ytUrl }}" class="ev-social-icon" target="{{ $ytUrl !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          @if(!empty($twUrl) && $twUrl !== '#')
+            <a href="{{ $twUrl }}" class="ev-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+          @endif
         </div>
       </div>
 

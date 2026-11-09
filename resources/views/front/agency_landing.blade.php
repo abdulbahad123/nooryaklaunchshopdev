@@ -1432,7 +1432,12 @@
 
         {{-- Bottom bar --}}
         <div style="padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-            <p style="font-size:11px;color:#475569">© {{ date('Y') }} {{ $agency->name }}. All rights reserved.</p>
+            <p style="font-size:11px;color:#475569">
+                &copy; copyrights {{ strtolower($agency->name ?? 'saasreselling') }} , all rights reserved
+                @if(empty($agency->hide_developer_attribution) && empty($agency->hide_developer_copyright))
+                    developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color:#94a3b8;text-decoration:underline;">nooryak technologies</a>
+                @endif
+            </p>
             <p style="font-size:11px;color:#475569;display:flex;align-items:center;gap:4px">Made with <span style="color:#f43f5e">❤️</span> in India 🇮🇳</p>
         </div>
     </div>

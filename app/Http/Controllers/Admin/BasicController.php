@@ -104,6 +104,10 @@ class BasicController extends Controller
             $preloadername = Uploader::upload_picture($dir, $img3);
         }
 
+        if ($request->hasFile('otp_notice_image')) {
+            $otp_notice_img_name = Uploader::upload_picture($dir, $request->file('otp_notice_image'));
+        }
+
         try {
             if (!Schema::hasColumn('basic_settings', 'is_gemini')) {
                 \Illuminate\Support\Facades\DB::statement("ALTER TABLE basic_settings ADD COLUMN is_gemini TINYINT(1) NOT NULL DEFAULT 0");
@@ -124,6 +128,12 @@ class BasicController extends Controller
             $bs->favicon = $request->hasFile('favicon') ? $favicon_name : $bs->favicon;
             $bs->logo = $request->hasFile('logo') ? $logoname : $bs->logo;
             $bs->preloader = $request->hasFile('preloader') ? $preloadername : $bs->preloader;
+            if ($request->hasFile('otp_notice_image')) {
+                $bs->otp_notice_image = $otp_notice_img_name;
+            }
+            if ($request->has('otp_notice_text')) {
+                $bs->otp_notice_text = $request->otp_notice_text;
+            }
             $bs->save();
         }
 

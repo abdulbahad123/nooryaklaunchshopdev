@@ -579,29 +579,33 @@ class CheckoutController extends Controller
             $planPrice   = $packageObj ? ($be->base_currency_symbol . $packageObj->price) : '';
 
             //send verification email to user
-            $mailer = new MegaMailer();
-            $links = MegaMailer::getProductLinks($user->username, 'ecombuilder');
-            $data = [
-                'toMail' => $user->email,
-                'toName' => $user->first_name,
-                'customer_name' => $user->first_name,
-                'verification_link' => $verification_link,
-                'website_title' => $bs->website_title,
-                'templateType' => 'email_verification',
-                'type' => 'emailVerification',
-                'password' => $password,
-                'package_title' => $planName,
-                'login_link' => $links['login']
-            ];
-            $mailer->mailFromAdmin($data);
+            try {
+                $mailer = new MegaMailer();
+                $links = MegaMailer::getProductLinks($user->username, 'ecombuilder');
+                $data = [
+                    'toMail' => $user->email,
+                    'toName' => $user->first_name,
+                    'customer_name' => $user->first_name,
+                    'verification_link' => $verification_link,
+                    'website_title' => $bs->website_title,
+                    'templateType' => 'email_verification',
+                    'type' => 'emailVerification',
+                    'password' => $password,
+                    'package_title' => $planName,
+                    'login_link' => $links['login']
+                ];
+                $mailer->mailFromAdmin($data);
+            } catch (\Throwable $mEx) {
+                Log::warning('Verification email send failed (proceeding to WhatsApp): ' . $mEx->getMessage());
+            }
 
             // ── 1. WhatsApp welcome message with store credentials FIRST ──
             try {
                 $phoneInput = $request['phone'] ?? ($request['phone_number'] ?? ($user->phone ?? ''));
                 $countryCodeInput = $request['country_code'] ?? ($user->country_code ?? '91');
                 $mobileNo = \App\Services\WhatsAppNotificationService::formatNumber($phoneInput, $countryCodeInput);
-                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? $user->first_name, $user->email, $mobileNo, $user->first_name);
-            } catch (\Exception $waEx) {
+                $this->sendWelcomeWhatsApp($mobileNo, $request['username'] ?? $user->username, $password, $planName, $planPrice, $user->shop_name ?? ($user->first_name ?? 'Store Owner'), $user->email, $mobileNo, $user->first_name);
+            } catch (\Throwable $waEx) {
                 Log::warning('Welcome WhatsApp send failed: ' . $waEx->getMessage());
             }
 
@@ -817,7 +821,7 @@ class CheckoutController extends Controller
     /**
      * Send a welcome WhatsApp message with account credentials and store details after registration.
      */
-    public function sendWelcomeWhatsApp(string $mobileNo, string $username, string $password, string $planName, string $planPrice, string $shopName, string $email, string $phone, ?string $firstName = null, ?string $invoiceFileName = null, ?string $otp = null): void
+    public function sendWelcomeWhatsApp($mobileNo, $username, $password, $planName = 'Standard Plan', $planPrice = '', $shopName = '', $email = '', $phone = '', ?string $firstName = null, ?string $invoiceFileName = null, ?string $otp = null): void
     {
         $links = MegaMailer::getProductLinks($username, 'ecombuilder');
         $storeLiveLink = $links['store'];
@@ -832,9 +836,12 @@ class CheckoutController extends Controller
             return;
         }
 
+        $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
+        $prodName = ($agency && !empty($agency->name)) ? $agency->name : 'Ecombuilder';
+
         // 1. Dispatch primary Store Launch Credentials via WhatsAppNotificationService
         try {
-            \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
+            $waCredRes = \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
                 $digitsOnly,
                 $storeDisplayName,
                 $storeLiveLink,
@@ -842,8 +849,11 @@ class CheckoutController extends Controller
                 $email,
                 $password,
                 $planDisplay,
-                'Ecombuilder'
+                $prodName,
+                null,
+                $agency
             );
+            Log::info("sendWelcomeWhatsApp credentials result for {$digitsOnly}: " . json_encode($waCredRes));
         } catch (\Throwable $waCredEx) {
             Log::warning('WhatsApp credentials dispatch failed: ' . $waCredEx->getMessage());
         }

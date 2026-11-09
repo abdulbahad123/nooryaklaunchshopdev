@@ -517,11 +517,41 @@
       <div class="d-flex align-items-center gap-4 flex-wrap">
         <span><i class="fa-solid fa-envelope text-success me-1"></i> <a href="mailto:{{ $agency->email ?? 'info@designagency.com' }}">{{ $agency->email ?? 'info@designagency.com' }}</a></span>
         <span><i class="fa-solid fa-phone text-success me-1"></i> {{ $agency->phone ?? '+1 (234) 567-890' }}</span>
+        @php
+          $rawAgencySoc = $agency->social_links ?? [];
+          if (is_string($rawAgencySoc)) {
+              $dec = json_decode($rawAgencySoc, true);
+              $rawAgencySoc = is_string($dec) ? json_decode($dec, true) : $dec;
+          }
+          if (!is_array($rawAgencySoc)) { $rawAgencySoc = []; }
+
+          $formatAgencySoc = function($url, $platform = '') {
+              if (empty($url) || $url === '#') return '#';
+              $u = trim((string)$url);
+              if (str_starts_with($u, '@')) {
+                  if ($platform === 'instagram') return 'https://instagram.com/' . ltrim($u, '@');
+                  if ($platform === 'twitter') return 'https://twitter.com/' . ltrim($u, '@');
+                  return 'https://' . ltrim($u, '@/');
+              }
+              if (!preg_match('#^https?://#i', $u) && !str_starts_with($u, 'mailto:') && !str_starts_with($u, 'tel:')) {
+                  return 'https://' . ltrim($u, '/');
+              }
+              return $u;
+          };
+          $agFb = $formatAgencySoc($rawAgencySoc['facebook'] ?? '#', 'facebook');
+          $agTw = $formatAgencySoc($rawAgencySoc['twitter'] ?? '#', 'twitter');
+          $agLi = $formatAgencySoc($rawAgencySoc['linkedin'] ?? '#', 'linkedin');
+          $agIg = $formatAgencySoc($rawAgencySoc['instagram'] ?? '#', 'instagram');
+          $agYt = $formatAgencySoc($rawAgencySoc['youtube'] ?? '', 'youtube');
+        @endphp
         <div class="d-flex gap-2 ms-2">
-          <a href="{{ $agency->social_links['facebook'] ?? '#' }}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $agency->social_links['twitter'] ?? '#' }}" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="{{ $agency->social_links['instagram'] ?? '#' }}" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $agFb }}" target="{{ $agFb !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $agTw }}" target="{{ $agTw !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="{{ $agLi }}" target="{{ $agLi !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $agIg }}" target="{{ $agIg !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+          @if(!empty($agYt) && $agYt !== '#')
+            <a href="{{ $agYt }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i></a>
+          @endif
         </div>
       </div>
     </div>
@@ -762,10 +792,13 @@
           {{ $agency->footer_text ?? "We're a creative digital agency helping businesses grow with modern design, development & marketing solutions." }}
         </p>
         <div class="d-flex align-items-center gap-1">
-          <a href="{{ $agency->social_links['facebook'] ?? '#' }}" class="footer-social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $agency->social_links['twitter'] ?? '#' }}" class="footer-social-icon" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="{{ $agency->social_links['linkedin'] ?? '#' }}" class="footer-social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="{{ $agency->social_links['instagram'] ?? '#' }}" class="footer-social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $agFb }}" class="footer-social-icon" target="{{ $agFb !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $agTw }}" class="footer-social-icon" target="{{ $agTw !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="{{ $agLi }}" class="footer-social-icon" target="{{ $agLi !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $agIg }}" class="footer-social-icon" target="{{ $agIg !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          @if(!empty($agYt) && $agYt !== '#')
+            <a href="{{ $agYt }}" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          @endif
         </div>
       </div>
 

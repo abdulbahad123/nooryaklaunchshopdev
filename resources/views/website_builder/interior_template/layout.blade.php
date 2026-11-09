@@ -400,12 +400,39 @@
         <p class="ic-footer-bio">
           {{ $interior->footer_text ?? 'We create beautiful, functional spaces that reflect your style and improve your everyday living.' }}
         </p>
+        @php
+          $icSocial = $interior->social_links ?? [];
+          if (is_string($icSocial)) {
+              $dec = json_decode($icSocial, true);
+              $icSocial = is_string($dec) ? json_decode($dec, true) : $dec;
+          }
+          if (!is_array($icSocial)) { $icSocial = []; }
+
+          $formatIcSoc = function($url, $platform = '') {
+              if (empty($url) || $url === '#') return '#';
+              $u = trim((string)$url);
+              if (str_starts_with($u, '@')) {
+                  if ($platform === 'instagram') return 'https://instagram.com/' . ltrim($u, '@');
+                  if ($platform === 'twitter') return 'https://twitter.com/' . ltrim($u, '@');
+                  return 'https://' . ltrim($u, '@/');
+              }
+              if (!preg_match('#^https?://#i', $u) && !str_starts_with($u, 'mailto:') && !str_starts_with($u, 'tel:')) {
+                  return 'https://' . ltrim($u, '/');
+              }
+              return $u;
+          };
+          $icFb = $formatIcSoc($icSocial['facebook'] ?? '#', 'facebook');
+          $icIg = $formatIcSoc($icSocial['instagram'] ?? '#', 'instagram');
+          $icPin = $formatIcSoc($icSocial['pinterest'] ?? '#', 'pinterest');
+          $icLi = $formatIcSoc($icSocial['linkedin'] ?? '#', 'linkedin');
+          $icYt = $formatIcSoc($icSocial['youtube'] ?? '#', 'youtube');
+        @endphp
         <div class="ic-footer-socials">
-          <a href="{{ $interior->social_links['facebook'] ?? '#' }}" class="ic-social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="{{ $interior->social_links['instagram'] ?? '#' }}" class="ic-social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="{{ $interior->social_links['pinterest'] ?? '#' }}" class="ic-social-icon" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
-          <a href="{{ $interior->social_links['linkedin'] ?? '#' }}" class="ic-social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="{{ $interior->social_links['youtube'] ?? '#' }}" class="ic-social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          <a href="{{ $icFb }}" class="ic-social-icon" target="{{ $icFb !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $icIg }}" class="ic-social-icon" target="{{ $icIg !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $icPin }}" class="ic-social-icon" target="{{ $icPin !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
+          <a href="{{ $icLi }}" class="ic-social-icon" target="{{ $icLi !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $icYt }}" class="ic-social-icon" target="{{ $icYt !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
         </div>
       </div>
 

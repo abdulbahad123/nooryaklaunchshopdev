@@ -643,6 +643,38 @@
             </div>
           </div>
         </div>
+
+        <!-- OTP Notice Box Settings -->
+        <div class="card mb-4 shadow-sm border">
+          <div class="card-header bg-success text-white py-2 px-3">
+            <h5 class="card-title mb-0" style="font-size: 14px;"><i class="fab fa-whatsapp mr-2"></i> {{ __('OTP Notice Box Settings') }}</h5>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label class="font-weight-bold text-dark small">{{ __('Notice Profile Photo / Logo') }}</label>
+                  <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: #F8FAFC; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center;">
+                    <img src="{{ !empty($settings->otp_notice_image) ? asset('assets/front/img/' . $settings->otp_notice_image) : asset('images/ecom builder_icon.png') }}"
+                      alt="OTP Logo" id="waBulkOtpNoticePreview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                  </div>
+                  <div class="mt-2">
+                    <input type="file" class="form-control form-control-sm" name="otp_notice_image" accept="image/*" onchange="if(this.files && this.files[0]) { var r = new FileReader(); r.onload = function(e){ document.getElementById('waBulkOtpNoticePreview').src = e.target.result; }; r.readAsDataURL(this.files[0]); }">
+                  </div>
+                  <small class="text-muted d-block mt-1">{{ __('PNG, JPG or SVG') }}</small>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="form-group">
+                  <label class="font-weight-bold text-dark small">{{ __('Notice Message Text') }}</label>
+                  <textarea class="form-control" name="otp_notice_text" rows="3"
+                    placeholder="Check Your Whatsapp For Whatsapp Bulk Verification | Otp Recieve From Nooryak Technologies.">{{ $settings->otp_notice_text ?? 'Check Your Whatsapp For Whatsapp Bulk Verification | Otp Recieve From Nooryak Technologies.' }}</textarea>
+                  <small class="text-muted d-block mt-1">{{ __('Displayed on the right side of the profile photo inside the registration notice box.') }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>

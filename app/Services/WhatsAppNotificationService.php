@@ -597,21 +597,31 @@ class WhatsAppNotificationService
         string $password,
         ?string $planName = null,
         string $productName = 'Ecombuilder',
-        ?string $otp = null
+        ?string $otp = null,
+        ?object $agency = null
     ): array {
-        $config = self::getWhatsAppConfig();
+        if (!$agency && function_exists('getAgencyFromHost')) {
+            try {
+                $agency = getAgencyFromHost();
+            } catch (\Throwable $e) {}
+        }
+
+        $config = self::getWhatsAppConfig($agency);
         // Ensure credentials delivery is active for successful store launch
         $config['is_active'] = 1;
         $config['credentials_active'] = 1;
 
         $template = !empty($config['credentials_template']) ? $config['credentials_template'] : self::DEFAULT_CREDENTIALS_TEMPLATE;
 
+        $productDisplayName = ($agency && !empty($agency->name)) ? $agency->name : (!empty($config['agency_name']) ? $config['agency_name'] : $productName);
+
         $message = str_replace(
             ['{user_name}', '{store_name}', '{email}', '{password}', '{store_url}', '{login_url}', '{product_name}', '{plan_name}', '{otp}'],
-            [$storeName, $storeName, $email, $password, $storeLiveLink, $loginLink, $productName, $planName ?: 'Standard Plan', ''],
+            [$storeName, $storeName, $email, $password, $storeLiveLink, $loginLink, $productDisplayName, $planName ?: 'Standard Plan', ''],
             $template
         );
 
+        Log::info("WhatsAppNotificationService: Dispatching store credentials to {$phone} for {$productDisplayName}");
         return self::sendMessage($phone, $message, null, null, $config);
     }
 
@@ -625,9 +635,16 @@ class WhatsAppNotificationService
         ?string $planTitle = null,
         ?string $paymentMethod = null,
         ?string $invoiceUrl = null,
-        string $productName = 'Ecombuilder'
+        string $productName = 'Ecombuilder',
+        ?object $agency = null
     ): array {
-        $config = self::getWhatsAppConfig();
+        if (!$agency && function_exists('getAgencyFromHost')) {
+            try {
+                $agency = getAgencyFromHost();
+            } catch (\Throwable $e) {}
+        }
+
+        $config = self::getWhatsAppConfig($agency);
 
         if (empty($config['is_active']) || empty($config['invoice_active'])) {
             Log::info("WhatsAppNotificationService: Invoice notifications toggled OFF in settings. Skipping.");
@@ -640,14 +657,17 @@ class WhatsAppNotificationService
 
         $template = !empty($config['invoice_template']) ? $config['invoice_template'] : self::DEFAULT_INVOICE_TEMPLATE;
 
+        $productDisplayName = ($agency && !empty($agency->name)) ? $agency->name : (!empty($config['agency_name']) ? $config['agency_name'] : $productName);
+
         $message = str_replace(
             ['{user_name}', '{invoice_id}', '{amount}', '{plan_title}', '{payment_method}', '{invoice_url}', '{product_name}'],
-            ['Customer', $invoiceId, $amount, $planTitle ?: $productName, $paymentMethod ?: 'Online Payment', $invoiceUrl ?: '', $productName],
+            ['Customer', $invoiceId, $amount, $planTitle ?: $productDisplayName, $paymentMethod ?: 'Online Payment', $invoiceUrl ?: '', $productDisplayName],
             $template
         );
 
         $filename = !empty($invoiceId) ? "Invoice_{$invoiceId}.pdf" : "Invoice.pdf";
 
+        Log::info("WhatsAppNotificationService: Dispatching invoice to {$phone} for {$productDisplayName} (#{$invoiceId})");
         return self::sendMessage($phone, $message, $invoiceUrl, $filename, $config);
     }
 

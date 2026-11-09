@@ -49,6 +49,8 @@ class WbAgencySetting extends Model
         'contact_image',
         'faqs_data',
         'social_links',
+        'otp_notice_image',
+        'otp_notice_text',
         'footer_text',
         'footer_quick_links',
         'footer_legal_links',
@@ -713,6 +715,12 @@ class WbAgencySetting extends Model
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'social_links')) {
                         $table->json('social_links')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'otp_notice_image')) {
+                        $table->string('otp_notice_image')->nullable();
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'otp_notice_text')) {
+                        $table->text('otp_notice_text')->nullable();
                     }
                     if (!\Illuminate\Support\Facades\Schema::hasColumn('wb_agency_settings', 'footer_text')) {
                         $table->text('footer_text')->nullable();

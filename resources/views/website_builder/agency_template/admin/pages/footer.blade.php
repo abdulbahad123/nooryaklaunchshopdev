@@ -238,6 +238,43 @@
         <label class="form-label fw-semibold small"><i class="fa-brands fa-instagram text-danger me-1"></i> Instagram Profile URL</label>
         <input type="text" class="form-control" name="social_links[instagram]" value="{{ $agency->social_links['instagram'] ?? '#' }}" placeholder="https://instagram.com/youragency">
       </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small"><i class="fa-brands fa-youtube text-danger me-1"></i> YouTube Channel URL</label>
+        <input type="text" class="form-control" name="social_links[youtube]" value="{{ $agency->social_links['youtube'] ?? '#' }}" placeholder="https://youtube.com/@youragency">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small"><i class="fa-brands fa-pinterest text-danger me-1"></i> Pinterest Profile URL</label>
+        <input type="text" class="form-control" name="social_links[pinterest]" value="{{ $agency->social_links['pinterest'] ?? '#' }}" placeholder="https://pinterest.com/youragency">
+      </div>
+    </div>
+  </div>
+
+  <!-- 3B. OTP VERIFICATION NOTICE BOX CARD -->
+  <div class="card card-editor p-4 mb-4" style="border-left: 4px solid #10B981;">
+    <h5 class="fw-bold mb-1"><i class="fa-brands fa-whatsapp text-success me-2"></i>Checkout & Registration OTP Verification Notice Box</h5>
+    <p class="text-muted small mb-3">Customize the left profile photo/logo and right-hand instruction text shown to clients when receiving verification OTPs.</p>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Upload Notice Profile / Logo Image</label>
+        <input type="file" class="form-control" name="otp_notice_image_file" accept="image/*">
+        <div class="form-text small text-muted">Upload an icon or profile photo (PNG, JPG, SVG) for the left side of the OTP notice.</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold small">Or Image URL / Path</label>
+        <input type="text" class="form-control" name="otp_notice_image" value="{{ $agency->otp_notice_image ?? '' }}" placeholder="assets/landing_page/websitebuilder_logo.png">
+      </div>
+      <div class="col-md-12">
+        <label class="form-label fw-semibold small">Right Side Verification Notice Message</label>
+        <input type="text" class="form-control" name="otp_notice_text" value="{{ $agency->otp_notice_text ?? 'Check Your Whatsapp For Website Builder Verification | Otp Recieve From Nooryak Technologies.' }}" placeholder="Check Your Whatsapp For Website Builder Verification | Otp Recieve From Nooryak Technologies.">
+      </div>
+      <div class="col-md-12">
+        <label class="form-label fw-semibold small text-muted">Live Preview in Checkout / Registration Form:</label>
+        <div class="p-3 rounded-3" style="border: 1.5px dashed #22c55e; background: #f0fdf4; display: flex; align-items: center; gap: 14px;">
+          <img src="{{ !empty($agency->otp_notice_image) ? (str_starts_with($agency->otp_notice_image, 'http') ? $agency->otp_notice_image : asset($agency->otp_notice_image)) : asset('assets/landing_page/websitebuilder_logo.png') }}" alt="OTP Logo" style="height: 38px; width: 38px; object-fit: contain; border-radius: 6px;">
+          <span style="font-size: 13.5px; font-weight: 600; color: #166534;">{{ $agency->otp_notice_text ?? 'Check Your Whatsapp For Website Builder Verification | Otp Recieve From Nooryak Technologies.' }}</span>
+        </div>
+      </div>
     </div>
   </div>
 

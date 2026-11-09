@@ -528,10 +528,14 @@
                   <div id="otp-whatsapp-badge" class="d-none mb-20">
                     <div class="whatsapp-badge-wrapper">
                       <div class="whatsapp-badge-logo">
-                        <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Logo">
+                        @if(!empty($bs->otp_notice_image))
+                          <img src="{{ asset('assets/front/img/' . $bs->otp_notice_image) }}" alt="Logo">
+                        @else
+                          <img src="{{ asset('images/ecom builder_icon.png') }}" alt="Logo">
+                        @endif
                       </div>
                       <div class="whatsapp-badge-content">
-                        <p class="badge-desc">{{ __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.') }}</p>
+                        <p class="badge-desc">{{ !empty($bs->otp_notice_text) ? $bs->otp_notice_text : __('Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.') }}</p>
                       </div>
                     </div>
                   </div>
@@ -1132,7 +1136,7 @@
           email: emailVal
         }, function(response) {
           if (response.success) {
-            $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>');
+            $('#phone-feedback').html('');
             $('#otp-whatsapp-badge').removeClass('d-none');
             $('#otp-group').removeClass('d-none');
             
@@ -1184,7 +1188,7 @@
           email: emailVal
         }, function(response) {
           if (response.success) {
-            $('#phone-feedback').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + response.message + '</span>');
+            $('#phone-feedback').html('');
             $('#otp-whatsapp-badge').removeClass('d-none');
             if (response.channel === 'email') {
               $('#otp-channel-label').text(@json(__('Enter OTP sent to your Email Address')) + ' *');

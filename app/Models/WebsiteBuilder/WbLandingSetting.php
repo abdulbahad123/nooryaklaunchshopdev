@@ -18,6 +18,8 @@ class WbLandingSetting extends Model
         'hero_image',
         'header_logo',
         'footer_logo',
+        'otp_notice_image',
+        'otp_notice_text',
         'brand_name',
         'cta_primary_text',
         'cta_primary_url',
@@ -128,6 +130,8 @@ class WbLandingSetting extends Model
             $columnsToAdd = [
                 'header_logo'          => 'string',
                 'footer_logo'          => 'string',
+                'otp_notice_image'     => 'string',
+                'otp_notice_text'      => 'text',
                 'brand_name'           => 'string',
                 'trust_badges'         => 'text',
                 'contact_chat_label'   => 'string',

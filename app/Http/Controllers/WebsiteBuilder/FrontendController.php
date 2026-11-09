@@ -1321,6 +1321,9 @@ class FrontendController extends Controller
         
         // Send parallel WhatsApp notifications for Website Builder
         if (!empty($phoneNum)) {
+            $agency = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
+            $prodName = ($agency && !empty($agency->name)) ? $agency->name : 'Website Builder';
+
             try {
                 \App\Services\WhatsAppNotificationService::sendWebsiteLaunchCredentials(
                     $phoneNum,
@@ -1330,7 +1333,9 @@ class FrontendController extends Controller
                     $customerEmail,
                     $customerPassword,
                     $planName . ($price ? " (Rs. " . number_format($price) . ")" : ""),
-                    'Website Builder'
+                    $prodName,
+                    null,
+                    $agency
                 );
             } catch (\Throwable $waCredEx) {
                 \Illuminate\Support\Facades\Log::error('WB WhatsApp Credentials Error: ' . $waCredEx->getMessage());
@@ -1338,15 +1343,20 @@ class FrontendController extends Controller
 
             try {
                 $invId = $utrNumber ?: ($razorpayPaymentId ?: ('WB-' . time()));
-                \App\Services\WhatsAppNotificationService::sendInvoice(
-                    $phoneNum,
-                    $invId,
-                    'Rs. ' . number_format($price),
-                    $templateName ?: $planName,
-                    $paymentMethod,
-                    null,
-                    'Website Builder'
-                );
+                $dedupCacheKey = 'wa_invoice_sent_' . md5($invId . '_' . preg_replace('/[^0-9]/', '', (string)$phoneNum));
+                if (!\Illuminate\Support\Facades\Cache::has($dedupCacheKey)) {
+                    \Illuminate\Support\Facades\Cache::put($dedupCacheKey, true, 300);
+                    \App\Services\WhatsAppNotificationService::sendInvoice(
+                        $phoneNum,
+                        $invId,
+                        'Rs. ' . number_format($price),
+                        $templateName ?: $planName,
+                        $paymentMethod,
+                        null,
+                        $prodName,
+                        $agency
+                    );
+                }
             } catch (\Throwable $waInvEx) {
                 \Illuminate\Support\Facades\Log::error('WB WhatsApp Invoice Error: ' . $waInvEx->getMessage());
             }

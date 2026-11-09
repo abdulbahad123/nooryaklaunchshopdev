@@ -328,7 +328,12 @@
             </div>
 
             <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-                <div>© 2026 {{ $agency->name }}. All rights reserved.</div>
+                <div>
+                    &copy; copyrights {{ strtolower($agency->name ?? 'saasreselling') }} , all rights reserved
+                    @if(empty($agency->hide_developer_attribution) && empty($agency->hide_developer_copyright))
+                        developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white underline">nooryak technologies</a>
+                    @endif
+                </div>
                 <div>Made with ❤️ in India 🇮🇳</div>
             </div>
 

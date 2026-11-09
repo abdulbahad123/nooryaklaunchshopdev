@@ -154,6 +154,46 @@
 
                 <div class="gs-divider mb-4"></div>
 
+                {{-- ====== OTP VERIFICATION NOTICE BOX ====== --}}
+                <div class="gs-section-header mb-3">
+                  <div class="gs-section-icon" style="background: #ECFDF5; color: #10B981;">
+                    <i class="fab fa-whatsapp"></i>
+                  </div>
+                  <div>
+                    <h6 class="gs-section-title">{{ __('OTP Notice Box Settings') }}</h6>
+                    <p class="gs-section-subtitle">{{ __('Customize the profile photo/logo and notice message displayed below the Sent button on the registration step.') }}</p>
+                  </div>
+                </div>
+
+                <div class="row align-items-center mb-4">
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="gs-label">{{ __('Notice Profile Photo / Logo') }}</label>
+                      <div class="gs-image-uploader" style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: #F8FAFC; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ !empty($abs->otp_notice_image) ? asset('assets/front/img/' . $abs->otp_notice_image) : asset('images/ecom builder_icon.png') }}"
+                          alt="OTP Logo" id="otpNoticeImgPreview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                      </div>
+                      <div role="button" class="btn-primary-purple py-2 px-3 upload-btn mt-2"
+                        style="border-radius: 8px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        {{ __('Choose Photo') }}
+                        <input type="file" class="img-input" name="otp_notice_image" accept="image/*" onchange="if(this.files && this.files[0]) { var r = new FileReader(); r.onload = function(e){ document.getElementById('otpNoticeImgPreview').src = e.target.result; }; r.readAsDataURL(this.files[0]); }">
+                      </div>
+                      <p class="popup-field-hint mt-1">{{ __('PNG, JPG or SVG format') }}</p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-9">
+                    <div class="form-group">
+                      <label class="gs-label">{{ __('Notice Message Text') }}</label>
+                      <textarea class="form-control" name="otp_notice_text" rows="3"
+                        placeholder="Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.">{{ $abs->otp_notice_text ?? 'Check Your Whatsapp For Ecom Builder Verification | Otp Recieve From Nooryak Technologies.' }}</textarea>
+                      <p class="popup-field-hint mt-1">{{ __('Displayed on the right side of the profile photo inside the registration notice box.') }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gs-divider mb-4"></div>
+
                 {{-- ====== REGIONAL TIME PREFERENCES ====== --}}
                 <div class="gs-section-header mb-3">
                   <div class="gs-section-icon" style="background: #FFF7ED; color: #F59E0B;">

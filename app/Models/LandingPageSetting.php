@@ -19,7 +19,41 @@ class LandingPageSetting extends Model
         'testimonials_data',
         'faqs_data',
         'cta_footer_data',
+        'otp_notice_image',
+        'otp_notice_text',
     ];
+
+    protected static function booted()
+    {
+        static::retrieved(function ($model) {
+            self::ensureOtpNoticeColumns();
+        });
+        static::saving(function ($model) {
+            self::ensureOtpNoticeColumns();
+        });
+    }
+
+    public static function ensureOtpNoticeColumns()
+    {
+        static $checked = false;
+        if ($checked) return;
+        $checked = true;
+
+        try {
+            if (Schema::hasTable('landing_page_settings')) {
+                if (!Schema::hasColumn('landing_page_settings', 'otp_notice_image')) {
+                    Schema::table('landing_page_settings', function (Blueprint $table) {
+                        $table->string('otp_notice_image')->nullable();
+                    });
+                }
+                if (!Schema::hasColumn('landing_page_settings', 'otp_notice_text')) {
+                    Schema::table('landing_page_settings', function (Blueprint $table) {
+                        $table->text('otp_notice_text')->nullable();
+                    });
+                }
+            }
+        } catch (\Throwable $e) {}
+    }
 
     /**
      * Self-healing: ensure table exists and has default content matching reference images

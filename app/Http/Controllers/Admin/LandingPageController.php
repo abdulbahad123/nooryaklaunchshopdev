@@ -216,6 +216,17 @@ class LandingPageController extends Controller
             'cta_footer_data'   => json_encode($ctaFooter, JSON_UNESCAPED_UNICODE),
         ]);
 
+        if ($request->hasFile('otp_notice_image')) {
+            $img = $request->file('otp_notice_image');
+            $dir = public_path('assets/front/img/');
+            $otpNoticeImgName = \App\Http\Helpers\Uploader::upload_picture($dir, $img);
+            $rec->otp_notice_image = $otpNoticeImgName;
+        }
+        if ($request->has('otp_notice_text')) {
+            $rec->otp_notice_text = $request->input('otp_notice_text');
+        }
+        $rec->save();
+
         Session::flash('success', __('Landing Page Sections Updated Successfully'));
         return "success";
     }

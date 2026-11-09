@@ -135,6 +135,9 @@ class LandingSettingsController extends Controller
             'footer_products'       => 'nullable|array',
             'footer_products.*.name'=> 'nullable|string|max:150',
             'footer_products.*.url' => 'nullable|string|max:500',
+            'otp_notice_image'      => 'nullable|string',
+            'otp_notice_image_file' => 'nullable|file|max:5120',
+            'otp_notice_text'       => 'nullable|string',
             // reCAPTCHA
             'recaptcha_site_key'   => 'nullable|string|max:255',
             'recaptcha_secret_key' => 'nullable|string|max:255',
@@ -201,6 +204,22 @@ class LandingSettingsController extends Controller
             $file->move($destDir, $filename);
             $validated['hero_image'] = 'assets/website-builder/img/' . $filename;
         }
+
+        // Handle OTP Notice Image upload
+        if ($request->hasFile('otp_notice_image_file')) {
+            $file = $request->file('otp_notice_image_file');
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (in_array($ext, $allowedExts)) {
+                $filename = 'wb_otp_notice_' . time() . '.' . $ext;
+                $destDir = public_path('assets/website-builder/img');
+                if (!is_dir($destDir)) {
+                    mkdir($destDir, 0755, true);
+                }
+                $file->move($destDir, $filename);
+                $validated['otp_notice_image'] = 'assets/website-builder/img/' . $filename;
+            }
+        }
+        unset($validated['otp_notice_image_file']);
 
         unset($validated['header_logo_file'], $validated['footer_logo_file'], $validated['hero_image_file']);
 

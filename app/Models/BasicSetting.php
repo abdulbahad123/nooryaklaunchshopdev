@@ -56,7 +56,39 @@ class BasicSetting extends Model
         'pollinations_secret_key',
         'pollinations_text_model',
         'pollinations_image_model',
+        'otp_notice_image',
+        'otp_notice_text',
     ];
+
+    protected static function booted()
+    {
+        static::retrieved(function ($model) {
+            self::ensureColumnsExist();
+        });
+        static::saving(function ($model) {
+            self::ensureColumnsExist();
+        });
+    }
+
+    public static function ensureColumnsExist()
+    {
+        static $checked = false;
+        if ($checked) return;
+        $checked = true;
+
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('basic_settings', 'otp_notice_image')) {
+                \Illuminate\Support\Facades\Schema::table('basic_settings', function ($table) {
+                    $table->string('otp_notice_image')->nullable();
+                });
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('basic_settings', 'otp_notice_text')) {
+                \Illuminate\Support\Facades\Schema::table('basic_settings', function ($table) {
+                    $table->text('otp_notice_text')->nullable();
+                });
+            }
+        } catch (\Throwable $e) {}
+    }
 
     public function language()
     {

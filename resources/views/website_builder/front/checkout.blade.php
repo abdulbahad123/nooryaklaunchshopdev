@@ -841,6 +841,21 @@
 
               <!-- OTP Verification Input Box -->
               <div class="mb-4" id="otp_container" style="display: none;">
+                <!-- OTP Notice Box (Dynamic across all tools) -->
+                <div id="wb_otp_notice_badge" style="margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 14px; background: #F0FDF4; border: 2px dashed #22C55E; border-radius: 12px; padding: 14px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.05); text-align: left;">
+                    <div style="flex-shrink: 0; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
+                      <img src="{{ !empty($landingSettings->otp_notice_image) ? asset('assets/front/img/' . $landingSettings->otp_notice_image) : asset('images/ecom builder_icon.png') }}"
+                        alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div>
+                      <p style="font-size: 14px; color: #166534; margin: 0; font-weight: 700; line-height: 1.4;">
+                        {{ !empty($landingSettings->otp_notice_text) ? $landingSettings->otp_notice_text : __('Check Your Whatsapp For Website Builder Verification | Otp Recieve From Nooryak Technologies.') }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <label class="form-label fw-bold small text-muted">Enter OTP Code *</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-shield-halved text-success"></i></span>
@@ -849,9 +864,7 @@
                     <i class="fa-solid fa-circle-check me-1"></i> Verify OTP
                   </button>
                 </div>
-                <div class="alert alert-info py-2 px-3 small border-0 mt-2 mb-0" id="otp_status_banner" style="background: #EFF6FF; color: #1E40AF; border-radius: 8px;">
-                  <i class="fa-solid fa-envelope-open-text me-1"></i> OTP will be sent to your email address above.
-                </div>
+                <div class="alert alert-info py-2 px-3 small border-0 mt-2 mb-0" id="otp_status_banner" style="display: none; background: #EFF6FF; color: #1E40AF; border-radius: 8px;"></div>
                 <div class="text-danger small mt-1 error-msg" id="err_input_otp" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter the 6-digit OTP code</div>
               </div>
 
@@ -1507,9 +1520,10 @@
       document.getElementById('otp_container').style.display = 'block';
       document.getElementById('input_otp').value = '';
       var banner = document.getElementById('otp_status_banner');
-      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-semibold";
-      var otpText = '';
-      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> ' + (data.message || 'OTP verification code sent successfully!') + otpText;
+      if (banner) {
+        banner.style.display = 'none';
+        banner.innerHTML = '';
+      }
     })
     .catch(err => {
       btn.disabled = false;

@@ -169,7 +169,7 @@
               $allLangs = \App\Models\Language::all();
               $cLang = app('currentLang');
             @endphp
-            @if ($allLangs->count() > 1)
+            @if (false && $allLangs->count() > 1)
               <li class="nav-item has-submenu d-lg-none">
                 <a class="nav-link" href="javascript:void(0);">
                   <i class="fas fa-globe me-1"></i> {{ $cLang->name ?? 'Language' }} <i class="fal fa-plus"></i>
@@ -196,7 +196,7 @@
           $hdrLoginUrl = !empty($bs->header_login_url) ? $bs->header_login_url : (\Illuminate\Support\Facades\Route::has('user.login') ? route('user.login') : url('/login'));
         @endphp
         <div class="side-option d-flex align-items-center">
-          @if ($allLangs->count() > 1)
+          @if (false && $allLangs->count() > 1)
             <div class="item lang-selector-item me-2 d-none d-sm-block">
               <div class="dropdown">
                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1" type="button" id="frontLangDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px; font-size: 13px; font-weight: 600; padding: 6px 14px; border: 1px solid #e2e8f0; background: #ffffff; color: #1e293b; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">

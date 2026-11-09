@@ -393,12 +393,38 @@
         </a>
         <p class="cn-footer-brand-desc">{{ $agency->footer_text ?? 'We create spaces that inspire, strengthen communities, and build a brighter tomorrow.' }}</p>
         <div class="cn-footer-social">
-          @php $social = $agency->social_links ?? []; @endphp
-          <a href="{{ $social['facebook']  ?? '#' }}" class="cn-footer-social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="{{ $social['twitter']   ?? '#' }}" class="cn-footer-social-btn" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
-          <a href="{{ $social['linkedin']  ?? '#' }}" class="cn-footer-social-btn" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-          <a href="{{ $social['instagram'] ?? '#' }}" class="cn-footer-social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="{{ $social['youtube']   ?? '#' }}" class="cn-footer-social-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          @php
+            $cnSocial = $agency->social_links ?? [];
+            if (is_string($cnSocial)) {
+                $dec = json_decode($cnSocial, true);
+                $cnSocial = is_string($dec) ? json_decode($dec, true) : $dec;
+            }
+            if (!is_array($cnSocial)) { $cnSocial = []; }
+
+            $formatCnSoc = function($url, $platform = '') {
+                if (empty($url) || $url === '#') return '#';
+                $u = trim((string)$url);
+                if (str_starts_with($u, '@')) {
+                    if ($platform === 'instagram') return 'https://instagram.com/' . ltrim($u, '@');
+                    if ($platform === 'twitter') return 'https://twitter.com/' . ltrim($u, '@');
+                    return 'https://' . ltrim($u, '@/');
+                }
+                if (!preg_match('#^https?://#i', $u) && !str_starts_with($u, 'mailto:') && !str_starts_with($u, 'tel:')) {
+                    return 'https://' . ltrim($u, '/');
+                }
+                return $u;
+            };
+            $cnFb = $formatCnSoc($cnSocial['facebook'] ?? '#', 'facebook');
+            $cnTw = $formatCnSoc($cnSocial['twitter'] ?? '#', 'twitter');
+            $cnLi = $formatCnSoc($cnSocial['linkedin'] ?? '#', 'linkedin');
+            $cnIg = $formatCnSoc($cnSocial['instagram'] ?? '#', 'instagram');
+            $cnYt = $formatCnSoc($cnSocial['youtube'] ?? '#', 'youtube');
+          @endphp
+          <a href="{{ $cnFb }}" class="cn-footer-social-btn" target="{{ $cnFb !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="{{ $cnTw }}" class="cn-footer-social-btn" target="{{ $cnTw !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="{{ $cnLi }}" class="cn-footer-social-btn" target="{{ $cnLi !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="{{ $cnIg }}" class="cn-footer-social-btn" target="{{ $cnIg !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="{{ $cnYt }}" class="cn-footer-social-btn" target="{{ $cnYt !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
         </div>
       </div>
 

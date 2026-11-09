@@ -417,11 +417,42 @@
         <p class="text-white-50 small mb-4" style="line-height:1.65; max-width:280px;">
           {{ $agency->footer_text ?? 'Providing safe, reliable, and comfortable transportation for everyone, anytime, anywhere.' }}
         </p>
+        @php
+          $txSocial = $agency->social_links ?? [];
+          if (is_string($txSocial)) {
+              $dec = json_decode($txSocial, true);
+              $txSocial = is_string($dec) ? json_decode($dec, true) : $dec;
+          }
+          if (!is_array($txSocial)) { $txSocial = []; }
+
+          $formatSocialUrl = function($url, $platform = '') {
+              if (empty($url) || $url === '#') return '#';
+              $u = trim((string)$url);
+              if (str_starts_with($u, '@')) {
+                  if ($platform === 'instagram') return 'https://instagram.com/' . ltrim($u, '@');
+                  if ($platform === 'twitter') return 'https://twitter.com/' . ltrim($u, '@');
+                  return 'https://' . ltrim($u, '@/');
+              }
+              if (!preg_match('#^https?://#i', $u) && !str_starts_with($u, 'mailto:') && !str_starts_with($u, 'tel:')) {
+                  return 'https://' . ltrim($u, '/');
+              }
+              return $u;
+          };
+
+          $txFb = $formatSocialUrl($txSocial['facebook'] ?? '#', 'facebook');
+          $txTw = $formatSocialUrl($txSocial['twitter'] ?? '#', 'twitter');
+          $txIg = $formatSocialUrl($txSocial['instagram'] ?? '#', 'instagram');
+          $txLi = $formatSocialUrl($txSocial['linkedin'] ?? '#', 'linkedin');
+          $txYt = $formatSocialUrl($txSocial['youtube'] ?? '', 'youtube');
+        @endphp
         <div class="d-flex gap-2">
-          <a href="#" class="tx-social-icon"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#" class="tx-social-icon"><i class="fa-brands fa-twitter"></i></a>
-          <a href="#" class="tx-social-icon"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#" class="tx-social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="{{ $txFb }}" class="tx-social-icon" target="{{ $txFb !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="{{ $txTw }}" class="tx-social-icon" target="{{ $txTw !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+          <a href="{{ $txIg }}" class="tx-social-icon" target="{{ $txIg !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="{{ $txLi }}" class="tx-social-icon" target="{{ $txLi !== '#' ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          @if(!empty($txYt) && $txYt !== '#')
+            <a href="{{ $txYt }}" class="tx-social-icon" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          @endif
         </div>
       </div>
 

@@ -859,7 +859,45 @@ class AgencyAdminController extends Controller
             $setting->faqs_data = array_values($request->input('faqs_data', []));
         }
         if ($request->has('social_links')) {
-            $setting->social_links = $request->input('social_links', []);
+            $rawSocial = $setting->getAttribute('social_links');
+            $existingSocial = WbAgencySetting::safeJsonDecodeArray($rawSocial);
+            $customFields = $existingSocial['_custom_fields'] ?? null;
+
+            $newSocial = $request->input('social_links', []);
+            if (!is_array($newSocial)) {
+                $newSocial = [];
+            }
+            // Sanitize URLs (auto-format bare usernames, @handles, and missing https://)
+            foreach ($newSocial as $k => $v) {
+                $v = trim((string)$v);
+                if (!empty($v) && $v !== '#') {
+                    if (str_starts_with($v, '@')) {
+                        if ($k === 'instagram') $v = 'https://instagram.com/' . ltrim($v, '@');
+                        elseif ($k === 'twitter') $v = 'https://twitter.com/' . ltrim($v, '@');
+                        else $v = 'https://' . ltrim($v, '@/');
+                    } elseif (!preg_match('#^https?://#i', $v) && !str_starts_with($v, 'mailto:') && !str_starts_with($v, 'tel:')) {
+                        $v = 'https://' . ltrim($v, '/');
+                    }
+                }
+                $newSocial[$k] = $v;
+            }
+            if ($customFields !== null) {
+                $newSocial['_custom_fields'] = $customFields;
+            }
+            $setting->social_links = $newSocial;
+        }
+
+        // OTP Verification Notice Box Settings
+        if ($request->hasFile('otp_notice_image_file')) {
+            $upImg = $saveUploadedFile($request->file('otp_notice_image_file'), 'wb_otp_notice');
+            if ($upImg) {
+                $setting->otp_notice_image = $upImg;
+            }
+        } elseif ($request->filled('otp_notice_image')) {
+            $setting->otp_notice_image = trim($request->input('otp_notice_image'));
+        }
+        if ($request->has('otp_notice_text')) {
+            $setting->otp_notice_text = trim($request->input('otp_notice_text'));
         }
         if ($request->has('footer_quick_links')) {
             $setting->footer_quick_links = array_values($request->input('footer_quick_links', []));
