@@ -937,15 +937,7 @@
     <!-- BOTTOM COPYRIGHT BAR -->
     <div class="footer-bottom-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        @php
-          $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
-          $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'saasreselling');
-          $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
-        @endphp
-        &copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
-        @if(!$wbHideAttr)
-          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
-        @endif
+        &copy; {{ date('Y') }} <span class="fw-bold text-white">{{ $agency->site_title ?? 'DesignAGENCY' }}</span>. All Rights Reserved.
       </div>
       <div>
         Made with <i class="fa-solid fa-heart text-danger mx-1"></i> for your business growth.

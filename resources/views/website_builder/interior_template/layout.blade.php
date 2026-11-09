@@ -541,16 +541,7 @@
 
     <!-- Bottom Copyright Bar -->
     <div class="ic-footer-bottom-bar">
-      @php
-        $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
-        $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'InterioCRAFT');
-        $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
-      @endphp
-      <div>&copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
-        @if(!$wbHideAttr)
-          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
-        @endif
-      </div>
+      <div>&copy; {{ date('Y') }} InterioCRAFT. All rights reserved.</div>
       <div>Designing Better Spaces for a Brighter Tomorrow. <i class="fa-solid fa-leaf text-success ms-1"></i></div>
     </div>
   </div>

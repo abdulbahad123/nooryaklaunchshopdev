@@ -583,16 +583,7 @@
 
     <!-- Copyright Bar -->
     <div class="pt-4 border-top border-secondary d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
-      @php
-        $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
-        $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'TaxiGo');
-        $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
-      @endphp
-      <div>&copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
-        @if(!$wbHideAttr)
-          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
-        @endif
-      </div>
+      <div>&copy; {{ date('Y') }} {{ $agency->site_title ?? 'TaxiGo' }}. {{ $agency->copyright_text ?? 'All rights reserved.' }}</div>
       <div>Reliable, Safe &amp; Affordable Mobility Solutions. <i class="fa-solid fa-taxi text-warning ms-1"></i></div>
     </div>
   </div>

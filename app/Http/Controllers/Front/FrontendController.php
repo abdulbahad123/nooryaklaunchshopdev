@@ -790,7 +790,7 @@ class FrontendController extends Controller
             return $template;
         });
         $data['templates'] = $templates;
-        $data['bs'] = BasicSetting::first();
+        $data['bs'] = \App\Models\BasicSetting::first();
         $data['agency'] = function_exists('getAgencyFromHost') ? getAgencyFromHost() : null;
 
         return view('front.step', $data);

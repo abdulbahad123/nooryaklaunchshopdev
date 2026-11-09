@@ -1080,16 +1080,7 @@
     </div>
     <hr class="footer-divider">
     <div class="footer-bottom">
-      @php
-        $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
-        $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($settings->brand_name ?? 'saasreselling');
-        $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
-      @endphp
-      <span>&copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
-        @if(!$wbHideAttr)
-          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
-        @endif
-      </span>
+      <span>{{ $settings->footer_copyright ?? '© ' . date('Y') . ' website builder. All rights reserved.' }}</span>
       <span>Made with ❤️ for builders everywhere</span>
     </div>
   </div>

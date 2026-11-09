@@ -327,14 +327,14 @@
 
             </div>
 
-            <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+            <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4" style="font-size:14px;color:#ffffff !important;font-weight:500;">
                 <div>
                     &copy; copyrights {{ strtolower($agency->name ?? 'saasreselling') }} , all rights reserved
                     @if(empty($agency->hide_developer_attribution) && empty($agency->hide_developer_copyright))
-                        developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white underline">nooryak technologies</a>
+                        developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color:#ffffff !important;text-decoration:underline;font-weight:700;">nooryak technologies</a>
                     @endif
                 </div>
-                <div>Made with ❤️ in India 🇮🇳</div>
+                <div style="color:#ffffff !important;">Made with ❤️ in India 🇮🇳</div>
             </div>
 
         </div>

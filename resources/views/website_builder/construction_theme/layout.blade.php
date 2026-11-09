@@ -556,15 +556,7 @@
 
     <div class="cn-footer-bottom">
       <div class="cn-footer-copy">
-        @php
-          $footerAgency = (function_exists('getAgencyFromHost') ? getAgencyFromHost() : null) ?? ($agency ?? null);
-          $wbBrandName = !empty($footerAgency->name) ? $footerAgency->name : ($agency->site_title ?? 'saasreselling');
-          $wbHideAttr = !empty($footerAgency->hide_developer_attribution) || !empty($footerAgency->hide_developer_copyright);
-        @endphp
-        &copy; copyrights {{ strtolower($wbBrandName) }} , all rights reserved
-        @if(!$wbHideAttr)
-          developed by <a href="https://nooryak.com/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">nooryak technologies</a>
-        @endif
+        &copy; {{ date('Y') }} {{ $agency->site_title ?? 'BuildCraft' }}. All rights reserved.
       </div>
       <div class="cn-footer-copy text-end">
         Building Today for a Better Tomorrow. <span class="cn-footer-yellow-line"></span>
