@@ -589,6 +589,14 @@
       <div class="col-xl-6 col-lg-5 col-md-12 order-1 order-lg-2">
         <div class="checkout-card">
           @php
+            $reqHost = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+            $reqHost = preg_replace('/:\d+$/', '', $reqHost);
+            $reqHost = preg_replace('/^www\./i', '', $reqHost);
+            $cleanAgencyHost = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $reqHost);
+            if (empty($cleanAgencyHost) || $cleanAgencyHost === 'localhost' || $cleanAgencyHost === '127.0.0.1') {
+                $cleanAgencyHost = 'saasreselling.in';
+            }
+
             $wbProcessAction = Route::has('website-builder.checkout.process')
                 ? route('website-builder.checkout.process')
                 : (Route::has('front.membership.checkout') ? route('front.membership.checkout') : url('/website-builder/checkout/process'));
