@@ -845,7 +845,15 @@
                 <div id="wb_otp_notice_badge" style="margin-bottom: 16px;">
                   <div style="display: flex; align-items: center; gap: 14px; background: #F0FDF4; border: 2px dashed #22C55E; border-radius: 12px; padding: 14px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.05); text-align: left;">
                     <div style="flex-shrink: 0; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
-                      <img src="{{ !empty($landingSettings->otp_notice_image) ? asset('assets/front/img/' . $landingSettings->otp_notice_image) : asset('images/ecom builder_icon.png') }}"
+                      @php
+                        $wbNoticeImg = asset('assets/landing_page/websitebuilder_logo.png');
+                        if (!empty($landingSettings->otp_notice_image)) {
+                            $wbNoticeImg = str_starts_with($landingSettings->otp_notice_image, 'http')
+                                ? $landingSettings->otp_notice_image
+                                : (str_starts_with($landingSettings->otp_notice_image, 'assets/') ? asset($landingSettings->otp_notice_image) : asset('assets/front/img/' . $landingSettings->otp_notice_image));
+                        }
+                      @endphp
+                      <img src="{{ $wbNoticeImg }}"
                         alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     </div>
                     <div>
