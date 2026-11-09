@@ -3,6 +3,39 @@
     $captcha = Captcha::render();
     $languages = Language::getLanguages();
     $currentLang = app()->getLocale();
+
+    $agencyObj = null;
+    try {
+        if (class_exists('\App\Services\WhatsAppOtpService')) {
+            $pdo = \App\Services\WhatsAppOtpService::getSassAdminPdo();
+            if ($pdo) {
+                $rawH = strtolower(trim((string)(request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
+                $rawH = preg_replace('/:\d+$/', '', $rawH);
+                $cleanH = preg_replace('/^(launchshop|checkout|app|www|websitebuilder|website-builder|whatsappbulk|whatsapp-bulk|whatsapp|wa|ecombuilder|ecom-builder)\./i', '', $rawH);
+                $subSlug = explode('.', $cleanH)[0];
+                $stmt = $pdo->prepare("SELECT * FROM agencies WHERE custom_domain = ? OR custom_domain = ? OR custom_domain LIKE ? OR slug = ? LIMIT 1");
+                $stmt->execute([$rawH, $cleanH, "%{$cleanH}%", $subSlug]);
+                $agencyObj = $stmt->fetch();
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    $waNoticeImageRaw = !empty($agencyObj->otp_notice_image)
+        ? $agencyObj->otp_notice_image
+        : get_option('otp_notice_image', 'assets/whatsappbulklogo.png');
+
+    $waNoticeImg = asset('assets/whatsappbulklogo.png');
+    if (!empty($waNoticeImageRaw)) {
+        $waNoticeImg = str_starts_with($waNoticeImageRaw, 'http')
+            ? $waNoticeImageRaw
+            : (str_starts_with($waNoticeImageRaw, 'assets/') || str_starts_with($waNoticeImageRaw, 'uploads/') || str_starts_with($waNoticeImageRaw, 'img/')
+                ? asset($waNoticeImageRaw)
+                : asset('uploads/otp_notice/' . $waNoticeImageRaw));
+    }
+
+    $waNoticeText = !empty($agencyObj->otp_notice_text)
+        ? $agencyObj->otp_notice_text
+        : get_option('otp_notice_text', 'Check Your Whatsapp For WhatsApp Bulk Verification | Otp Recieved From saasreselling platform');
 @endphp
 
 <style>
@@ -235,77 +268,100 @@
                 </div>
 
                 <!-- WhatsApp Mobile Number Section -->
-                <div class="wb-card-section">
+                <div class="wb-card-section" style="margin-bottom: 16px;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                         <label for="phone" style="margin: 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
                             <i class="fa-brands fa-whatsapp" style="font-size: 16px;"></i>
-                            <span>{{ __("WhatsApp Mobile Number") }}</span>
+                            <span>{{ __("WhatsApp Mobile Number") }} <span style="color: #dc2626;">*</span></span>
                         </label>
                         <span id="wa-verified-badge" class="wb-badge-verified" style="display: none;">
                             <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
                         </span>
                     </div>
 
-                    <div class="wb-otp-flex">
-                        <div style="display: flex; flex: 1; min-width: 0; border: 1.5px solid #cfe2d6; border-radius: 12px; background: #ffffff; overflow: hidden; box-sizing: border-box;">
-                            <select id="country_code" name="country_code" style="height: 48px; border: none; border-right: 1px solid #e5e7eb; background: #f9fafb; padding: 0 10px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; max-width: 135px; flex-shrink: 0;">
-                                <option value="+91" selected>🇮🇳 +91 (IN)</option>
-                                <option value="+1">🇺🇸 +1 (US)</option>
-                                <option value="+44">🇬🇧 +44 (UK)</option>
-                                <option value="+971">🇦🇪 +971 (AE)</option>
-                                <option value="+966">🇸🇦 +966 (SA)</option>
-                                <option value="+65">🇸🇬 +65 (SG)</option>
-                                <option value="+60">🇲🇾 +60 (MY)</option>
-                                <option value="+61">🇦🇺 +61 (AU)</option>
-                                <option value="+49">🇩🇪 +49 (DE)</option>
-                                <option value="+33">🇫🇷 +33 (FR)</option>
-                                <option value="+92">🇵🇰 +92 (PK)</option>
-                                <option value="+880">🇧🇩 +880 (BD)</option>
-                                <option value="+977">🇳🇵 +977 (NP)</option>
-                                <option value="+94">🇱🇰 +94 (LK)</option>
-                                <option value="+62">🇮🇩 +62 (ID)</option>
-                                <option value="+63">🇵🇭 +63 (PH)</option>
-                                <option value="+86">🇨🇳 +86 (CN)</option>
-                                <option value="+81">🇯🇵 +81 (JP)</option>
-                                <option value="+55">🇧🇷 +55 (BR)</option>
-                                <option value="+27">🇿🇦 +27 (ZA)</option>
-                                <option value="+234">🇳🇬 +234 (NG)</option>
-                            </select>
-                            <input type="tel" id="phone" name="phone" style="height: 48px; border: none; padding: 0 14px; font-size: 14px; width: 100%; min-width: 0; outline: none; background: transparent; box-sizing: border-box; color: #16231b;" placeholder="{{ __('Mobile number (e.g. 9876543210)') }}" required>
-                        </div>
-                        <button type="button" id="btn-send-wa-otp" class="wb-btn-send">
-                            <i class="fa-brands fa-whatsapp" style="font-size: 16px;"></i>
-                            <span>{{ __("Send OTP") }}</span>
-                        </button>
+                    <div style="display: flex; width: 100%; min-width: 0; border: 1.5px solid #cfe2d6; border-radius: 12px; background: #ffffff; overflow: hidden; box-sizing: border-box;">
+                        <select id="country_code" name="country_code" style="height: 48px; border: none; border-right: 1px solid #e5e7eb; background: #f9fafb; padding: 0 10px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; max-width: 135px; flex-shrink: 0;">
+                            <option value="+91" selected>🇮🇳 +91 (IN)</option>
+                            <option value="+1">🇺🇸 +1 (US)</option>
+                            <option value="+44">🇬🇧 +44 (UK)</option>
+                            <option value="+971">🇦🇪 +971 (AE)</option>
+                            <option value="+966">🇸🇦 +966 (SA)</option>
+                            <option value="+65">🇸🇬 +65 (SG)</option>
+                            <option value="+60">🇲🇾 +60 (MY)</option>
+                            <option value="+61">🇦🇺 +61 (AU)</option>
+                            <option value="+49">🇩🇪 +49 (DE)</option>
+                            <option value="+33">🇫🇷 +33 (FR)</option>
+                            <option value="+92">🇵🇰 +92 (PK)</option>
+                            <option value="+880">🇧🇩 +880 (BD)</option>
+                            <option value="+977">🇳🇵 +977 (NP)</option>
+                            <option value="+94">🇱🇰 +94 (LK)</option>
+                            <option value="+62">🇮🇩 +62 (ID)</option>
+                            <option value="+63">🇵🇭 +63 (PH)</option>
+                            <option value="+86">🇨🇳 +86 (CN)</option>
+                            <option value="+81">🇯🇵 +81 (JP)</option>
+                            <option value="+55">🇧🇷 +55 (BR)</option>
+                            <option value="+27">🇿🇦 +27 (ZA)</option>
+                            <option value="+234">🇳🇬 +234 (NG)</option>
+                        </select>
+                        <input type="tel" id="phone" name="phone" style="height: 48px; border: none; padding: 0 14px; font-size: 14px; width: 100%; min-width: 0; outline: none; background: transparent; box-sizing: border-box; color: #16231b;" placeholder="{{ __('Mobile number (e.g. 9876543210)') }}" required>
                     </div>
+                </div>
 
-                    <div id="wa-otp-msg" style="margin-top: 6px; font-size: 12px; font-weight: 600; min-height: 16px;"></div>
+                <!-- Email Address Section -->
+                <div class="wb-card-section" style="margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <label for="email" style="margin: 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-envelope" style="font-size: 15px;"></i>
+                            <span>{{ __("Email Address") }} <span style="color: #dc2626;">*</span></span>
+                        </label>
+                        <span id="email-verified-badge" class="wb-badge-verified" style="display: none;">
+                            <i class="fa-solid fa-circle-check"></i> {{ __("Verified") }}
+                        </span>
+                    </div>
+                    <input type="email" id="email" name="email" class="wb-input" placeholder="{{ __('Enter your email address') }}" required>
+                </div>
 
-                    <!-- Inline WhatsApp OTP verification box -->
-                    <div id="wa-otp-box" style="display: none; margin-top: 12px; padding: 14px; background: #ffffff; border: 1.5px solid #bbf7d0; border-radius: 14px;">
-                        <div style="font-size: 13px; color: #166534; font-weight: 600; margin-bottom: 8px;">
-                            <i class="fa-solid fa-key" style="margin-right: 4px;"></i> {{ __("Enter the 6-digit verification code sent to your WhatsApp number / Email:") }}
+                <!-- Send OTP Action Button (Placed directly BELOW Email Address) -->
+                <div style="margin-bottom: 16px;">
+                    <button type="button" id="btn-send-wa-otp" class="wb-btn-send" style="width: 100% !important; justify-content: center; height: 50px !important;">
+                        <i class="fa-solid fa-paper-plane" style="font-size: 15px;"></i>
+                        <span>{{ __("Send OTP") }}</span>
+                    </button>
+                    <div id="wa-otp-msg" style="margin-top: 8px; font-size: 12.5px; font-weight: 600; min-height: 18px; text-align: center;"></div>
+                </div>
+
+                <!-- OTP Notice Box (Standardized with Website Builder & Ecom Builder: Left Logo + Right Notice Text) -->
+                <div id="wa_otp_notice_badge" style="display: none; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 14px; background: #F0FDF4; border: 2px dashed #22C55E; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.05); text-align: left;">
+                        <div style="flex-shrink: 0; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: #ffffff; border-radius: 10px; border: 1px solid #dcfce7; padding: 4px;">
+                            <img src="{{ $waNoticeImg }}" alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                            <input type="text" id="wa-otp-input" maxlength="6" style="height: 42px; width: 140px; text-align: center; font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #1f7a45; border-radius: 10px; outline: none; background: #ffffff; color: #16231b;" placeholder="••••••">
-                            <button type="button" id="btn-verify-wa-otp" style="height: 42px; padding: 0 18px; background-color: #1f7a45; color: #ffffff !important; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(31,122,69,0.2);">
-                                {{ __("Verify OTP") }}
-                            </button>
-                            <button type="button" id="btn-resend-wa-otp" style="display: none; background: transparent; border: none; color: #1f7a45; text-decoration: underline; font-size: 12px; font-weight: 600; cursor: pointer;">
-                                {{ __("Resend Code") }}
-                            </button>
-                            <span id="wa-timer" style="font-size: 12px; color: #6b7280; font-family: monospace; font-weight: 600; margin-left: auto;"></span>
+                        <div style="flex-grow: 1;">
+                            <p style="font-size: 13.5px; color: #166534; margin: 0; font-weight: 700; line-height: 1.45;">
+                                {{ $waNoticeText }}
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Email Address Section (Standard Input without OTP) -->
-                <div class="wb-card-section">
-                    <label for="email" style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #1f7a45; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-envelope" style="font-size: 15px;"></i>
-                        <span>{{ __("Email Address") }} <span style="color: #dc2626;">*</span></span>
-                    </label>
-                    <input type="email" id="email" name="email" class="wb-input" placeholder="{{ __('Enter your email address') }}" required>
+                <!-- OTP Verification Input Box -->
+                <div id="wa-otp-box" style="display: none; margin-bottom: 18px; padding: 16px; background: #ffffff; border: 1.5px solid #bbf7d0; border-radius: 14px; box-shadow: 0 4px 14px rgba(31, 122, 69, 0.05);">
+                    <div style="font-size: 13px; color: #166534; font-weight: 700; margin-bottom: 8px;">
+                        <i class="fa-solid fa-shield-halved" style="margin-right: 4px; color: #16a34a;"></i> {{ __("Enter 6-Digit OTP Code") }} <span style="color: #dc2626;">*</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="wa-otp-input" maxlength="6" style="height: 44px; width: 140px; text-align: center; font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #1f7a45; border-radius: 10px; outline: none; background: #ffffff; color: #16231b;" placeholder="••••••">
+                        <button type="button" id="btn-verify-wa-otp" style="height: 44px; padding: 0 20px; background-color: #1f7a45; color: #ffffff !important; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(31,122,69,0.2);">
+                            <i class="fa-solid fa-circle-check me-1"></i> {{ __("Verify OTP") }}
+                        </button>
+                        <button type="button" id="btn-resend-wa-otp" style="display: none; background: transparent; border: none; color: #1f7a45; text-decoration: underline; font-size: 12px; font-weight: 600; cursor: pointer;">
+                            {{ __("Resend Code") }}
+                        </button>
+                        <span id="wa-timer" style="font-size: 12px; color: #6b7280; font-family: monospace; font-weight: 600; margin-left: auto;"></span>
+                    </div>
+                    <div id="wa-otp-verified-banner" style="display: none; margin-top: 12px; padding: 10px 14px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; font-size: 13px; font-weight: 700; color: #065f46;">
+                        <i class="fa-solid fa-circle-check text-success me-1"></i> {{ __("OTP Verified successfully! Your account is verified.") }}
+                    </div>
                 </div>
 
                 <!-- Password & Confirm Password with Eye Toggle -->
@@ -1053,21 +1109,26 @@ document.addEventListener('DOMContentLoaded', function () {
     function doSendWaOtp() {
         const phone = phoneInput ? phoneInput.value.trim() : '';
         const countryCode = countryCodeSelect ? countryCodeSelect.value.trim() : '+91';
+        const emailEl = document.getElementById('email');
+        const emailVal = emailEl ? emailEl.value.trim() : '';
 
-        if (!phone) {
+        if (!phone || phone.length < 7) {
             if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter your mobile number.</span>';
             if (phoneInput) phoneInput.focus();
             return;
         }
 
-        const emailEl = document.getElementById('email');
-        const emailVal = emailEl ? emailEl.value.trim() : '';
+        if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
+            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid email address before sending OTP.</span>';
+            if (emailEl) emailEl.focus();
+            return;
+        }
 
         if (btnSendWaOtp) {
             btnSendWaOtp.disabled = true;
             const originalText = btnSendWaOtp.innerHTML;
             btnSendWaOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#6b7280;">Sending verification code...</span>';
+            if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#6b7280;">Sending verification code to WhatsApp & Email...</span>';
 
             fetch('{{ url("auth/send_whatsapp_otp") }}', {
                 method: 'POST',
@@ -1084,7 +1145,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 btnSendWaOtp.innerHTML = originalText;
 
                 if (data.status === 1) {
-                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'OTP sent successfully!') + '</span>';
+                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-check"></i> ' + (data.message || 'OTP sent successfully to both your WhatsApp number and Email!') + '</span>';
+                    var noticeBadge = document.getElementById('wa_otp_notice_badge');
+                    if (noticeBadge) noticeBadge.style.display = 'block';
                     if (waOtpBox) waOtpBox.style.display = 'block';
                     if (waOtpInput) waOtpInput.focus();
                     startCountdown(60, waTimerSpan, btnResendWaOtp, btnSendWaOtp, waIntervalRef);
@@ -1113,13 +1176,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const countryCode = countryCodeSelect ? countryCodeSelect.value.trim() : '+91';
 
             if (!otp || otp.length < 6) {
-                if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP received on WhatsApp.</span>';
+                if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;">Please enter the 6-digit OTP received on WhatsApp / Email.</span>';
                 if (waOtpInput) waOtpInput.focus();
                 return;
             }
 
             btnVerifyWaOtp.disabled = true;
-            btnVerifyWaOtp.textContent = 'Verifying...';
+            btnVerifyWaOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Verifying...';
 
             fetch('{{ url("auth/verify_whatsapp_otp") }}', {
                 method: 'POST',
@@ -1133,20 +1196,62 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 btnVerifyWaOtp.disabled = false;
-                btnVerifyWaOtp.textContent = 'Verify OTP';
+                btnVerifyWaOtp.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verify OTP';
 
                 if (data.status === 1) {
                     isPhoneVerified = true;
                     if (waIntervalRef.val) clearInterval(waIntervalRef.val);
-                    if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> ' + (data.message || 'WhatsApp number verified!') + '</span>';
-                    if (waOtpBox) waOtpBox.style.display = 'none';
-                    if (btnSendWaOtp) btnSendWaOtp.style.display = 'none';
+                    if (waOtpMsg) waOtpMsg.innerHTML = '';
+
+                    var verifiedBanner = document.getElementById('wa-otp-verified-banner');
+                    if (verifiedBanner) {
+                        verifiedBanner.style.display = 'block';
+                        verifiedBanner.innerHTML = '<i class="fa-solid fa-circle-check text-success me-1"></i> ' + (data.message || 'OTP Verified successfully! Your account is verified.');
+                    }
+
+                    if (waOtpInput) {
+                        waOtpInput.disabled = true;
+                        waOtpInput.readOnly = true;
+                        waOtpInput.style.backgroundColor = '#f1f5f9';
+                        waOtpInput.style.color = '#334155';
+                        waOtpInput.style.cursor = 'not-allowed';
+                        waOtpInput.style.borderColor = '#10b981';
+                    }
+
+                    if (btnVerifyWaOtp) {
+                        btnVerifyWaOtp.disabled = true;
+                        btnVerifyWaOtp.style.cursor = 'default';
+                        btnVerifyWaOtp.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verified';
+                        btnVerifyWaOtp.style.backgroundColor = '#10b981';
+                    }
+
+                    if (btnSendWaOtp) {
+                        btnSendWaOtp.disabled = true;
+                        btnSendWaOtp.style.cursor = 'default';
+                        btnSendWaOtp.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verified';
+                        btnSendWaOtp.style.background = '#10b981';
+                    }
+
+                    if (btnResendWaOtp) btnResendWaOtp.style.display = 'none';
+                    if (waTimerSpan) waTimerSpan.textContent = '';
                     if (waVerifiedBadge) waVerifiedBadge.style.display = 'inline-flex';
+
+                    var emailVerifiedBadge = document.getElementById('email-verified-badge');
+                    if (emailVerifiedBadge) emailVerifiedBadge.style.display = 'inline-flex';
+
                     if (phoneInput) {
                         phoneInput.readOnly = true;
                         phoneInput.style.backgroundColor = '#f0fdf4';
+                        phoneInput.style.cursor = 'not-allowed';
                     }
                     if (countryCodeSelect) countryCodeSelect.disabled = true;
+
+                    var emailEl = document.getElementById('email');
+                    if (emailEl) {
+                        emailEl.readOnly = true;
+                        emailEl.style.backgroundColor = '#f0fdf4';
+                        emailEl.style.cursor = 'not-allowed';
+                    }
                 } else {
                     if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'Invalid code.') + '</span>';
                     if (waOtpInput) waOtpInput.select();
@@ -1154,7 +1259,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(err => {
                 btnVerifyWaOtp.disabled = false;
-                btnVerifyWaOtp.textContent = 'Verify OTP';
+                btnVerifyWaOtp.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verify OTP';
                 if (waOtpMsg) waOtpMsg.innerHTML = '<span style="color:#ef4444;">Verification failed. Please try again.</span>';
             });
         });
@@ -1242,10 +1347,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!isPhoneVerified) {
                 if (errorContainer) {
-                    errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number before signing up.</div>';
+                    errorContainer.innerHTML = '<div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Please verify your WhatsApp mobile number and email address before signing up.</div>';
                     errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-                if (phoneInput) phoneInput.focus();
+                const btnSend = document.getElementById('btn-send-wa-otp');
+                if (btnSend) btnSend.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return false;
             }
 

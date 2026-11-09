@@ -62,6 +62,20 @@ class AdminLandingPageController extends Controller
     {
         $posts = $request->except(['_token']);
 
+        // Handle OTP notice logo file upload
+        if ($request->hasFile('otp_notice_image_file')) {
+            $otpFile = $request->file('otp_notice_image_file');
+            if ($otpFile && $otpFile->isValid()) {
+                $uploadDir = public_path('uploads/otp_notice');
+                if (!file_exists($uploadDir)) {
+                    @mkdir($uploadDir, 0755, true);
+                }
+                $filename = 'otp_logo_' . time() . '.' . $otpFile->getClientOriginalExtension();
+                $otpFile->move($uploadDir, $filename);
+                $posts['otp_notice_image'] = 'uploads/otp_notice/' . $filename;
+            }
+        }
+
         // Handle dynamic testimonials up to 40 items with ratings and avatar images
         if ($request->has('testimonials_data')) {
             $testiData = $request->input('testimonials_data');

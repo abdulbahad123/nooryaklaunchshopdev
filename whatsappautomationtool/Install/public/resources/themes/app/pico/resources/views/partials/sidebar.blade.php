@@ -401,6 +401,21 @@
                                 </a>
                             </div>
                         @endif
+
+                        @if(($value['uri'] ?? '') == 'admin/dashboard')
+                            <div class="menu-item">
+                                <a class="menu-link flex-grow-1 align-items-center {{ request()->is('admin/frontend/landing-page*') ? 'text-primary' : '' }}" href="{{ url('admin/frontend/landing-page') }}">
+                                    <div class="menu-icon fs-18 {{ request()->is('admin/frontend/landing-page*') ? 'text-primary' : 'text-gray-900' }}">
+                                        <i class="fa-light fa-rocket text-success"></i>
+                                    </div>
+                                    <div class="menu-title d-flex align-items-center flex-grow-1 fs-14 fw-5 text-truncate">
+                                        <div class="text-truncate">
+                                            {{ __('Landing Page & OTP') }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
                     @else
                         @php
                             $sub_menus = $value['sub_menu'];

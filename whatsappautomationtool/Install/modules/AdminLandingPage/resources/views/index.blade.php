@@ -92,6 +92,11 @@
                     <i class="fa-light fa-envelope-open-text me-1 text-primary"></i> {{ __('Contact Us & Location') }}
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-6 fs-13" id="tab-otp-notice" data-bs-toggle="pill" data-bs-target="#content-otp-notice" type="button" role="tab">
+                    <i class="fa-brands fa-whatsapp me-1 text-success"></i> {{ __('OTP Notice Box') }}
+                </button>
+            </li>
         </ul>
 
         {{-- Tab Content Panes --}}
@@ -881,6 +886,60 @@
                 </div>
             </div>
 
+            {{-- TAB 9: SIGNUP & CHECKOUT OTP NOTICE BOX --}}
+            <div class="tab-pane fade" id="content-otp-notice" role="tabpanel">
+                <div class="card shadow-none border mb-4" style="border-left: 4px solid #10b981 !important;">
+                    <div class="card-header bg-light d-flex align-items-center justify-content-between">
+                        <div class="fw-bold fs-15 text-gray-800">
+                            <i class="fa-brands fa-whatsapp text-success me-2 fs-18"></i> {{ __('Checkout & Registration OTP Verification Notice Box') }}
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold px-2 py-1">
+                            <i class="fa-solid fa-check me-1"></i> {{ __('Dynamic Delivery') }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-4">
+                            {{ __('Customize the left profile photo/logo and right-hand instruction text shown to clients when receiving verification OTPs in WhatsApp Bulk.') }}
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Upload Notice Profile / Logo Image') }}</label>
+                                <input type="file" class="form-control" name="otp_notice_image_file" id="otpNoticeFileInput" accept="image/*">
+                                <div class="form-text small text-muted">{{ __('Upload an icon or profile photo (PNG, JPG, SVG) for the left side of the OTP notice.') }}</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Or Image URL / Path') }}</label>
+                                <input type="text" class="form-control" name="otp_notice_image" id="otpNoticeImageInput" value="{{ get_option('otp_notice_image', 'assets/whatsappbulklogo.png') }}" placeholder="assets/whatsappbulklogo.png">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13">{{ __('Right Side Verification Notice Message') }}</label>
+                                <input type="text" class="form-control" name="otp_notice_text" id="otpNoticeTextInput" value="{{ get_option('otp_notice_text', 'Check Your Whatsapp For WhatsApp Bulk Verification | Otp Recieved From saasreselling platform') }}" placeholder="Check Your Whatsapp For WhatsApp Bulk Verification | Otp Recieved From saasreselling platform">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-6 fs-13 text-muted">{{ __('Live Preview in Checkout / Registration Form:') }}</label>
+                                <div class="p-3 rounded-3" style="border: 2px dashed #22c55e; background: #f0fdf4; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.05);">
+                                    <div style="flex-shrink: 0; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: #ffffff; border-radius: 8px; border: 1px solid #dcfce7; padding: 4px;">
+                                        @php
+                                            $adminOtpImgRaw = get_option('otp_notice_image', 'assets/whatsappbulklogo.png');
+                                            $adminOtpImg = asset('assets/whatsappbulklogo.png');
+                                            if (!empty($adminOtpImgRaw)) {
+                                                $adminOtpImg = str_starts_with($adminOtpImgRaw, 'http')
+                                                    ? $adminOtpImgRaw
+                                                    : (str_starts_with($adminOtpImgRaw, 'assets/') || str_starts_with($adminOtpImgRaw, 'uploads/') || str_starts_with($adminOtpImgRaw, 'img/') ? asset($adminOtpImgRaw) : asset('uploads/otp_notice/' . $adminOtpImgRaw));
+                                            }
+                                        @endphp
+                                        <img id="otpNoticeImgPreview" src="{{ $adminOtpImg }}" alt="OTP Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                    </div>
+                                    <div style="flex-grow: 1;">
+                                        <span id="otpNoticeTextPreview" style="font-size: 14px; font-weight: 700; color: #166534; line-height: 1.4; display: block;">{{ get_option('otp_notice_text', 'Check Your Whatsapp For WhatsApp Bulk Verification | Otp Recieved From saasreselling platform') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         {{-- Floating / Fixed Save Button --}}
@@ -1089,6 +1148,38 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenDataInput.value = JSON.stringify(list);
         }
     });
+
+    // Live update OTP preview
+    const otpImgInput = document.getElementById('otpNoticeImageInput');
+    const otpFileInput = document.getElementById('otpNoticeFileInput');
+    const otpTextInput = document.getElementById('otpNoticeTextInput');
+    const otpImgPreview = document.getElementById('otpNoticeImgPreview');
+    const otpTextPreview = document.getElementById('otpNoticeTextPreview');
+
+    if (otpTextInput && otpTextPreview) {
+        otpTextInput.addEventListener('input', function() {
+            otpTextPreview.textContent = this.value || 'Check Your Whatsapp For WhatsApp Bulk Verification | Otp Recieved From saasreselling platform';
+        });
+    }
+    if (otpImgInput && otpImgPreview) {
+        otpImgInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                otpImgPreview.src = this.value.trim();
+            }
+        });
+    }
+    if (otpFileInput && otpImgPreview) {
+        otpFileInput.addEventListener('change', function(e) {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(re) {
+                    otpImgPreview.src = re.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
     // Initialize counts on page load
     updateTestimonialCounts();

@@ -144,9 +144,12 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'phone'        => 'required|string|min:7|max:20',
             'country_code' => 'required|string|max:8',
+            'email'        => 'required|email|max:255',
         ], [
-            'phone.required' => __('Mobile number is required.'),
+            'phone.required'        => __('Mobile number is required.'),
             'country_code.required' => __('Country code is required.'),
+            'email.required'        => __('Email address is required before sending OTP.'),
+            'email.email'           => __('Please enter a valid email address.'),
         ]);
 
         if ($validator->fails()) {
@@ -169,14 +172,21 @@ class AuthController extends Controller
             }
         }
 
+        $email = strtolower(trim((string)$request->input('email', '')));
+        if (User::where('email', $email)->exists()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => __('This email address is already registered. Please log in or use another email.'),
+            ]);
+        }
+
         // Generate ONE shared OTP for simultaneous dual-channel delivery
         $otp = WhatsAppOtpService::generateOtp();
 
         // 1. Dispatch WhatsApp OTP
         $res = WhatsAppOtpService::sendWhatsappOtp($request->phone, $request->country_code, $otp);
 
-        // 2. Dispatch Email OTP simultaneously if email was provided
-        $email = trim((string)$request->input('email', ''));
+        // 2. Dispatch Email OTP simultaneously
         $emailSent = false;
         if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             try {
@@ -187,9 +197,9 @@ class AuthController extends Controller
             } catch (\Throwable $e) {}
         }
 
-        if (($res['status'] ?? 0) === 1 && $emailSent) {
+        if (($res['status'] ?? 0) === 1) {
             $res['message'] = __('Verification code has been sent to both your WhatsApp number (+:number) and Email (:email)!', ['number' => $cleanPhone, 'email' => $email]);
-            $res['email_sent'] = true;
+            $res['email_sent'] = $emailSent;
         }
 
         return response()->json($res);
@@ -214,6 +224,9 @@ class AuthController extends Controller
         }
 
         $res = WhatsAppOtpService::verifyWhatsappOtp($request->phone, $request->country_code, $request->otp);
+        if (($res['status'] ?? 0) === 1) {
+            $res['message'] = __('OTP Verified successfully! Your account is verified.');
+        }
         return response()->json($res);
     }
 
