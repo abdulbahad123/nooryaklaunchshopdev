@@ -874,7 +874,7 @@
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-shield-halved text-success"></i></span>
                   <input type="text" id="input_otp" class="form-control input-custom border-start-0" placeholder="e.g. 337178" maxlength="6">
-                  <button type="button" class="btn btn-success px-3 fw-bold small" onclick="handleVerifyOtp()">
+                  <button type="button" class="btn btn-success px-3 fw-bold small" id="btn_verify_otp" onclick="handleVerifyOtp()">
                     <i class="fa-solid fa-circle-check me-1"></i> Verify OTP
                   </button>
                 </div>
@@ -1590,6 +1590,12 @@
       return;
     }
 
+    var btnVerify = document.getElementById('btn_verify_otp');
+    if (btnVerify) {
+      btnVerify.disabled = true;
+      btnVerify.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Verifying...';
+    }
+
     fetch("{{ route('website-builder.checkout.verify-otp') }}", {
       method: "POST",
       headers: {
@@ -1602,20 +1608,72 @@
     .then(data => {
       if(data.success) {
         otpVerified = true;
-        var banner = document.getElementById('otp_status_banner');
-        banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-bold";
-        banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verified: ' + data.message;
         hideInputError('input_otp');
+
+        // 1. Show prominent success banner
+        var banner = document.getElementById('otp_status_banner');
+        if (banner) {
+          banner.style.display = 'block';
+          banner.style.backgroundColor = '#ecfdf5';
+          banner.style.color = '#065f46';
+          banner.style.border = '1px solid #a7f3d0';
+          banner.className = "alert py-2.5 px-3 small mt-2 mb-0 fw-bold d-flex align-items-center gap-2";
+          banner.innerHTML = '<i class="fa-solid fa-circle-check fs-6 text-success"></i> <span>' + (data.message || 'OTP Verified successfully! Your account is verified.') + '</span>';
+        }
+
+        // 2. Disable & lock OTP input so user cannot edit it
+        var inputOtp = document.getElementById('input_otp');
+        if (inputOtp) {
+          inputOtp.disabled = true;
+          inputOtp.readOnly = true;
+          inputOtp.style.backgroundColor = '#f1f5f9';
+          inputOtp.style.color = '#334155';
+          inputOtp.style.cursor = 'not-allowed';
+          inputOtp.style.borderColor = '#10b981';
+        }
+
+        // 3. Disable Verify button and set to Verified state
+        if (btnVerify) {
+          btnVerify.disabled = true;
+          btnVerify.className = 'btn btn-success px-3 fw-bold small';
+          btnVerify.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verified';
+          btnVerify.style.cursor = 'default';
+        }
+
+        // 4. Disable Resend / Send OTP button
+        var btnSend = document.getElementById('btn_send_otp');
+        if (btnSend) {
+          btnSend.disabled = true;
+          btnSend.innerHTML = '<i class="fa-solid fa-check me-1"></i> Verified';
+          btnSend.className = 'btn btn-outline-secondary px-3 fw-bold small';
+          btnSend.style.cursor = 'default';
+        }
+
+        // 5. Lock email & phone so they cannot be altered after verification
+        var inputEmail = document.getElementById('input_email');
+        if (inputEmail) {
+          inputEmail.readOnly = true;
+          inputEmail.style.backgroundColor = '#f8fafc';
+        }
+        var inputPhone = document.getElementById('input_phone');
+        if (inputPhone) {
+          inputPhone.readOnly = true;
+          inputPhone.style.backgroundColor = '#f8fafc';
+        }
       } else {
-        showInlineError('input_otp', data.message || 'Invalid OTP code.');
+        if (btnVerify) {
+          btnVerify.disabled = false;
+          btnVerify.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verify OTP';
+        }
+        showInlineError('input_otp', data.message || 'Invalid OTP code. Please check and try again.');
       }
     })
     .catch(err => {
-      otpVerified = true;
-      var banner = document.getElementById('otp_status_banner');
-      banner.className = "alert alert-success py-2 px-3 small border-0 mt-2 mb-0 fw-bold";
-      banner.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> OTP Verified successfully!';
-      hideInputError('input_otp');
+      if (btnVerify) {
+        btnVerify.disabled = false;
+        btnVerify.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Verify OTP';
+      }
+      showInlineError('input_otp', 'Verification request failed. Please check your connection and try again.');
     });
   }
 
