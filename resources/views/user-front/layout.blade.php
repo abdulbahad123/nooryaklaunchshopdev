@@ -19,8 +19,11 @@
   <meta name="description" content="@yield('meta-description')">
   <meta name="keywords" content="@yield('meta-keywords')">
   <link rel="canonical" href="{{ canonicalUrl() }}">
-  <link rel="manifest" href="/site.webmanifest?u={{ $user->username ?? 'LaunchShop' }}">
-  <link rel="apple-touch-icon" href="/pwa-icon/192?u={{ $user->username ?? 'LaunchShop' }}">
+  @php
+    $pwaIconVer = !empty($userBs->web_app_image) ? md5($userBs->web_app_image) : (!empty($userBs->logo) ? md5($userBs->logo) : '1');
+  @endphp
+  <link rel="manifest" href="/site.webmanifest?u={{ $user->username ?? 'LaunchShop' }}&v={{ $pwaIconVer }}">
+  <link rel="apple-touch-icon" href="/pwa-icon/192?u={{ $user->username ?? 'LaunchShop' }}&v={{ $pwaIconVer }}">
   <meta name="theme-color" content="#{{ $userBs->base_color ?? '007bff' }}">
 
   {{-- PWA: capture beforeinstallprompt EARLY (fires before DOM ready, before bottom scripts) --}}

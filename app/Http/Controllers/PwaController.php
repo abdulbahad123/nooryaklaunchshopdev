@@ -10,11 +10,38 @@ class PwaController extends Controller
 {
     protected function resolveUser(?string $username): ?User
     {
-        if ($username) {
-            return User::where('username', $username)->first();
+        if (!empty($username) && $username !== 'LaunchShop') {
+            $user = User::where('username', $username)->first();
+            if ($user) {
+                return $user;
+            }
         }
 
-        return getUser();
+        if (function_exists('getUser')) {
+            try {
+                $user = getUser();
+                if ($user) {
+                    return $user;
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // Check referer header if manifest/icon is fetched from a store page
+        $referer = request()->header('Referer');
+        if (!empty($referer)) {
+            $path = trim(parse_url($referer, PHP_URL_PATH) ?? '', '/');
+            if (!empty($path)) {
+                $firstSegment = explode('/', $path)[0] ?? '';
+                if (!empty($firstSegment) && !in_array(strtolower($firstSegment), ['admin', 'user', 'assets', 'api', 'public'])) {
+                    $user = User::where('username', $firstSegment)->first();
+                    if ($user) {
+                        return $user;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     protected function resolveUserBs(?User $user): ?BasicSetting
@@ -88,12 +115,13 @@ class PwaController extends Controller
         $urls = $this->getPwaUrls($user);
         $color = '#' . ltrim($userBs->base_color ?? '007bff', '#');
 
-        $iconQuery = $username !== '' ? '?u=' . urlencode($username) : '';
+        $iconVer = !empty($userBs->web_app_image) ? md5($userBs->web_app_image) : (!empty($userBs->logo) ? md5($userBs->logo) : '1');
+        $iconQuery = ($username !== '' ? '?u=' . urlencode($username) . '&' : '?') . 'v=' . $iconVer;
 
         // Use relative URLs so that icons match current origin, HTTPS, and custom domain
         $icon192 = '/pwa-icon/192' . $iconQuery;
         $icon512 = '/pwa-icon/512' . $iconQuery;
-        $iconMaskable = '/pwa-icon/512' . $iconQuery . ($iconQuery ? '&' : '?') . 'maskable=1';
+        $iconMaskable = '/pwa-icon/512' . $iconQuery . '&maskable=1';
 
         $manifest = [
             'name'             => $shopName,
@@ -175,12 +203,15 @@ class PwaController extends Controller
                 if ($canvas) {
                     $white = imagecolorallocate($canvas, 255, 255, 255);
                     imagefilledrectangle($canvas, 0, 0, $size, $size, $white);
+                    imagealphablending($canvas, true);
 
                     if ($logoPath && is_file($logoPath)) {
                         $rawLogo = @file_get_contents($logoPath);
                         if (!empty($rawLogo)) {
                             $src = @imagecreatefromstring($rawLogo);
                             if ($src) {
+                                imagealphablending($src, true);
+                                imagesavealpha($src, true);
                                 $srcW = imagesx($src);
                                 $srcH = imagesy($src);
 

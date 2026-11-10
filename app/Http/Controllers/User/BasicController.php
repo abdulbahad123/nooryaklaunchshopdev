@@ -148,16 +148,16 @@ class BasicController extends Controller
         $favicon = $request->file('favicon');
         $preloader = $request->file('preloader');
         $webAppImage = $request->file('web_app_image');
-        $allowedExts = array('jpg', 'png', 'jpeg', 'gif');
+        $allowedExts = array('jpg', 'png', 'jpeg', 'gif', 'webp');
 
         $rules = [
             'base_currency_symbol_position' => 'required',
             'logo' => [
                 function ($attribute, $value, $fail) use ($logo, $allowedExts) {
                     if (!empty($logo)) {
-                        $ext = $logo->getClientOriginalExtension();
+                        $ext = strtolower($logo->getClientOriginalExtension());
                         if (!in_array($ext, $allowedExts)) {
-                            return $fail(__("Only png, jpg, jpeg image is allowed"));
+                            return $fail(__("Only png, jpg, jpeg, webp image is allowed"));
                         }
                     }
                 },
@@ -165,9 +165,9 @@ class BasicController extends Controller
             'favicon' => [
                 function ($attribute, $value, $fail) use ($favicon, $allowedExts) {
                     if (!empty($favicon)) {
-                        $ext = $favicon->getClientOriginalExtension();
+                        $ext = strtolower($favicon->getClientOriginalExtension());
                         if (!in_array($ext, $allowedExts)) {
-                            return $fail(__("Only png, jpg, jpeg image is allowed"));
+                            return $fail(__("Only png, jpg, jpeg, webp image is allowed"));
                         }
                     }
                 },
@@ -175,9 +175,9 @@ class BasicController extends Controller
             'preloader' => [
                 function ($attribute, $value, $fail) use ($preloader, $allowedExts) {
                     if (!empty($preloader)) {
-                        $ext = $preloader->getClientOriginalExtension();
+                        $ext = strtolower($preloader->getClientOriginalExtension());
                         if (!in_array($ext, $allowedExts)) {
-                            return $fail(__("Only png, jpg, jpeg, gif image is allowed"));
+                            return $fail(__("Only png, jpg, jpeg, gif, webp image is allowed"));
                         }
                     }
                 },
@@ -187,19 +187,16 @@ class BasicController extends Controller
                 'image',
                 function ($attribute, $value, $fail) use ($webAppImage, $allowedExts) {
                     if (!empty($webAppImage)) {
-                        $ext = $webAppImage->getClientOriginalExtension();
+                        $ext = strtolower($webAppImage->getClientOriginalExtension());
                         if (!in_array($ext, $allowedExts)) {
-                            return $fail(__("Only png, jpg, jpeg image is allowed"));
+                            return $fail(__("Only png, jpg, jpeg, webp image is allowed"));
                         }
                     }
                 },
-                'dimensions:min_width=512,min_height=512,ratio=1/1',
             ],
         ];
 
-        $messages = [
-            'web_app_image.dimensions' => __('The web app image must be a square image (minimum 512x512 pixels).'),
-        ];
+        $messages = [];
 
         $validator = Validator::make($request->all(), $rules, $messages);
 

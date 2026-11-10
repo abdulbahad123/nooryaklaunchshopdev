@@ -37,10 +37,12 @@
 </div>
 
 <div id="pwa-install-fallback" class="pwa-install-fallback" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="pwa-fallback-title">
-  <div class="pwa-install-fallback__panel">
-    <h3 id="pwa-fallback-title">{{ $keywords['Install App'] ?? __('Install App') }}</h3>
-    <p id="pwa-fallback-desc">{{ $keywords['To install this app, tap your browser menu and select Add to Home Screen or Install App.'] ?? __('To install this app, tap your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".') }}</p>
-    <button type="button" onclick="closePwaInstallFallback()">OK</button>
+  <div class="pwa-install-fallback__panel" style="text-align:center;">
+    <img src="{{ !empty($userBs) && !empty($userBs->web_app_image) ? asset('assets/front/img/user/' . $userBs->web_app_image) : (!empty($userBs) && !empty($userBs->logo) ? asset('assets/front/img/user/' . $userBs->logo) : asset('assets/front/img/673095353bc62.png')) }}"
+         style="width:56px;height:56px;object-fit:contain;border-radius:12px;border:1px solid #e2e8f0;padding:3px;background:#fff;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);" alt="">
+    <h3 id="pwa-fallback-title" style="margin:0 0 10px; font-size:18px; font-weight:700;">{{ $keywords['Install App'] ?? __('Install App') }}</h3>
+    <p id="pwa-fallback-desc" style="margin:0 0 18px; font-size:14px; line-height:1.5; color:#475569;">{{ $keywords['To install this app, tap your browser menu and select Add to Home Screen or Install App.'] ?? __('To install this app, tap your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".') }}</p>
+    <button type="button" onclick="closePwaInstallFallback()" style="background:#0f172a; color:#fff; border:none; border-radius:8px; padding:10px 24px; font-size:14px; font-weight:600; cursor:pointer;">OK</button>
   </div>
 </div>
 

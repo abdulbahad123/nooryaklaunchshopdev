@@ -2136,9 +2136,9 @@ body.show-mobile-menu .grocery2-header {
 
     .g2-hero-slider .g2-slider-item {
         border-radius: 16px !important;
-        padding: 16px !important;
-        height: 340px !important;
-        min-height: 340px !important;
+        padding: 10px !important;
+        height: auto !important;
+        min-height: 330px !important;
         background-position: center right !important;
         display: flex !important;
         align-items: center !important;
@@ -2146,17 +2146,17 @@ body.show-mobile-menu .grocery2-header {
     }
 
     .g2-hero-slider .g2-slider-content {
-        background: rgba(255, 255, 255, 0.5) !important;
+        background: rgba(255, 255, 255, 0.32) !important;
         backdrop-filter: blur(8px) !important;
         -webkit-backdrop-filter: blur(8px) !important;
-        padding: 20px 16px !important;
+        padding: 18px 14px !important;
         border-radius: 14px !important;
         max-width: 100% !important;
-        width: 90% !important;
-        margin: 0 auto !important;
+        width: 100% !important;
+        margin: 0 !important;
         z-index: 2 !important;
-        border: 1px solid rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.45) !important;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12) !important;
         box-sizing: border-box !important;
     }
 
@@ -2184,9 +2184,26 @@ body.show-mobile-menu .grocery2-header {
     }
 
     .g2-hero-slider .g2-slider-btns {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .g2-hero-slider .g2-slider-btns .btn,
+    .g2-hero-slider .g2-slider-btns .g2-btn-primary,
+    .g2-hero-slider .g2-slider-btns .g2-btn-secondary {
+        flex: 1 1 0 !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 0 !important;
     }
 
     .btn-install-our-app {

@@ -695,7 +695,37 @@
     @media (max-width: 767.98px) {
       .theme-grocery2 .g2-hero-slider .g2-slider-item,
       .theme-grocery2 .g2-hero-slider .slick-slide.g2-slider-item {
-        padding: 16px !important;
+        padding: 10px !important;
+      }
+      .theme-grocery2 .g2-hero-slider .g2-slider-content {
+        background: rgba(255, 255, 255, 0.32) !important;
+        padding: 18px 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 14px !important;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12) !important;
+      }
+      .theme-grocery2 .g2-hero-slider .g2-slider-btns {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+      .theme-grocery2 .g2-hero-slider .g2-slider-btns .btn,
+      .theme-grocery2 .g2-hero-slider .g2-slider-btns .g2-btn-primary,
+      .theme-grocery2 .g2-hero-slider .g2-slider-btns .g2-btn-secondary {
+        flex: 1 1 0 !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 0 !important;
       }
       .theme-grocery2 .g2-side-promo {
         padding: 24px 20px 24px 24px !important;
