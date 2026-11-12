@@ -232,13 +232,13 @@ class DataTableService
             if( isset($column['name']) && $column['name'] != ""){
                 $name = $column['name'];
                 // If the column is not already qualified with a table, prepend the table name
-                if (strpos($name, '.') === false) {
+                if (strpos($name, '.') === false && strpos($name, '(') === false) {
                     $name = "{$tableName}.{$name}";
                 }
 
                 // If column belongs to $tableName, verify it exists before selecting to avoid 1054 Unknown column
                 $colClean = str_replace("{$tableName}.", "", $name);
-                if (strpos($colClean, '.') === false && !empty($tableName)) {
+                if (strpos($colClean, '.') === false && strpos($colClean, '(') === false && !empty($tableName)) {
                     try {
                         if (!Schema::hasColumn($tableName, $colClean)) {
                             $alias = $column['alias'] ?? $colClean;
