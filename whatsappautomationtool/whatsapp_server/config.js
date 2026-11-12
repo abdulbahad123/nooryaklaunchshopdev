@@ -52,6 +52,8 @@ for (const envPath of candidateEnvPaths) {
 const config = {
   debug: process.env.NODE_DEBUG === "true",
   app_url: process.env.APP_URL || envVars.APP_URL || "http://localhost:8080/",
+  email_cron_enabled: process.env.EMAIL_CRON_ENABLED !== "false" && envVars.EMAIL_CRON_ENABLED !== "false",
+  email_cron_url: process.env.EMAIL_CRON_URL || envVars.EMAIL_CRON_URL || "",
   database: {
     connectionLimit: 100,
     host: process.env.DB_HOST || envVars.DB_HOST || "127.0.0.1",
