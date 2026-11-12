@@ -2850,7 +2850,7 @@ const WAZIPER = {
 
         EMAIL_CRON_WORKING = true;
         try {
-            let dueDb = null;
+            const dueDbs = [];
             for (const targetDb of Common.getAllDatabases()) {
                 try {
                     const row = await Common.withDatabase(targetDb, async () => {
@@ -2865,76 +2865,125 @@ const WAZIPER = {
                         );
                     });
                     if (row && row.has_due) {
-                        dueDb = targetDb;
-                        break;
+                        dueDbs.push(targetDb);
                     }
                 } catch (e) {}
             }
 
-            if (!dueDb) {
+            if (dueDbs.length === 0) {
                 return;
             }
 
-            let cronKey = "";
-            try {
-                const keyRow = await Common.db_query(
-                    "SELECT value FROM options WHERE name = 'cron_key' LIMIT 1",
-                    true,
-                    dueDb
-                );
-                if (keyRow && keyRow.value) {
-                    cronKey = String(keyRow.value).trim();
-                }
-            } catch (e) {}
+            const toCronEndpoint = (raw) => {
+                const cleaned = String(raw || "").trim().replace(/\/+$/, "");
+                if (!/^https?:\/\//i.test(cleaned)) return "";
+                return cleaned.includes("/cron/email-campaigns")
+                    ? cleaned
+                    : `${cleaned}/cron/email-campaigns`;
+            };
 
-            let handled = false;
-            const customUrl = String(config.email_cron_url || "").trim().replace(/\/+$/, "");
-            const baseUrl = String(config.app_url || "").trim().replace(/\/+$/, "");
-            const cronUrl = customUrl
-                ? (customUrl.includes("/cron/email-campaigns") ? customUrl : `${customUrl}/cron/email-campaigns`)
-                : (baseUrl ? `${baseUrl}/cron/email-campaigns` : "");
+            const candidateInstallDirs = [
+                path.resolve(__dirname, "../../Install"),
+                path.resolve(__dirname, "../Install"),
+                "/home/nooryak/public_html/tools.saasreselling.in/whatsappautomationtool/Install",
+                "/home/nooryak/public_html/saasreselling.com/Install",
+            ];
 
-            if (/^https?:\/\//i.test(cronUrl)) {
+            for (const dueDb of dueDbs) {
+                let cronKey = "";
                 try {
-                    const resp = await axios.get(cronUrl, {
-                        params: cronKey ? { key: cronKey } : {},
-                        timeout: 245000,
-                        validateStatus: (status) => status >= 200 && status < 500,
-                    });
-
-                    if (resp.status === 200 && resp.data && Number(resp.data.status) === 1) {
-                        const s = resp.data.summary || {};
-                        if ((s.sent || 0) > 0 || (s.failed || 0) > 0 || (s.queued || 0) > 0) {
-                            logger.ok(
-                                `Email batch processed via HTTP: sent=${s.sent || 0}, queued=${s.queued || 0}, failed=${s.failed || 0}`,
-                                "EMAIL"
-                            );
-                        }
-                        handled = true;
-                    } else {
-                        logger.warn(
-                            `Email cron HTTP returned ${resp.status}: ${resp.data?.message || "unexpected response"}`,
-                            "EMAIL"
-                        );
-                    }
-                } catch (httpErr) {
-                    logger.warn(`Email cron HTTP trigger failed (${httpErr.message}), trying artisan CLI fallback`, "EMAIL");
-                }
-            }
-
-            if (!handled) {
-                const installDir = path.resolve(__dirname, "../../Install");
-                const artisanPath = path.join(installDir, "artisan");
-                if (fs.existsSync(artisanPath)) {
-                    const phpBin = process.env.PHP_BIN || "php";
-                    const { stdout } = await execFileAsync(
-                        phpBin,
-                        [artisanPath, "email:process-campaigns"],
-                        { cwd: installDir, timeout: 245000 }
+                    const keyRow = await Common.db_query(
+                        "SELECT value FROM options WHERE name = 'cron_key' LIMIT 1",
+                        true,
+                        dueDb
                     );
-                    const summaryLine = String(stdout || "").trim().split(/\r?\n/)[0] || "completed";
-                    if (summaryLine && !summaryLine.includes("Sent: 0 | Queued: 0 | Failed: 0")) {
-                        logger.ok(`Email batch via artisan: ${summaryLine}`, "EMAIL");
+                    if (keyRow && keyRow.value) {
+                        cronKey = String(keyRow.value).trim();
+                    }
+                } catch (e) {}
+
+                let tenantOrigin = "";
+                try {
+                    const whRow = await Common.db_query(
+                        "SELECT webhook_url FROM whatsapp_webhooks WHERE webhook_url LIKE 'http%' ORDER BY id DESC LIMIT 1",
+                        true,
+                        dueDb
+                    );
+                    if (whRow && whRow.webhook_url) {
+                        tenantOrigin = new URL(whRow.webhook_url).origin;
+                    }
+                } catch (e) {}
+
+                const candidateUrls = Array.from(
+                    new Set(
+                        [
+                            toCronEndpoint(config.email_cron_url),
+                            toCronEndpoint(tenantOrigin),
+                            toCronEndpoint(config.app_url),
+                        ].filter(Boolean)
+                    )
+                );
+
+                let handled = false;
+                let lastHttpError = "";
+
+                for (const cronUrl of candidateUrls) {
+                    try {
+                        const resp = await axios.get(cronUrl, {
+                            params: {
+                                ...(cronKey ? { key: cronKey } : {}),
+                                tenant_db: dueDb,
+                            },
+                            timeout: 245000,
+                            validateStatus: (status) => status >= 200 && status < 500,
+                        });
+
+                        if (resp.status === 200 && resp.data && Number(resp.data.status) === 1) {
+                            const s = resp.data.summary || {};
+                            if ((s.sent || 0) > 0 || (s.failed || 0) > 0 || (s.queued || 0) > 0) {
+                                logger.ok(
+                                    `Email batch processed (${dueDb}): sent=${s.sent || 0}, queued=${s.queued || 0}, failed=${s.failed || 0}`,
+                                    "EMAIL"
+                                );
+                            }
+                            handled = true;
+                            break;
+                        }
+
+                        lastHttpError = `${cronUrl} -> HTTP ${resp.status}: ${resp.data?.message || "unexpected response"}`;
+                    } catch (httpErr) {
+                        lastHttpError = `${cronUrl} -> ${httpErr.message}`;
+                    }
+                }
+
+                if (!handled) {
+                    const artisanInstallDir = candidateInstallDirs.find((dir) =>
+                        fs.existsSync(path.join(dir, "artisan"))
+                    );
+                    if (artisanInstallDir) {
+                        try {
+                            const phpBin = process.env.PHP_BIN || "php";
+                            const { stdout } = await execFileAsync(
+                                phpBin,
+                                [
+                                    path.join(artisanInstallDir, "artisan"),
+                                    "email:process-campaigns",
+                                    `--tenant_db=${dueDb}`,
+                                ],
+                                { cwd: artisanInstallDir, timeout: 245000 }
+                            );
+                            const summaryLine = String(stdout || "").trim().split(/\r?\n/)[0] || "completed";
+                            if (summaryLine && !summaryLine.includes("Sent: 0 | Queued: 0 | Failed: 0")) {
+                                logger.ok(`Email batch via artisan (${dueDb}): ${summaryLine}`, "EMAIL");
+                            }
+                            handled = true;
+                        } catch (cliErr) {
+                            logger.warn(`Email cron CLI fallback failed (${dueDb}): ${cliErr.message}`, "EMAIL");
+                        }
+                    }
+
+                    if (!handled && lastHttpError) {
+                        logger.warn(`Email cron HTTP failed (${lastHttpError})`, "EMAIL");
                     }
                 }
             }
